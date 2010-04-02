@@ -53,7 +53,7 @@ module Seq(clock,reset,inst,inst_wen,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
    reg [64*8-1:0]     d_n_State;
    reg [64*8-1:0]     d_w_inst_code;
 
-   assign next = n_Address;
+   assign next = c_Address;
    assign oreg = n_OReg;
    assign oreg_wen = n_ORegWen;
 
