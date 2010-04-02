@@ -10,7 +10,7 @@ AluTest.reset
 AluTest.alu.d_c_State[511:0]
 AluTest.alu.d_n_State[511:0]
 @28
-AluTest.alu.inst_wen
+AluTest.alu.inst_en
 @820
 AluTest.alu.d_w_inst_code[511:0]
 @22

@@ -12,12 +12,12 @@
 `define Swc_State_Ready 2'h1
 `define Swc_State_Error 2'h2
 
-module Swc(clock,reset,inst,inst_wen,counter,ready);
+module Swc(clock,reset,inst,inst_en,counter,ready);
    input wire         clock;
    input wire 	      reset;
 
    input wire [11:0]  inst;
-   input wire 	      inst_wen;
+   input wire 	      inst_en;
 
    output wire [23:0] counter;
    output wire 	      ready;
@@ -71,7 +71,7 @@ module Swc(clock,reset,inst,inst_wen,counter,ready);
 	   end
 
 	   `Swc_State_Ready: begin
-	      if (inst_wen) begin
+	      if (inst_en) begin
 		 case (w_inst_code)
 		   `Swc_NOP: begin
 		      n_State    = `Swc_State_Ready;
@@ -143,7 +143,7 @@ module Swc(clock,reset,inst,inst_wen,counter,ready);
 		      n_Ready    = 1'bz;
 		   end
 		 endcase // case (w_inst_code)
-	      end // if (inst_wen)
+	      end // if (inst_en)
 	      else begin
 		 case (c_ContInst)
 		   `Swc_NOP: begin
@@ -190,7 +190,7 @@ module Swc(clock,reset,inst,inst_wen,counter,ready);
 		      n_Ready    = 1'bz;
 		   end
 		 endcase // case (c_ContInst)
-	      end // else: !if(inst_wen)
+	      end // else: !if(inst_en)
 	   end // case: `Swc_State_Reset
 
 	   `Swc_State_Error: begin

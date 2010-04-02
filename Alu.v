@@ -13,12 +13,12 @@
 `define Alu_State_Ready 2'h1
 `define Alu_State_Error 2'h2
 
-module Alu(clock,reset,inst,inst_wen,result);
+module Alu(clock,reset,inst,inst_en,result);
    input wire        clock;
    input wire 	     reset;
 
    input wire [11:0] inst;
-   input wire 	     inst_wen;
+   input wire 	     inst_en;
 
    output wire [7:0] result;
 
@@ -58,7 +58,7 @@ module Alu(clock,reset,inst,inst_wen,result);
 	  end
 
 	  `Alu_State_Ready: begin
-	     if (inst_wen) begin
+	     if (inst_en) begin
 		case (w_inst_code)
 		  `Alu_NOP: begin
 		     n_State = `Alu_State_Ready;
@@ -115,11 +115,11 @@ module Alu(clock,reset,inst,inst_wen,result);
 		     n_Accum = {8{1'bz}};
 		  end
 		endcase // case (w_inst_code)
-	     end // if (inst_wen)
+	     end // if (inst_en)
 	     else begin
 		n_State = `Alu_State_Ready;
 		n_Accum = c_Accum;
-	     end // else: !if(inst_wen)
+	     end // else: !if(inst_en)
 	  end // case: `Alu_State_Ready
 
 	  `Alu_State_Error: begin

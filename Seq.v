@@ -14,12 +14,12 @@
 `define Seq_State_Ready 2'h1
 `define Seq_State_Error 2'h2
 
-module Seq(clock,reset,inst,inst_wen,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
+module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
    input wire         clock;
    input wire 	      reset;
 
    input wire [11:0]  inst;
-   input wire 	      inst_wen;
+   input wire 	      inst_en;
    input wire [7:0]   ireg_0;
    input wire [7:0]   ireg_1;
    input wire [7:0]   ireg_2;
@@ -102,7 +102,7 @@ module Seq(clock,reset,inst,inst_wen,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 	   end
 
 	   `Seq_State_Ready: begin
-	      if (inst_wen) begin
+	      if (inst_en) begin
 		 case (w_inst_code)
 		   `Seq_NOP: begin
 		      n_State    = `Seq_State_Ready;
@@ -200,14 +200,14 @@ module Seq(clock,reset,inst,inst_wen,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 		      n_ORegWen  = {8{1'bz}};
 		   end
 		 endcase // case (w_inst_code)
-	      end // if (inst_wen)
+	      end // if (inst_en)
 	      else begin
 		 n_State    = `Seq_State_Ready;
 		 n_Transfer = c_Transfer;
 		 n_Address  = c_Address;
 		 n_OReg     = 0;
 		 n_ORegWen  = 0;
-	      end // else: !if(inst_wen)
+	      end // else: !if(inst_en)
 	   end // case: `Seq_State_Ready
 
 	   `Seq_State_Error: begin

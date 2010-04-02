@@ -10,7 +10,7 @@ SeqTest.reset
 SeqTest.seq.d_c_State[511:0]
 SeqTest.seq.d_n_State[511:0]
 @28
-SeqTest.seq.inst_wen
+SeqTest.seq.inst_en
 @820
 SeqTest.seq.d_w_inst_code[511:0]
 @22

@@ -5,7 +5,7 @@ module AluTest;
    reg 	      reset;
 
    reg [11:0] inst;
-   reg 	      inst_wen;
+   reg 	      inst_en;
 
    wire [7:0] result;
 
@@ -30,61 +30,61 @@ module AluTest;
    initial begin
       // Test for all instructions after reset.
       #8 inst = {`Alu_LDI,8'h1A};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_ADD,8'h01};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
-      #4 inst = {`Alu_NOP,8'h00};
-      #0 inst_wen = 1;
+      #4 inst = {`Alu_NOP,8'bxxxxxxxx};
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_SUB,8'h02};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
-      #4 inst = {`Alu_NOT,8'h00};
-      #0 inst_wen = 1;
+      #4 inst = {`Alu_NOT,8'bxxxxxxxx};
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_AND,8'h0F};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_IOR,8'hF1};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_XOR,8'hAF};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_SHL,8'h01};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_SHR,8'h02};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
-      #4 inst = {`Alu_NOP,8'h00};
-      #0 inst_wen = 1;
+      #4 inst = {`Alu_NOP,8'bxxxxxxxx};
+      #0 inst_en = 1;
 
       #4 inst = {`Alu_ADD,8'h01};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       // A little delay here from the #4 to simulate the actual delay from
       // a real wire, when receiving a new command from a controller.
-      #5 inst_wen = 0;
+      #5 inst_en = 0;
 
       #7 inst = {`Alu_SUB,8'h02};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       // Same type of delay as above.
-      #5 inst_wen = 0;
+      #5 inst_en = 0;
 
       // Same type of delay as above.
-      #4 inst_wen = 1;
+      #4 inst_en = 1;
 
       // An invalid instruction
       #3 inst = {4'hF,8'h02};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       // This instruction won't execute, because we're in the error state.
       #4 inst = {`Alu_ADD,8'h03};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
       // We need to reset the system to be able to pull
       // it out of the error state.
@@ -93,10 +93,10 @@ module AluTest;
 
       // This instruction will execute properly.
       #2 inst = {`Alu_LDI,8'hAA};
-      #0 inst_wen = 1;
+      #0 inst_en = 1;
 
-      #4 inst = {`Alu_NOP,8'h00};
-      #0 inst_wen = 1;
+      #4 inst = {`Alu_NOP,8'bxxxxxxxx};
+      #0 inst_en = 1;
    end
 
    Alu #()
@@ -104,7 +104,7 @@ module AluTest;
 	.reset(reset),
 	
 	.inst(inst),
-	.inst_wen(inst_wen),
+	.inst_en(inst_en),
 
 	.result(result));
 endmodule

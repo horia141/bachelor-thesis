@@ -11,7 +11,7 @@ SwcTest.reset
 SwcTest.swc.d_c_State[511:0]
 SwcTest.swc.d_n_State[511:0]
 @28
-SwcTest.swc.inst_wen
+SwcTest.swc.inst_en
 @820
 SwcTest.swc.d_w_inst_code[511:0]
 @22

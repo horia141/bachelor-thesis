@@ -1,6 +1,6 @@
-* change all test modules to use 8'bxxxxxxxx instead of 8'h00 in cases where the value
++ change all test modules to use 8'bxxxxxxxx instead of 8'h00 in cases where the value
   of the immediate constant for a instruction doesn't matter.
 
-* change inst_wen to inst_en.
++ change inst_wen to inst_en.
 
 * investigate relationship between next and n_Address and c_Address in Seq.
