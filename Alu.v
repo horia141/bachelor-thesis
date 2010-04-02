@@ -102,12 +102,12 @@ module Alu(clock,reset,inst,inst_wen,result);
 
 		  `Alu_SHL: begin
 		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum << w_inst_imm;
+		     n_Accum = c_Accum << w_inst_imm[2:0];
 		  end
 
 		  `Alu_SHR: begin
 		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum >> w_inst_imm;
+		     n_Accum = c_Accum >> w_inst_imm[2:0];
 		  end
 
 		  default: begin

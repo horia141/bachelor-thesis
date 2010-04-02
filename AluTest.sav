@@ -1,7 +1,7 @@
 [timestart] 0
 [size] 1336 1004
 [pos] -1 -1
-*-13.000000 8060 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.000000 72000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] AluTest.
 @28
 AluTest.clock
@@ -9,11 +9,11 @@ AluTest.reset
 @820
 AluTest.alu.d_c_State[511:0]
 AluTest.alu.d_n_State[511:0]
+@28
+AluTest.alu.inst_wen
+@820
 AluTest.alu.d_w_inst_code[511:0]
 @22
 AluTest.alu.w_inst_imm[7:0]
 AluTest.alu.c_Accum[7:0]
-@23
 AluTest.alu.n_Accum[7:0]
-@22
-AluTest.alu.result[7:0]

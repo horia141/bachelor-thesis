@@ -10,4 +10,9 @@ swc: Swc.v
 seq: Seq.v
 	iverilog -o Seq Seq.v
 
+clean:
+	rm AluTest.vvp
+	rm AluTest.vcd
 
+	rm Swc
+	rm Seq

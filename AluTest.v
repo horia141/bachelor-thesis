@@ -27,6 +27,60 @@ module AluTest;
       #4 reset = 0;
    end
 
+   initial begin
+      #8 inst = {`Alu_LDI,8'h1A};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_ADD,8'h01};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_NOP,8'h00};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_SUB,8'h02};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_NOT,8'h00};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_AND,8'h0F};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_IOR,8'hF1};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_XOR,8'hAF};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_SHL,8'h01};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_SHR,8'h02};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_NOP,8'h00};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_ADD,8'h01};
+      #0 inst_wen = 1;
+
+      // A little delay here to simulate the actual delay from
+      // a real wire, when receiving a new command from a controller.
+      #5 inst_wen = 0;
+
+      #7 inst = {`Alu_SUB,8'h02};
+      #0 inst_wen = 1;
+
+      // Same type of delay as above.
+      #5 inst_wen = 0;
+
+      // Same type of delay as above.
+      #4 inst_wen = 1;
+
+      // An invalid instruction
+      #3 inst = {4'hF,8'h02};
+   end
+
    Alu #()
    alu (.clock(clock),
 	.reset(reset),
