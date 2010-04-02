@@ -11,8 +11,9 @@ swc: Swc.v SwcTest.v out
 	iverilog -o out/SwcTest.vvp Swc.v SwcTest.v
 	vvp out/SwcTest.vvp
 
-seq: Seq.v out
-	iverilog -o out/Seq Seq.v
+seq: Seq.v SeqTest.v out
+	iverilog -o out/SeqTest.vvp Seq.v SeqTest.v
+	vvp out/SeqTest.vvp
 
 clean:
 	rm -rf out

@@ -1,0 +1,34 @@
+[timestart] 0
+[size] 1678 989
+[pos] -1 -1
+*-13.000000 5000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] SeqTest.
+@29
+SeqTest.clock
+@28
+SeqTest.reset
+@820
+SeqTest.seq.d_c_State[511:0]
+SeqTest.seq.d_n_State[511:0]
+@28
+SeqTest.seq.inst_wen
+@820
+SeqTest.seq.d_w_inst_code[511:0]
+@22
+SeqTest.seq.w_inst_imm[7:0]
+@24
+SeqTest.seq.w_inst_src[1:0]
+@22
+SeqTest.seq.w_inst_cmd[3:0]
+@24
+SeqTest.seq.w_inst_dst[2:0]
+@22
+SeqTest.seq.c_Address[7:0]
+SeqTest.seq.n_Address[7:0]
+SeqTest.seq.c_Transfer[7:0]
+SeqTest.seq.n_Transfer[7:0]
+SeqTest.seq.c_OReg[11:0]
+SeqTest.seq.n_OReg[11:0]
+@28
+SeqTest.seq.c_ORegWen[7:0]
+SeqTest.seq.n_ORegWen[7:0]
