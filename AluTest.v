@@ -28,6 +28,7 @@ module AluTest;
    end
 
    initial begin
+      // Test for all instructions after reset
       #8 inst = {`Alu_LDI,8'h1A};
       #0 inst_wen = 1;
 
@@ -64,7 +65,7 @@ module AluTest;
       #4 inst = {`Alu_ADD,8'h01};
       #0 inst_wen = 1;
 
-      // A little delay here to simulate the actual delay from
+      // A little delay here from the #4 to simulate the actual delay from
       // a real wire, when receiving a new command from a controller.
       #5 inst_wen = 0;
 
@@ -79,6 +80,23 @@ module AluTest;
 
       // An invalid instruction
       #3 inst = {4'hF,8'h02};
+      #0 inst_wen = 1;
+
+      // This instruction won't execute, because we're in the error state.
+      #4 inst = {`Alu_ADD,8'h03};
+      #0 inst_wen = 1;
+
+      // We need to reset the system to be able to pull
+      // it out of the error state.
+      #2 reset = 1;
+      #4 reset = 0;
+
+      // This instruction will execute properly
+      #2 inst = {`Alu_LDI,8'hAA};
+      #0 inst_wen = 1;
+
+      #4 inst = {`Alu_NOP,8'h00};
+      #0 inst_wen = 1;
    end
 
    Alu #()
