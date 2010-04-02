@@ -1,18 +1,18 @@
 all: alu swc seq
 
-alu: Alu.v AluTest.v
-	iverilog -o AluTest.vvp Alu.v AluTest.v
-	vvp AluTest.vvp
+out:
+	mkdir -p out
 
-swc: Swc.v
-	iverilog -o Swc Swc.v
+alu: Alu.v AluTest.v out
+	iverilog -o out/AluTest.vvp Alu.v AluTest.v
+	vvp out/AluTest.vvp
 
-seq: Seq.v
-	iverilog -o Seq Seq.v
+swc: Swc.v SwcTest.v out
+	iverilog -o out/SwcTest.vvp Swc.v SwcTest.v
+	vvp out/SwcTest.vvp
+
+seq: Seq.v out
+	iverilog -o out/Seq Seq.v
 
 clean:
-	rm AluTest.vvp
-	rm AluTest.vcd
-
-	rm Swc
-	rm Seq
+	rm -rf out

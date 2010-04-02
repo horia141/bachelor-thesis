@@ -10,7 +10,7 @@ module AluTest;
    wire [7:0] result;
 
    initial begin
-      #0 $dumpfile("AluTest.vcd");
+      #0 $dumpfile("out/AluTest.vcd");
       #0 $dumpvars;
 
       #1000 $finish;
