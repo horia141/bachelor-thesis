@@ -28,7 +28,7 @@ module AluTest;
    end
 
    initial begin
-      // Test for all instructions after reset
+      // Test for all instructions after reset.
       #8 inst = {`Alu_LDI,8'h1A};
       #0 inst_wen = 1;
 
@@ -91,7 +91,7 @@ module AluTest;
       #2 reset = 1;
       #4 reset = 0;
 
-      // This instruction will execute properly
+      // This instruction will execute properly.
       #2 inst = {`Alu_LDI,8'hAA};
       #0 inst_wen = 1;
 

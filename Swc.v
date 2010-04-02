@@ -70,7 +70,7 @@ module Swc(clock,reset,inst,inst_wen,counter,ready);
 	      n_Ready    = 1;
 	   end
 
-	   `Swc_State_Reset: begin
+	   `Swc_State_Ready: begin
 	      if (inst_wen) begin
 		 case (w_inst_code)
 		   `Swc_NOP: begin
