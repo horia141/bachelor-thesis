@@ -39,22 +39,7 @@ module Auto1(clock,reset,counter);
 	.oreg(seq_oreg),
 	.oreg_wen(seq_oreg_wen));
 
-   Rom16x12 #(.Word_00({`Seq_LDI,8'h1A}),
- 	      .Word_01({`Seq_CMD,`Alu_LDI,`Send_ALU}),
- 	      .Word_02({`Seq_LDI,8'h02}),
- 	      .Word_03({`Seq_CMD,`Alu_ADD,`Send_ALU}),
- 	      .Word_04({`Seq_LDR,`Recv_ALU}),
- 	      .Word_05({`Seq_CMD,`Swc_LD0,`Send_SWC}),
- 	      .Word_06({`Seq_LDI,8'h03}),
- 	      .Word_07({`Seq_CMD,`Alu_LDI,`Send_ALU}),
- 	      .Word_08({`Seq_LDI,8'h02}),
- 	      .Word_09({`Seq_CMD,`Alu_SUB,`Send_ALU}),
- 	      .Word_0A({`Seq_LDR,`Recv_ALU}),
- 	      .Word_0B({`Seq_CMD,`Swc_LD1,`Send_SWC}),
- 	      .Word_0C({`Seq_CMD,`Swc_CCD,`Send_SWC}),
- 	      .Word_0D({`Seq_LDR,`Recv_SWC}),
- 	      .Word_0E({`Seq_JZI,8'h0D}),
-	      .Word_0F({`Seq_JXI,8'h00}))
+   Auto1Rom #()
    rom (.addr(seq_next[3:0]),
 	.data_o(rom_data_o));
 

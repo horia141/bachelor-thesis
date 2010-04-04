@@ -71,8 +71,8 @@ psFormat = do reserved psLexer "Format"
                 "Hex" -> return Hex
 
 psContentLine :: MemFormat -> Parser String
-psContentLine Bin = lexeme psLexer $ many1 $ oneOf "01_"
-psContentLine Hex = lexeme psLexer $ many1 $ oneOf "0123456789ABCDEFabcdef_"
+psContentLine Bin = lexeme psLexer $ many1 $ oneOf "xXzZ01_"
+psContentLine Hex = lexeme psLexer $ many1 $ oneOf "xXzZ0123456789ABCDEFabcdef_"
 
 psMemFile :: Parser MemDef
 psMemFile = do (name,wordSize,addrSize,format) <- permute (readyp <$$> psName
@@ -109,7 +109,7 @@ genSimRom (Def name wordSize addrSize format content) =
     "      default: data_o = " ++ veriNumber format "0" ++ ";" ++ "\n" ++
     "    endcase" ++ "\n" ++
     "  end" ++ "\n" ++
-    "endmodule // Rom" ++ show addrSize ++ "x" ++ show wordSize ++ "\n"
+    "endmodule // " ++ name ++ "\n"
     where body :: String
           body | length content <= 2^addrSize
                    = intercalate "\n" $ 
@@ -119,8 +119,8 @@ genSimRom (Def name wordSize addrSize format content) =
               where toCase index value = "      " ++ show index ++ ": data_o = " ++ value ++ ";"
 
           veriNumber :: MemFormat -> String -> String
-          veriNumber Bin number = show addrSize ++ "'b" ++ number
-          veriNumber Hex number = show addrSize ++ "'h" ++ number
+          veriNumber Bin number = show wordSize ++ "'b" ++ number
+          veriNumber Hex number = show wordSize ++ "'h" ++ number
 
 data ClOptions
     = ClOptions {

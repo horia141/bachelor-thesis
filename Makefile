@@ -3,15 +3,19 @@
 Projects = AluTest SwcTest SeqTest Auto1Test
 
 AluTest_Src = Alu.v AluTest.v
+AluTest_Mem = 
 AluTest_Out = AluTest.vvp
 
 SwcTest_Src = Swc.v SwcTest.v
+SwcTest_Mem =
 SwcTest_Out = SwcTest.vvp
 
 SeqTest_Src = Seq.v SeqTest.v
+SeqTest_Mem = 
 SeqTest_Out = SeqTest.vvp
 
-Auto1Test_Src = Alu.v Swc.v Seq.v Rom.v Auto1.v Auto1Test.v
+Auto1Test_Src = Alu.v Swc.v Seq.v Auto1.v Auto1Test.v
+Auto1Test_Mem = Auto1.mem
 Auto1Test_Out = Auto1Test.vvp
 
 Tools = MemGen
@@ -33,11 +37,13 @@ clean:
 
 define projectBuild
 $(1)_SrcFull = $(addprefix $(SrcPath)/,$($(1)_Src))
+$(1)_MemFull = $(addprefix $(SrcPath)/,$($(1)_Mem))
 $(1)_OutFull = $(addprefix $(OutPath)/,$($(1)_Out))
 
-$(1)-build: $$($(1)_SrcFull) _out
+$(1)-build: $$($(1)_SrcFull) _out $(addsuffix -build,$(Tools))
 	$$(info === [Building Project $(1)] ===)
-	iverilog -o $$($(1)_OutFull) $$($(1)_SrcFull)
+	$(OutPath)/memgen -o $(TmpPath)/$(1).Gen.v $$($(1)_MemFull)
+	iverilog -o $$($(1)_OutFull) $(TmpPath)/$(1).Gen.v $$($(1)_SrcFull)
 	vvp $$($(1)_OutFull)
 endef
 
