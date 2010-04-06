@@ -6,3 +6,7 @@
 * investigate relationship between next and n_Address and c_Address in Seq.
 
 x add proper tests for Rom16x12.
+
+* add proper error handling in SeqAsm
+  * check all instructions are valid
+  * check modules fit in memory
