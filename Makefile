@@ -23,7 +23,7 @@ Tools = MemGen SeqAsm
 MemGen_Src = Main.hs
 MemGen_Out = memgen
 
-SeqAsm_Src = Main.hs Defines.hs Parser.hs
+SeqAsm_Src = Main.hs Defines.hs Parser.hs ClOptions.hs
 SeqAsm_Out = seqasm
 
 # Configuration Dependent Rules
@@ -53,10 +53,12 @@ endef
 define toolBuild
 $(1)_SrcFull = $(addprefix $(DevPath)/$(1)/,$($(1)_Src))
 $(1)_OutFull = $(addprefix $(OutPath)/,$($(1)_Out))
+$(1)_TmpPath = $(TmpPath)/$(1)
 
 $(1)-build: $$($(1)_SrcFull) _out _tmp
 	$$(info === [Building Tool $(1)] ===)
-	ghc --make -o $$($(1)_OutFull) -odir $(TmpPath) -hidir $(TmpPath) $$($(1)_SrcFull)
+	mkdir -p $$($(1)_TmpPath)
+	ghc --make -o $$($(1)_OutFull) -odir $$($(1)_TmpPath) -hidir $$($(1)_TmpPath) $$($(1)_SrcFull)
 endef
 
 $(foreach project,$(Projects),$(eval $(call projectBuild,$(project))))

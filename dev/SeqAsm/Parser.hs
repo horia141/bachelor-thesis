@@ -13,6 +13,22 @@ import Text.ParserCombinators.Parsec.Expr
 
 import Defines (SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
 
+parseProgram :: String -> [(String,String)] -> Either String SeqProgram
+parseProgram entry fncPairs = 
+    case partitionEithers $ map parseModule fncPairs of
+      ([],modules) -> Right $ Program entry modules
+      (errs,_) -> Left $ intercalate "\n" errs
+    where parseModule :: (String,String) -> Either String SeqModule
+          parseModule (fileName,contents) = 
+              case parse fullModule fileName contents of
+                Left err -> Left $ show err
+                Right res -> Right res
+              where fullModule :: Parser SeqModule
+                    fullModule = do whiteSpace pLexer
+                                    res <- pModule
+                                    eof
+                                    return res
+
 pLexer = makeTokenParser (LanguageDef {
                             commentStart    = "",
                             commentEnd      = "",
@@ -107,19 +123,3 @@ pModule = do reserved pLexer "module"
              instructions <- many pInstruction
 
              return $ Module name exports imports defines instructions
-
-parseProgram :: String -> [(String,String)] -> Either String SeqProgram
-parseProgram entry fncPairs = 
-    case partitionEithers $ map parseModule fncPairs of
-      ([],modules) -> Right $ Program entry modules
-      (errs,_) -> Left $ intercalate "\n" errs
-    where parseModule :: (String,String) -> Either String SeqModule
-          parseModule (fileName,contents) = 
-              case parse fullModule fileName contents of
-                Left err -> Left $ show err
-                Right res -> Right res
-              where fullModule :: Parser SeqModule
-                    fullModule = do whiteSpace pLexer
-                                    res <- pModule
-                                    eof
-                                    return res
