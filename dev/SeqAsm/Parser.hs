@@ -11,7 +11,7 @@ import Text.ParserCombinators.Parsec.Token
 import Text.ParserCombinators.Parsec.Language
 import Text.ParserCombinators.Parsec.Expr
 
-import Defines (SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
+import Defines (SeqSourceInfo(..),SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
 
 parseProgram :: String -> [(String,String)] -> Either String SeqProgram
 parseProgram entry fncPairs = 
@@ -29,6 +29,10 @@ parseProgram entry fncPairs =
                                     eof
                                     return res
 
+sourcePosToSourceInfo :: String -> SourcePos -> SeqSourceInfo
+sourcePosToSourceInfo sourceInit position =
+    SourceInfo (sourceName position) (sourceLine position) (sourceColumn position) (take 10 sourceInit)
+
 pLexer = makeTokenParser (LanguageDef {
                             commentStart    = "",
                             commentEnd      = "",
@@ -43,28 +47,36 @@ pLexer = makeTokenParser (LanguageDef {
                             caseSensitive   = True})
 
 pExprNumb :: Parser SeqExpr
-pExprNumb = (lexeme pLexer $ 
-             choice [try $ do digits <- many1 $ oneOf "0123456789ABCDEFabcdef"
-                              char 'h'
+pExprNumb = do sourceInit <- getInput
+               position <- getPosition
+
+               value <- lexeme pLexer $ 
+                        choice [try $ do digits <- many1 $ oneOf "0123456789ABCDEFabcdef"
+                                         char 'h'
                                           
-                              return $ Numb ((fst . head) (readInt 16 isHexDigit digitToInt digits)),
-                     try $ do digits <- many1 $ oneOf "0123456789"
-                              char 'd'
+                                         return ((fst . head) (readInt 16 isHexDigit digitToInt digits)),
+                                try $ do digits <- many1 $ oneOf "0123456789"
+                                         char 'd'
 
-                              return $ Numb ((fst . head) (readInt 10 isDigit digitToInt digits)),
-                     try $ do digits <- many1 $ oneOf "01"
-                              char 'b'
+                                         return ((fst . head) (readInt 10 isDigit digitToInt digits)),
+                                try $ do digits <- many1 $ oneOf "01"
+                                         char 'b'
 
-                              return $ Numb ((fst . head) (readInt 2 (\ x -> x == '0' || x == '1') digitToInt digits)),
-                     do digits <- many1 $ oneOf "0123456789"
+                                         return ((fst . head) (readInt 2 (\ x -> x == '0' || x == '1') digitToInt digits)),
+                                do digits <- many1 $ oneOf "0123456789"
 
-                        return $ Numb ((fst . head) (readInt 10 isDigit digitToInt digits))]) <?> "number"
+                                   return ((fst . head) (readInt 10 isDigit digitToInt digits))]
+
+               return (Numb value (sourcePosToSourceInfo sourceInit position)) <?> "number"
 
 pExprCall :: Parser SeqExpr
-pExprCall = do function <- identifier pLexer
+pExprCall = do sourceInit <- getInput
+               position <- getPosition
+
+               function <- identifier pLexer
                arguments <- option [] $ parens pLexer $ commaSep1 pLexer pExpr
 
-               return (Call function arguments) <?> "function call"
+               return (Call function arguments (sourcePosToSourceInfo sourceInit position)) <?> "function call"
 
 pExprTable :: OperatorTable Char () SeqExpr
 pExprTable = [[Infix (pExprOper "!") AssocRight],
@@ -72,8 +84,11 @@ pExprTable = [[Infix (pExprOper "!") AssocRight],
               [Infix (pExprOper "+") AssocLeft,Infix (pExprOper "-") AssocLeft],
               [Infix (pExprOper "~") AssocLeft]]
     where pExprOper :: String -> Parser (SeqExpr -> SeqExpr -> SeqExpr)
-          pExprOper op = do reservedOp pLexer op
-                            return (\ x y -> Call op [x,y])
+          pExprOper op = do sourceInit <- getInput
+                            position <- getPosition
+                            
+                            reservedOp pLexer op
+                            return (\ x y -> Call op [x,y] (sourcePosToSourceInfo sourceInit position))
 
 pExprFactor :: Parser SeqExpr
 pExprFactor = pExprNumb <|> 
@@ -84,21 +99,27 @@ pExpr :: Parser SeqExpr
 pExpr = buildExpressionParser pExprTable pExprFactor <?> "expression"
 
 pDefine :: Parser SeqDefine
-pDefine = do reserved pLexer "define"
+pDefine = do sourceInit <- getInput
+             position <- getPosition
+
+             reserved pLexer "define"
              name <- identifier pLexer
              arguments <- option [] $ parens pLexer $ commaSep1 pLexer $ identifier pLexer
              lexeme pLexer $ string "="
              body <- pExpr
 
-             return $ Define name arguments body
+             return (Define name arguments body (sourcePosToSourceInfo sourceInit position)) <?> "define"
 
 pInstruction :: Parser SeqInstruction
-pInstruction = do label <- option "" $ try $ do char '@'
+pInstruction = do sourceInit <- getInput
+                  position <- getPosition
+
+                  label <- option "" $ try $ do char '@'
                                                 id <- identifier pLexer
                                                 return id
                   expr <- pExpr
 
-                  return $ Instruction 0 label expr
+                  return (Instruction 0 label expr (sourcePosToSourceInfo sourceInit position)) <?> "instruction"
 
 pImport :: Parser (String,[String])
 pImport = do reserved pLexer "import"
@@ -108,10 +129,13 @@ pImport = do reserved pLexer "import"
                          (do lexeme pLexer $ string "*"
                              return []))
 
-             return (name,imports)
+             return (name,imports) <?> "import"
 
 pModule :: Parser SeqModule
-pModule = do reserved pLexer "module"
+pModule = do sourceInit <- getInput
+             position <- getPosition
+
+             reserved pLexer "module"
              name <- identifier pLexer
              exports <- option [] $ parens pLexer $
                         ((try $ commaSep1 pLexer $ identifier pLexer) <|>
@@ -122,4 +146,4 @@ pModule = do reserved pLexer "module"
              defines <- many pDefine
              instructions <- many pInstruction
 
-             return $ Module name exports imports defines instructions
+             return (Module name exports imports defines instructions (sourcePosToSourceInfo sourceInit position)) <?> "module"

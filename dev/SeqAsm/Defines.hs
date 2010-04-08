@@ -1,31 +1,44 @@
 module Defines
-    (SeqExpr(..),
+    (SeqSourceInfo(..),
+     SeqExpr(..),
      SeqDefine(..),
      SeqInstruction(..),
      SeqModule(..),
      SeqProgram(..)) where
 
+data SeqSourceInfo
+    = SourceInfo {
+        sourceInfoName :: String,
+        sourceInfoLine :: Int,
+        sourceInfoColumn :: Int,
+        sourceInfoSource :: String}
+    deriving (Show)
+
 data SeqExpr
     = Null
     | Numb {
-        numbValue :: Integer}
+        numbValue :: Integer,
+        numbISource :: SeqSourceInfo}
     | Call {
         callFunction :: String,
-        callArguments :: [SeqExpr]}
+        callArguments :: [SeqExpr],
+        callISource :: SeqSourceInfo}
     deriving (Show)
 
 data SeqDefine
     = Define {
         defineName :: String,
         defineArguments :: [String],
-        defineBody :: SeqExpr}
+        defineBody :: SeqExpr,
+        defineISource :: SeqSourceInfo}
     deriving (Show)
 
 data SeqInstruction
     = Instruction {
         instructionAddress :: Integer,
         instructionLabel :: String,
-        instructionExpr :: SeqExpr}
+        instructionExpr :: SeqExpr,
+        instructionISource :: SeqSourceInfo}
     deriving (Show)
 
 data SeqModule
@@ -34,7 +47,8 @@ data SeqModule
         moduleExports :: [String],
         moduleImports :: [(String,[String])],
         moduleDefines :: [SeqDefine],
-        moduleInstructions :: [SeqInstruction]}
+        moduleInstructions :: [SeqInstruction],
+        moduleISource :: SeqSourceInfo}
     deriving (Show)
 
 data SeqProgram
