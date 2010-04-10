@@ -7,7 +7,8 @@ module Defines
      SeqProgram(..)) where
 
 data SeqSourceInfo
-    = SourceInfo {
+    = SourceStub
+    | SourceInfo {
         sourceInfoName :: String,
         sourceInfoLine :: Int,
         sourceInfoColumn :: Int,

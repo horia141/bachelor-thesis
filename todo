@@ -10,3 +10,7 @@ x add proper tests for Rom16x12.
 * add proper error handling in SeqAsm
   * check all instructions are valid
   * check modules fit in memory
+
+* add proper source string information to SeqSourceInfo by way of (take (length sourceInit - length sourceLast) sourceInit)
+
+* remove evalExpr from exports and imports where it shouldn't belong.
