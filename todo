@@ -14,3 +14,11 @@ x add proper tests for Rom16x12.
 * add proper source string information to SeqSourceInfo by way of (take (length sourceInit - length sourceLast) sourceInit)
 
 * remove evalExpr from exports and imports where it shouldn't belong.
+
+* if it's beginning to be an issue, change the underlying generated type from String, to
+ (String,Integer) or something similar. The String is still the generated value, but the Integer
+ is used for calculations.
+
+* see issues with negative numbers in SeqAsm.
+
+: the gimp can output .c or .h files with the contents of an image.

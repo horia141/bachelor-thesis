@@ -4,13 +4,10 @@ import Data.List (intercalate)
 
 import System.Environment (getArgs)
 
-import Defines (SeqSourceInfo(..),SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
-
 import ClOptions (ClOptions(..),parseCommandLine)
+import Defines (SeqSourceInfo(..),SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
 import Parser (parseProgram)
-import Compiler (compileProgram, 
-                 -- test
-                 evalExpr, putEntryFirst, placeModules)
+import Compiler (compileProgram)
 
 main :: IO ()
 main = do args <- getArgs

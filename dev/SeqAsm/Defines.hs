@@ -7,8 +7,7 @@ module Defines
      SeqProgram(..)) where
 
 data SeqSourceInfo
-    = SourceStub
-    | SourceInfo {
+    = SourceInfo {
         sourceInfoName :: String,
         sourceInfoLine :: Int,
         sourceInfoColumn :: Int,
@@ -27,12 +26,22 @@ data SeqExpr
     deriving (Show)
 
 data SeqDefine
-    = Define {
-        defineName :: String,
-        defineArguments :: [String],
-        defineBody :: SeqExpr,
-        defineISource :: SeqSourceInfo}
-    deriving (Show)
+    = UserFunc {
+        userFuncName :: String,
+        userFuncArguments :: [String],
+        userFuncBody :: SeqExpr,
+        userFuncISource :: SeqSourceInfo}
+    | PrimFunc {
+        primFuncName :: String,
+        primFuncArguments :: [String],
+        primFuncBody :: [String] -> Either [String] String}
+    | PrimOper {
+        primOperName :: String,
+        primOperArguments :: [String],
+        primOperBody :: [String] -> Either [String] String,
+        primOperPriority :: Integer}
+    | TempReturn {
+        tempReturnValue :: String}
 
 data SeqInstruction
     = Instruction {
@@ -50,10 +59,8 @@ data SeqModule
         moduleDefines :: [SeqDefine],
         moduleInstructions :: [SeqInstruction],
         moduleISource :: SeqSourceInfo}
-    deriving (Show)
 
 data SeqProgram
     = Program {
         programEntry :: String,
         programModules :: [SeqModule]}
-    deriving (Show)

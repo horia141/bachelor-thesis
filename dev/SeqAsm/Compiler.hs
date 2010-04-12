@@ -1,16 +1,11 @@
 module Compiler
-    (compileProgram,
-     evalExpr,
-     putEntryFirst,
-     placeModules) where
+    (compileProgram) where
 
 import Data.List (find,findIndex,mapAccumL,genericLength)
 import Data.Either (partitionEithers)
-import Data.Char (intToDigit)
-
-import Numeric (showIntAtBase)
 
 import Defines (SeqSourceInfo(..),SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
+import Utils (intToStr)
 
 (|->) :: a -> (a -> Either [String] b) -> Either [String] b
 (|->) value f = f value
@@ -29,20 +24,20 @@ eReduce eithers =
       ([],values) -> Right values
       (errStrings,_) -> Left $ concat errStrings
 
-findName :: [SeqModule] -> SeqModule -> [(String,String)] -> String -> ([String],String,(SeqModule,SeqDefine))
+findName :: [SeqModule] -> SeqModule -> [(String,String)] -> String -> Either [String] (SeqModule,SeqDefine)
 findName modules currentModule namedArguments name =
     case lookupArguments of
-      Just value -> ([],value,undefined)
-      Nothing -> 
+      Just value -> Right (currentModule,TempReturn value)
+      Nothing ->
           case lookupInstruction of
-            Just value -> ([],[],(currentModule,Define name [] (Numb (instructionAddress value) SourceStub) SourceStub))
+            Just value -> Right (currentModule,TempReturn $ intToStr 2 $ instructionAddress value)
             Nothing ->
                 case lookupLocal of
-                  Just define -> ([],[],(currentModule,define))
+                  Just define -> Right (currentModule,define)
                   Nothing ->
                       case lookupImport of
-                        Just (parentModule,imported) -> ([],[],(parentModule,imported))
-                        Nothing -> ([name ++ " is not defined or not visible in module " ++ moduleName currentModule],[],undefined)
+                        Just (parentModule,imported) -> Right (parentModule,imported)
+                        Nothing -> Left [name ++ " is not defined or not visible from module " ++ moduleName currentModule]
     where lookupArguments :: Maybe String
           lookupArguments = lookup name namedArguments
 
@@ -55,26 +50,45 @@ findName modules currentModule namedArguments name =
           lookupImport :: Maybe (SeqModule,SeqDefine)
           lookupImport = Nothing
 
+          defineName :: SeqDefine -> String
+          defineName (UserFunc name _ _ _) = name
+          defineName (PrimFunc name _ _) = name
+          defineName (PrimOper name _ _ _) = name
+          defineName (TempReturn _) = error "Invalid call to defineName!"
+
 evalExpr :: [SeqModule] -> SeqModule -> [(String,String)] -> SeqExpr -> Either [String] String
 evalExpr modules currentModule namedArguments (Null) = Right ""
-evalExpr modules currentModule namedArguments (Numb value isource) = Right $ showIntAtBase 2 intToDigit value ""
-evalExpr modules currentModule namedArguments (Call function arguments isource) = 
+evalExpr modules currentModule namedArguments (Numb value isource) = Right (intToStr 2 value)
+evalExpr modules currentModule namedArguments (Call function arguments isource) =
     case findName modules currentModule namedArguments function of
-      ([],[],(foundParentModule,(Define foundName foundArguments foundBody foundISource))) ->
+      Right (foundParentModule,(UserFunc foundName foundArguments foundBody foundISource)) ->
           if length arguments == length foundArguments
-          then let possibleArguments = map (evalExpr modules currentModule namedArguments) arguments
-               in case partitionEithers possibleArguments of
-                    ([],evaledArguments) -> evalExpr modules foundParentModule (zip foundArguments evaledArguments) foundBody
-                    (errStrings,_) -> Left $ concat (map (("Error in " ++ function ++ " at line " ++ (show $ sourceInfoLine isource)):) errStrings)
-          else Left ["Error in " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n" ++
-                     "  Function " ++ function ++ " takes " ++ (show $ length foundArguments) ++ " argument(s) but was supplied with " ++ (show $ length arguments)]
-      ([],value,_) -> 
+          then case eReduce $ map (evalExpr modules currentModule namedArguments) arguments of
+                 Right evaledArguments -> evalExpr modules foundParentModule (zip foundArguments evaledArguments) foundBody
+                 Left errStrings -> Left $ ("Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n"):errStrings
+          else Left ["Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n",
+                     "Function " ++ function ++ " takes " ++ (show $ length foundArguments) ++ " argument(s) but was supplied with " ++ (show $ length arguments)]
+      Right (foundParentModule,(PrimFunc foundName foundArguments foundBody)) ->
+          if length arguments == length foundArguments
+          then case eReduce $ map (evalExpr modules currentModule namedArguments) arguments of
+                 Right evaledArguments -> foundBody evaledArguments
+                 Left errStrings -> Left $ ("Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n"):errStrings
+          else Left ["Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n",
+                     "Function " ++ function ++ " takes " ++ (show $ length foundArguments) ++ " argument(s) but was supplied with " ++ (show $ length arguments)]
+      Right (foundParentModule,(PrimOper foundName foundArguments foundBody foundPriority)) ->
+          if length arguments == length foundArguments
+          then case eReduce $ map (evalExpr modules currentModule namedArguments) arguments of
+                 Right evaledArguments -> foundBody evaledArguments
+                 Left errStrings -> Left $ ("Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n"):errStrings
+          else Left ["Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n",
+                     "Function " ++ function ++ " takes " ++ (show $ length foundArguments) ++ " argument(s) but was supplied with " ++ (show $ length arguments)]
+      Right (foundParentModule,(TempReturn foundValue)) ->
           if length arguments == 0
-          then Right value
-          else Left ["Error in " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n" ++
-                     "  Function " ++ function ++ " takes no arguments but was supplied with " ++ (show $ length arguments)]
-      (errStrings,_,_) -> 
-          Left (("Error in " ++ function ++ " at line " ++ (show $ sourceInfoLine isource)):errStrings)
+          then Right foundValue
+          else Left ["Error when calling " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n",
+                     "Function " ++ function ++ " takes no arguments but was supplied with " ++ (show $ length arguments)]
+      Left errStrings ->
+          Left $ ("Error in " ++ function ++ " at line " ++ (show $ sourceInfoLine isource) ++ "\n"):errStrings
 
 genBitStream :: [SeqModule] -> Either [String] String
 genBitStream modules = eLift concat $ eReduce $ map genModule modules
@@ -83,6 +97,9 @@ genBitStream modules = eLift concat $ eReduce $ map genModule modules
                           eReduce $ 
                           map (evalExpr modules mod [] . instructionExpr) $ 
                           moduleInstructions mod
+
+insertPrimitives :: [SeqModule] -> Either [String] [SeqModule]
+insertPrimitives modules = Left []
 
 placeModules :: [SeqModule] -> Either [String] [SeqModule]
 placeModules modules = Right $ snd $ mapAccumL placeModule 0 modules
@@ -108,4 +125,5 @@ compileProgram :: SeqProgram -> Either [String] String
 compileProgram (Program entry modules) = 
     modules |-> putEntryFirst entry
             >-> placeModules
+            >-> insertPrimitives
             >-> genBitStream

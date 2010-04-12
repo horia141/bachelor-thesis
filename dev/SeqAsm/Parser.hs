@@ -3,8 +3,6 @@ module Parser
 
 import Data.List (intercalate)
 import Data.Either (partitionEithers)
-import Data.Char (digitToInt,isHexDigit,isDigit)
-import Numeric (readInt)
 
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Token
@@ -12,6 +10,7 @@ import Text.ParserCombinators.Parsec.Language
 import Text.ParserCombinators.Parsec.Expr
 
 import Defines (SeqSourceInfo(..),SeqExpr(..),SeqDefine(..),SeqInstruction(..),SeqModule(..),SeqProgram(..))
+import Utils (strToInt)
 
 parseProgram :: String -> [(String,String)] -> Either String SeqProgram
 parseProgram entry fncPairs = 
@@ -54,18 +53,18 @@ pExprNumb = do sourceInit <- getInput
                         choice [try $ do digits <- many1 $ oneOf "0123456789ABCDEFabcdef"
                                          char 'h'
                                           
-                                         return ((fst . head) (readInt 16 isHexDigit digitToInt digits)),
+                                         return $ strToInt 16 digits,
                                 try $ do digits <- many1 $ oneOf "0123456789"
                                          char 'd'
 
-                                         return ((fst . head) (readInt 10 isDigit digitToInt digits)),
+                                         return $ strToInt 10 digits,
                                 try $ do digits <- many1 $ oneOf "01"
                                          char 'b'
 
-                                         return ((fst . head) (readInt 2 (\ x -> x == '0' || x == '1') digitToInt digits)),
+                                         return $ strToInt 2 digits,
                                 do digits <- many1 $ oneOf "0123456789"
 
-                                   return ((fst . head) (readInt 10 isDigit digitToInt digits))]
+                                   return $ strToInt 10 digits]
 
                return (Numb value (sourcePosToSourceInfo sourceInit position)) <?> "number"
 
@@ -108,7 +107,7 @@ pDefine = do sourceInit <- getInput
              lexeme pLexer $ string "="
              body <- pExpr
 
-             return (Define name arguments body (sourcePosToSourceInfo sourceInit position)) <?> "define"
+             return (UserFunc name arguments body (sourcePosToSourceInfo sourceInit position)) <?> "define"
 
 pInstruction :: Parser SeqInstruction
 pInstruction = do sourceInit <- getInput
