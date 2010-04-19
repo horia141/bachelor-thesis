@@ -23,7 +23,7 @@ Tools = MemGen SeqAsm
 MemGen_Src = Main.hs
 MemGen_Out = memgen
 
-SeqAsm_Src = Main.hs ClOptions.hs Defines.hs Parser.hs Compiler.hs
+SeqAsm_Src = Main.hs ClOptions.hs Utils.hs Primitives.hs Defines.hs Parser.hs Compiler.hs
 SeqAsm_Out = seqasm
 
 # Configuration Dependent Rules

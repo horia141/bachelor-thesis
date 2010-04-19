@@ -1,10 +1,19 @@
 module Utils
-    (strToInt,
+    (imaybe,
+     zipmap,
+     strToInt,
      intToStr) where
 
 import Data.List (genericIndex)
 import Data.Char (digitToInt,intToDigit)
 import Numeric (readInt,showIntAtBase)
+
+imaybe ::  a -> Maybe a -> Maybe a
+imaybe replace (Just a) = Nothing
+imaybe replace Nothing = Just replace
+
+zipmap :: (a -> b) -> (a -> c) -> [a] -> [(b,c)]
+zipmap f g ls = zip (map f ls) (map g ls)
 
 strToInt :: (Integral a) => a -> String -> a
 strToInt base string = fst $ head $ readInt base (`elem` (genericIndex allowedDigits base)) digitToInt string

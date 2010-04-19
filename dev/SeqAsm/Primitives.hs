@@ -1,14 +1,24 @@
 module Primitives
-    (primiBang,
-     primiAdd,
-     primiSub,
-     primiMul,
-     primiDiv,
-     primiMod,
-     primiCat) where
+    (primitives) where
 
+import Defines(SeqSourceInfo(..),SeqDefine(..),SeqModule(..),SeqOpFixity(..),SeqOpAssoc(..))
 import Data.List (genericLength,genericDrop,genericReplicate)
 import Utils (strToInt,intToStr)
+
+primitives :: SeqModule
+primitives = Module {
+               moduleName = "primitives",
+               moduleExports = ["!","*","/","%","+","-","~"],
+               moduleImports = [],
+               moduleDefines = [PrimOper "!" ["op0","op1"] (primBang)    (OpInfix,OpRight,0),
+                                PrimOper "*" ["op0","op1"] (primBin (*)) (OpInfix,OpLeft, 1),
+                                PrimOper "/" ["op0","op1"] (primBin div) (OpInfix,OpLeft, 1),
+                                PrimOper "%" ["op0","op1"] (primBin mod) (OpInfix,OpLeft, 1),
+                                PrimOper "+" ["op0","op1"] (primBin (+)) (OpInfix,OpLeft, 2),
+                                PrimOper "-" ["op0","op1"] (primBin (-)) (OpInfix,OpLeft, 2),
+                                PrimOper "~" ["op0","op1"] (primCat)     (OpInfix,OpLeft, 3)],
+               moduleInstructions = [],
+               moduleISource = SourceStub}
 
 getArg0n :: [String] -> Integer
 getArg0n = strToInt 2 . head
@@ -22,38 +32,23 @@ getArg0s = head
 getArg1s :: [String] -> String
 getArg1s = head . tail
 
-primiArithmetic :: (Integer -> Integer -> Integer) -> [String] -> String
-primiArithmetic op arguments =
-    let arg0 = getArg0n arguments
-        arg1 = getArg1n arguments
-    in intToStr 2 (arg0 `op` arg1)
-                      
-primiBang :: [String] -> String
-primiBang arguments =
+primBang :: [String] -> Either [String] String
+primBang arguments =
     let arg0 = getArg0n arguments
         arg1 = getArg1s arguments
         diff = genericLength arg1 - arg0
-    in if diff >= 0
-       then genericDrop diff arg1
-       else genericReplicate (abs diff) '0' ++ arg1
+    in Right $ if diff >= 0
+               then genericDrop diff arg1
+               else genericReplicate (abs diff) '0' ++ arg1
 
-primiAdd :: [String] -> String
-primiAdd = primiArithmetic (+)
+primBin :: (Integer -> Integer -> Integer) -> [String] -> Either [String] String
+primBin op arguments =
+    let arg0 = getArg0n arguments
+        arg1 = getArg1n arguments
+    in Right $ intToStr 2 (arg0 `op` arg1)
 
-primiSub :: [String] -> String
-primiSub = primiArithmetic (-)
-
-primiMul :: [String] -> String
-primiMul = primiArithmetic (*)
-
-primiDiv :: [String] -> String
-primiDiv = primiArithmetic (div)
-
-primiMod :: [String] -> String
-primiMod = primiArithmetic (mod)
-
-primiCat :: [String] -> String
-primiCat arguments =
+primCat :: [String] -> Either [String] String
+primCat arguments =
     let arg0 = getArg0s arguments
         arg1 = getArg1s arguments
-    in arg0 ++ arg1
+    in Right $ arg0 ++ arg1

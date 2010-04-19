@@ -4,10 +4,15 @@ module Defines
      SeqDefine(..),
      SeqInstruction(..),
      SeqModule(..),
-     SeqProgram(..)) where
+     SeqProgram(..),
+     SeqOpFixity(..),
+     SeqOpAssoc(..),
+     SeqDesc(..),
+     defineName) where
 
 data SeqSourceInfo
-    = SourceInfo {
+    = SourceStub
+    | SourceInfo {
         sourceInfoName :: String,
         sourceInfoLine :: Int,
         sourceInfoColumn :: Int,
@@ -20,6 +25,7 @@ data SeqExpr
         numbValue :: Integer,
         numbISource :: SeqSourceInfo}
     | Call {
+        callModule :: String,
         callFunction :: String,
         callArguments :: [SeqExpr],
         callISource :: SeqSourceInfo}
@@ -39,7 +45,7 @@ data SeqDefine
         primOperName :: String,
         primOperArguments :: [String],
         primOperBody :: [String] -> Either [String] String,
-        primOperPriority :: Integer}
+        primOperParseRule :: (SeqOpFixity,SeqOpAssoc,Integer)}
     | TempReturn {
         tempReturnValue :: String}
 
@@ -55,7 +61,7 @@ data SeqModule
     = Module {
         moduleName :: String,
         moduleExports :: [String],
-        moduleImports :: [(String,[String])],
+        moduleImports :: [(String,String,[String])],
         moduleDefines :: [SeqDefine],
         moduleInstructions :: [SeqInstruction],
         moduleISource :: SeqSourceInfo}
@@ -64,3 +70,26 @@ data SeqProgram
     = Program {
         programEntry :: String,
         programModules :: [SeqModule]}
+
+data SeqDesc
+    = Desc {
+        descWordSize :: Integer,
+        descAddrSize :: Integer}
+    deriving (Show)
+
+data SeqOpFixity
+    = OpInfix
+    | OpPostfix
+    | OpPrefix
+    deriving (Show)
+
+data SeqOpAssoc
+    = OpLeft
+    | OpRight
+    deriving (Show)
+
+defineName :: SeqDefine -> String
+defineName (UserFunc name _ _ _) = name
+defineName (PrimFunc name _ _) = name
+defineName (PrimOper name _ _ _) = name
+defineName _ = undefined
