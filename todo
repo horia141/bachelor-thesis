@@ -7,29 +7,29 @@
 
 x add proper tests for Rom16x12.
 
-* add proper error handling in SeqAsm
-  * check all instructions are valid
-  * check modules fit in memory
-  * check a module imports only names exported by another module
-  * check a module exports only defined names, or names imported from another module (optionally, 
+x add proper error handling in SeqAsm
+  x check all instructions are valid
+  x check modules fit in memory
+  x check a module imports only names exported by another module
+  x check a module exports only defined names, or names imported from another module (optionally, 
     since this will be harder to do for our compiler).
-  * check an imported module exists. currently, a lot of this logic (last three points) exists in findName.
-  * check in import conflicts (two modules imported with the same name or aliases).
+  x check an imported module exists. currently, a lot of this logic (last three points) exists in findName.
+  x check in import conflicts (two modules imported with the same name or aliases).
 
-* add proper source string information to SeqSourceInfo by way of (take (length sourceInit - length sourceLast) sourceInit)
+x add proper source string information to SeqSourceInfo by way of (take (length sourceInit - length sourceLast) sourceInit)
 
-+ remove evalExpr from exports and imports where it shouldn't belong.
+x remove evalExpr from exports and imports where it shouldn't belong.
 
-* if it's beginning to be an issue, change the underlying generated type from String, to
+x if it's beginning to be an issue, change the underlying generated type from String, to
  (String,Integer) or something similar. The String is still the generated value, but the Integer
  is used for calculations.
 
-* see issues with negative numbers in SeqAsm.
+x see issues with negative numbers in SeqAsm.
 
-* too much lingake between modules in SeqAsm. Basically, only Main should link
+x too much lingake between modules in SeqAsm. Basically, only Main should link
   the different modules. Parser or Compiler should not have access to Primitives,
   for example - functions from them should be parametrized accordingly.
 
-* remove Seq prefix for SeqAsm type names.
+x remove Seq prefix for SeqAsm type names.
 
 : the gimp can output .c or .h files with the contents of an image.
