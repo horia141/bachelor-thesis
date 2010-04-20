@@ -18,13 +18,10 @@ Auto1Test_Src = Alu.v Swc.v Seq.v Auto1.v Auto1Test.v
 Auto1Test_Mem = Auto1.mem
 Auto1Test_Out = Auto1Test.vvp
 
-Tools = MemGen SeqAsm
+Tools = MemGen
 
 MemGen_Src = Main.hs
 MemGen_Out = memgen
-
-SeqAsm_Src = Main.hs ClOptions.hs Utils.hs Primitives.hs Defines.hs Parser.hs Compiler.hs
-SeqAsm_Out = seqasm
 
 # Configuration Dependent Rules
 
