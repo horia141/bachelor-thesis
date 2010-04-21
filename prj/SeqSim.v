@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module SeqTest;
+module SeqSim;
    reg         clock;
    reg 	       reset;
 
@@ -16,7 +16,7 @@ module SeqTest;
    wire [7:0]  oreg_wen;
 
    initial begin
-      #0 $dumpfile("out/SeqTest.vcd");
+      #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
       #1000 $finish;
@@ -148,4 +148,4 @@ module SeqTest;
 	.next(next),
 	.oreg(oreg),
 	.oreg_wen(oreg_wen));
-endmodule // SeqTest
+endmodule // SeqSim

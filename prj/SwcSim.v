@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module SwcTest;
+module SwcSim;
    reg         clock;
    reg 	       reset;
 
@@ -11,7 +11,7 @@ module SwcTest;
    wire        ready;
 
    initial begin
-      #0 $dumpfile("out/SwcTest.vcd");
+      #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
       #1000 $finish;
@@ -192,4 +192,4 @@ module SwcTest;
 
 	.counter(counter),
 	.ready(ready));
-endmodule // SwcTest
+endmodule // SwcSim

@@ -32,4 +32,6 @@ x too much lingake between modules in SeqAsm. Basically, only Main should link
 
 x remove Seq prefix for SeqAsm type names.
 
+* add a Dev tool that generates .sav files from compact representations.
+
 : the gimp can output .c or .h files with the contents of an image.

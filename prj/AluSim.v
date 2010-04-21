@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module AluTest;
+module AluSim;
    reg        clock;
    reg 	      reset;
 
@@ -10,7 +10,7 @@ module AluTest;
    wire [7:0] result;
 
    initial begin
-      #0 $dumpfile("out/AluTest.vcd");
+      #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
       #1000 $finish;
@@ -107,4 +107,4 @@ module AluTest;
 	.inst_en(inst_en),
 
 	.result(result));
-endmodule
+endmodule // AluSim

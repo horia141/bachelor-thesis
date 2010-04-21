@@ -1,13 +1,13 @@
 `timescale 1ns/10ps
 
-module Auto1Test;
+module Auto1Sim;
    reg         clock;
    reg 	       reset;
 
    wire [23:0] counter;
 
    initial begin
-      #0 $dumpfile("out/Auto1Test.vcd");
+      #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
       #3000 $finish;
@@ -29,4 +29,4 @@ module Auto1Test;
 	  .reset(reset),
 
 	  .counter(counter));
-endmodule
+endmodule // Auto1Sim

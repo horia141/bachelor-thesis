@@ -1,0 +1,19 @@
+[timestart] 0
+[size] 1336 1004
+[pos] -1 -1
+*-13.000000 72000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] AluSim.
+@28
+AluSim.clock
+AluSim.reset
+@820
+AluSim.alu.d_c_State[511:0]
+AluSim.alu.d_n_State[511:0]
+@28
+AluSim.alu.inst_en
+@820
+AluSim.alu.d_w_inst_code[511:0]
+@22
+AluSim.alu.w_inst_imm[7:0]
+AluSim.alu.c_Accum[7:0]
+AluSim.alu.n_Accum[7:0]
