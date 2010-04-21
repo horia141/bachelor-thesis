@@ -1,69 +1,49 @@
 module Main where
 
-import System.Process
-import System.IO
-import Text.Regex
-import Data.List
-import Data.Maybe
+import System.Process (StdStream(..),createProcess,waitForProcess,shell,std_out)
+import System.IO (hGetContents)
+import Text.Regex (matchRegex,mkRegex)
+import Data.List (intercalate,unfoldr)
 
-import System.Environment
-import System.Console.GetOpt
+import System.Environment (getArgs)
+import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),getOpt,usageInfo)
 
-data ClineOption
-    = Empty
-    | Padding {
-        paddingValue :: String}
-    | PadChar {
-        padcharValue:: String}
+data ClOptions
+    = ClOptions {
+        clOptionsPadding :: Int,
+        clOptionsPadChar :: String,
+        clOptionsMessage :: [String]}
     deriving (Show)
 
-clineOptionDesc :: [OptDescr ClineOption]
-clineOptionDesc = [Option ['p'] ["padding"] (ReqArg Padding "Number") "Padding around text",
-                   Option ['c'] ["padchar"] (ReqArg PadChar "Character") "Padding character"]
+clOptions :: [OptDescr (ClOptions -> ClOptions)]
+clOptions = [Option ['p'] ["padding"]
+             (ReqArg (\x -> (\opts -> opts {clOptionsPadding = read x})) "Number")
+             "Padding around text",
+             Option ['c'] ["padchar"]
+             (ReqArg (\x -> (\opts -> opts {clOptionsPadChar = [head x]})) "Character")
+             "Padding character"]
 
-clineHeader :: String
-clineHeader = "Usage: linebr [OPTIONS]... [WORDS]..."
-
-defaultPadChar :: String
-defaultPadChar = "="
+clHeader :: String
+clHeader = "Usage: linebr [OPTIONS]... [MESSAGE]..."
 
 main :: IO ()
 main = do argv <- getArgs
 
-          case getOpt RequireOrder clineOptionDesc argv of
-            (optArgs,nonOptArgs,[]) -> do
-              (_,Just stty_stdout,_,stty_handle) <- createProcess $ (shell "stty -a") { std_out = CreatePipe }
+          case getOpt RequireOrder clOptions argv of
+            (optArgs,nonOptArgs,[]) ->
+              case foldr ($) (ClOptions 1 "=" nonOptArgs) optArgs of
+                (ClOptions padding padchar message) -> do
+                  (_,Just stty_stdout,_,stty_handle) <- createProcess $ (shell "stty -a") { std_out = CreatePipe }
 
-              content <- hGetContents stty_stdout
-              code <- waitForProcess stty_handle
+                  content <- hGetContents stty_stdout
+                  code <- waitForProcess stty_handle
 
-              case matchRegex (mkRegex "columns ([0-9]+)") content of
-                Just (columns:[]) -> 
-                    let padchar = getPadChar optArgs
-                        padding = getPadding optArgs padchar
-                    in putStrLn $ makeText (intercalate " " nonOptArgs) (read columns :: Int) padding padchar
-                _                 -> error "Could not determine terminal size!"
+                  case matchRegex (mkRegex "columns ([0-9]+)") content of
+                    Just (columns:[]) -> putStrLn $ makeText (intercalate " " message) (read columns :: Int) padding padchar
+                    _ -> error "Could not determine terminal size!"
             (_,_,errorMessages) ->
-                error $ "\n" ++ (concat errorMessages) ++ (usageInfo clineHeader clineOptionDesc)
-    where getPadding :: [ClineOption] -> String -> Int
-          getPadding (optArgs) (padchar) = 
-              case filter isPadding optArgs of
-                (filterHead:filterTail) -> read (paddingValue $ filterHead) :: Int
-                (_)                     -> length padchar
-              where isPadding :: ClineOption -> Bool
-                    isPadding (Padding _) = True
-                    isPadding (_)         = False
-
-          getPadChar :: [ClineOption] -> String
-          getPadChar (optArgs) = 
-              case filter isPadChar optArgs of
-                (filterHead:filterTail) -> padcharValue $filterHead
-                (_)                     -> defaultPadChar
-              where isPadChar :: ClineOption -> Bool
-                    isPadChar (PadChar _) = True
-                    isPadChar (_)         = False
-          
-          makeText :: String -> Int -> Int -> String -> String
+                error $ "\n" ++ (concat errorMessages) ++ (usageInfo clHeader clOptions)
+    where makeText :: String -> Int -> Int -> String -> String
           makeText ("") (columns) (padding) (padchar) = 
               take columns $ cycle padchar
           makeText (text) (columns) (padding) (padchar)
