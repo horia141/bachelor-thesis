@@ -36,6 +36,10 @@ Dev.MemGen.Src = MemGen/Main.hs
 Dev.MemGen.Ref =
 Dev.MemGen.Out = memgen
 
+Dev.LineBR.Src = LineBR/Main.hs
+Dev.LineBR.Ref =
+Dev.LineBR.Out = linebr
+
 Cfg.Prj.SrcPath = prj
 Cfg.Prj.OutPath = out/prj
 Cfg.Dev.SrcPath = dev
