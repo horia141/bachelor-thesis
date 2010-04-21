@@ -67,7 +67,7 @@ Prj.$(1).Gen.TmpPath        = $(Cfg.Prj.OutPath)/$(1)/tmp
 Prj.$(1).Gen.MemGenOutFile  = $$(Prj.$(1).Gen.TmpPath)/MemGen.v
 
 $$(Prj.$(1).Gen.RuleName): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules)
-	$$(info === [Building Prj $(1)] ===)
+	$$(info $$(if $$(Dev.LineBR.Gen.OutFile),$$(shell $$(Dev.LineBR.Gen.OutFile) Building Prj $(1))))
 	mkdir -p $$(Prj.$(1).Gen.OutPath)
 	mkdir -p $$(Prj.$(1).Gen.TmpPath)
 	$$(Dev.MemGen.Gen.OutFile) -o $$(Prj.$(1).Gen.MemGenOutFile) $$(Prj.$(1).Gen.MemGenSrc)
@@ -92,7 +92,7 @@ Dev.$(1).Gen.OutFile  = $$(Dev.$(1).Gen.OutPath)/$(Dev.$(1).Out)
 Dev.$(1).Gen.TmpPath  = $(Cfg.Dev.OutPath)/$(1)/tmp
 
 $$(Dev.$(1).Gen.RuleName): $$(Dev.$(1).Gen.AllSrc)
-	$$(info === [Building Dev $(1)] ===)
+	$$(info $$(if $$(Dev.LineBR.Gen.OutFile),$$(shell $$(Dev.LineBR.Gen.OutFile) Building Dev $(1))))
 	mkdir -p $$(Dev.$(1).Gen.OutPath)
 	mkdir -p $$(Dev.$(1).Gen.TmpPath)
 	ghc --make -o $$(Dev.$(1).Gen.OutFile) -odir $$(Dev.$(1).Gen.TmpPath) -hidir $$(Dev.$(1).Gen.TmpPath) $$(Dev.$(1).Gen.AllSrc)
@@ -102,7 +102,6 @@ $(foreach project,$(PrjSimGetProjects),$(eval $(call PrjSimBuildE,$(project))))
 $(foreach project,$(DevGetProjects),$(eval $(call DevBuildE,$(project))))
 
 all: $(DevProjectsToRules) $(PrjSimProjectsToRules)
-	$(info $^)
 
 clean:
 	rm -rf $(Cfg.Prj.OutPath)
