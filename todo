@@ -34,4 +34,10 @@ x remove Seq prefix for SeqAsm type names.
 
 * add a Dev tool that generates .sav files from compact representations.
 
+* add a way to represent in the Makefiles the fact that some Dev tools are used by the makefile itself, and every rule should depend on them, as well as not use them in their building process.
+
++ in all build rules, when creating the gen "database", we should structure variables by tool, rather than just dump them at the root of Gen as we do now.
+
++ add a Prj|Dev.$(1).Gen.OutFile representing the final output of a rule.
+
 : the gimp can output .c or .h files with the contents of an image.
