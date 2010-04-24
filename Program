@@ -1,0 +1,11 @@
+rm -rf ImpactCommands.cmd
+echo setMode -bs >> ImpactCommands.cmd
+echo setCable -port auto >> ImpactCommands.cmd
+echo Identify >> ImpactCommands.cmd
+echo identifyMPM >> ImpactCommands.cmd
+echo assignFile -p 1 -file $1 >> ImpactCommands.cmd
+echo Program -p 1 >> ImpactCommands.cmd
+echo quit >> ImpactCommands.cmd
+impact -batch ImpactCommands.cmd
+rm -rf ImpactCommands.cmd
+rm -rf _impactbatch.log
