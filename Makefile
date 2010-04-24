@@ -309,6 +309,8 @@ all: $(PrjSimProjectsToRules) $(PrjFPGAProjectsToRules) $(DevProjectsToRules)
 clean:
 	rm -rf $(Cfg.Prj.OutPath)
 	rm -rf $(Cfg.Dev.OutPath)
+	rm -rf $(Cfg.RulePath)
+	rm -rf $(Cfg.OutPath)
 
 _out:
 	mkdir -p $(Cfg.OutPath)
