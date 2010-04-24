@@ -57,9 +57,9 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
    always @ * begin
       if (reset) begin
 	 n_State    = `Swc_State_Reset;
-	 n_ContInst = {4{1'bz}};
-	 n_Counter  = {24{1'bz}};
-	 n_Ready    = 1'bz;
+	 n_ContInst = {4{1'b0}};
+	 n_Counter  = {24{1'b0}};
+	 n_Ready    = 1'b0;
       end
       else begin
 	 case (c_State)
@@ -138,9 +138,9 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 
 		   default: begin
 		      n_State    = `Swc_State_Error;
-		      n_ContInst = {4{1'bz}};
-		      n_Counter  = {24{1'bz}};
-		      n_Ready    = 1'bz;
+		      n_ContInst = {4{1'b0}};
+		      n_Counter  = {24{1'b0}};
+		      n_Ready    = 1'b0;
 		   end
 		 endcase // case (w_inst_code)
 	      end // if (inst_en)
@@ -185,9 +185,9 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 
 		   default: begin
 		      n_State    = `Swc_State_Error;
-		      n_ContInst = {4{1'bz}};
-		      n_Counter  = {24{1'bz}};
-		      n_Ready    = 1'bz;
+		      n_ContInst = {4{1'b0}};
+		      n_Counter  = {24{1'b0}};
+		      n_Ready    = 1'b0;
 		   end
 		 endcase // case (c_ContInst)
 	      end // else: !if(inst_en)
@@ -195,16 +195,16 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 
 	   `Swc_State_Error: begin
 	      n_State    = `Swc_State_Error;
-	      n_ContInst = {4{1'bz}};
-	      n_Counter  = {24{1'bz}};
-	      n_Ready    = 1'bz;
+	      n_ContInst = {4{1'b0}};
+	      n_Counter  = {24{1'b0}};
+	      n_Ready    = 1'b0;
 	   end
 
 	   default: begin
 	      n_State    = `Swc_State_Error;
-	      n_ContInst = {4{1'bz}};
-	      n_Counter  = {24{1'bz}};
-	      n_Ready    = 1'bz;
+	      n_ContInst = {4{1'b0}};
+	      n_Counter  = {24{1'b0}};
+	      n_Ready    = 1'b0;
 	   end
 	 endcase // case (c_State)
       end // else: !if(reset)

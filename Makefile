@@ -7,7 +7,7 @@ Prj.Auto1.Sim.Src = Auto1Sim.v Auto1Sim.sav
 Prj.Auto1.Sim.Ref = Auto1.All
 Prj.Auto1.Sim.Out = Auto1Sim
 
-Prj.Auto1.FPGA.Src = Auto1FPGA.v Auto1FPGA.ucf
+Prj.Auto1.FPGA.Src = Auto1FPGA.v SlowClock.v Auto1FPGA.ucf
 Prj.Auto1.FPGA.Ref = Auto1.All
 Prj.Auto1.FPGA.Out = Auto1FPGA
 Prj.Auto1.FPGA.Top = Auto1FPGA
@@ -33,6 +33,18 @@ Prj.Swc.Sim.Src = SwcSim.v SwcSim.sav
 Prj.Swc.Sim.Ref = Swc.All
 Prj.Swc.Sim.Out = SwcSim
 
+Prj.SlowClock.All.Src = SlowClock.v
+Prj.SlowClock.All.Ref =
+
+Prj.SlowClock.Sim.Src = SlowClockSim.v SlowClockSim.sav
+Prj.SlowClock.Sim.Ref = SlowClock.All
+Prj.SlowClock.Sim.Out = SlowClockSim
+
+Prj.SlowClock.FPGA.Src = SlowClockFPGA.v SlowClockFPGA.ucf
+Prj.SlowClock.FPGA.Ref = SlowClock.All
+Prj.SlowClock.FPGA.Out = SlowClockFPGA
+Prj.SlowClock.FPGA.Top = SlowClockFPGA
+
 Dev.MemGen.Src = MemGen/Main.hs
 Dev.MemGen.Ref =
 Dev.MemGen.Out = memgen
@@ -41,8 +53,10 @@ Dev.LineBR.Src = LineBR/Main.hs
 Dev.LineBR.Ref =
 Dev.LineBR.Out = linebr
 
+Cfg.OutPath                                = out
+Cfg.RulePath                               = $(Cfg.OutPath)/rule
 Cfg.Prj.SrcPath                            = prj
-Cfg.Prj.OutPath                            = out/prj
+Cfg.Prj.OutPath                            = $(Cfg.OutPath)/prj
 Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke    = $(Dev.MemGen.Gen.OutFile)
 Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke  = iverilog
 Cfg.Prj.Targets.Sim.Tools.Vvp.Invoke       = vvp
@@ -57,7 +71,7 @@ Cfg.Prj.Targets.FPGA.Tools.Map.Invoke      = map
 Cfg.Prj.Targets.FPGA.Tools.Par.Invoke      = par
 Cfg.Prj.Targets.FPGA.Tools.BitGen.Invoke   = bitgen
 Cfg.Dev.SrcPath                            = dev
-Cfg.Dev.OutPath                            = out/dev
+Cfg.Dev.OutPath                            = $(Cfg.OutPath)/dev
 Cfg.Dev.Tools.Ghc.Invoke                   = ghc
 
 # Configuration Dependent Rules
@@ -69,11 +83,11 @@ GetAllSrc = $(strip $(foreach ref,$($(1).$(2).Ref),$(call GetAllSrc,$(1),$(ref))
 PrjGetAllSrc = $(addprefix $(Cfg.Prj.SrcPath)/,$(call GetAllSrc,Prj,$(1)))
 
 PrjSimGetProjects = $(foreach srcString,$(filter Prj.%.Sim.Src,$(.VARIABLES)),$(word 2,$(subst ., ,$(srcString))).Sim)
-PrjSimProjectToRule = Rule.$(1).Build
+PrjSimProjectToRule = $(Cfg.RulePath)/$(1).Build
 PrjSimProjectsToRules = $(foreach project,$(PrjSimGetProjects),$(call PrjSimProjectToRule,$(project)))
 
 define PrjSimBuildE
-Prj.$(1).Gen.RuleName                  = $(call PrjSimProjectToRule,$(1))
+Prj.$(1).Gen.RuleFile                  = $(call PrjSimProjectToRule,$(1))
 Prj.$(1).Gen.Src                       = $(call PrjGetAllSrc,$(1))
 Prj.$(1).Gen.BasePath                  = $(Cfg.Prj.OutPath)/$(1)
 Prj.$(1).Gen.OutFile                   = $$(Prj.$(1).Gen.BasePath)/$(Prj.$(1).Out).vcd
@@ -88,7 +102,7 @@ Prj.$(1).Gen.Tools.Vvp.OutPath         = $$(Prj.$(1).Gen.BasePath)/Vvp
 Prj.$(1).Gen.Tools.Sav.SavSrc          = $$(filter %.sav,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.Sav.OutPath         = $$(Prj.$(1).Gen.BasePath)
 
-$$(Prj.$(1).Gen.RuleName): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules)
+$$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 	@$$(call LineH1,Building Prj $(1))
 	mkdir -p $$(Prj.$(1).Gen.BasePath)
 	@$$(call LineH2,Building Prj $(1) : MemGen)
@@ -103,15 +117,17 @@ $$(Prj.$(1).Gen.RuleName): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules)
 	@$$(call LineH2,Building Prj $(2) : Sav)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Sav.OutPath)
 	$$(Cfg.Prj.Targets.Sim.Tools.Sav.Invoke) $$(Prj.$(1).Gen.Tools.Sav.SavSrc) $$(Prj.$(1).Gen.Tools.Sav.OutPath)
+	@$$(call LineH2,Building Prj $(1) : Done)
+	echo Done >> $$(Prj.$(1).Gen.RuleFile)
 endef
 
 PrjFPGAGetLibraryName = $(subst .,_,$(1))
 PrjFPGAGetProjects = $(foreach srcString,$(filter Prj.%.FPGA.Src,$(.VARIABLES)),$(word 2,$(subst ., ,$(srcString))).FPGA)
-PrjFPGAProjectToRule = Rule.$(1).Build
+PrjFPGAProjectToRule = $(Cfg.RulePath)/$(1).Build
 PrjFPGAProjectsToRules = $(foreach project, $(PrjFPGAGetProjects),$(call PrjFPGAProjectToRule,$(project)))
 
 define PrjFPGABuildE
-Prj.$(1).Gen.RuleName                     = $(call PrjFPGAProjectToRule,$(1))
+Prj.$(1).Gen.RuleFile                     = $(call PrjFPGAProjectToRule,$(1))
 Prj.$(1).Gen.Src                          = $(call PrjGetAllSrc,$(1))
 Prj.$(1).Gen.BasePath                     = $$(Cfg.Prj.OutPath)/$(1)
 Prj.$(1).Gen.OutFile                      = $$(Prj.$(1).Gen.BasePath)/$$(Prj.$(1).Out)
@@ -173,7 +189,7 @@ Prj.$(1).Gen.Tools.BitGen.DeviceDetailsMV = xilinx_device_details.xml
 Prj.$(1).Gen.Tools.BitGen.BgnFileMV       = $$(Prj.$(1).Gen.OutFile).bgn
 Prj.$(1).Gen.Tools.BitGen.DrcFileMV       = $$(Prj.$(1).Gen.OutFile).drc
 
-$$(Prj.$(1).Gen.RuleName): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules)
+$$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	@$$(call LineH1,Building Prj $(1))
 	mkdir -p $$(Prj.$(1).Gen.BasePath)
 	@$$(call LineH2,Building Prj $(1) : MemGen)
@@ -254,15 +270,17 @@ $$(Prj.$(1).Gen.RuleName): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules)
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.DeviceDetailsMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.BgnFileMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.DrcFileMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
+	@$$(call LineH2,Building Prj $(1) : Done)
+	echo Done >> $$(Prj.$(1).Gen.RuleFile)
 endef
 
 DevGetAllSrc = $(addprefix $(Cfg.Dev.SrcPath)/,$(call GetAllSrc,Dev,$(1)))
 DevGetProjects = $(foreach srcString,$(filter Dev.%.Src,$(.VARIABLES)),$(word 2,$(subst ., ,$(srcString))))
-DevProjectToRule = Rule.$(1).Build
+DevProjectToRule = $(Cfg.RulePath)/$(1).Build
 DevProjectsToRules = $(foreach project,$(DevGetProjects),$(call DevProjectToRule,$(project)))
 
 define DevBuildE
-Dev.$(1).Gen.RuleName             = $(call DevProjectToRule,$(1))
+Dev.$(1).Gen.RuleFile             = $(call DevProjectToRule,$(1))
 Dev.$(1).Gen.Src                  = $(call DevGetAllSrc,$(1))
 Dev.$(1).Gen.BasePath             = $$(Cfg.Dev.OutPath)/$(1)
 Dev.$(1).Gen.OutFile              = $$(Dev.$(1).Gen.BasePath)/$$(Dev.$(1).Out)
@@ -271,13 +289,15 @@ Dev.$(1).Gen.Tools.Ghc.OutPath    = $$(Dev.$(1).Gen.BasePath)/Ghc
 Dev.$(1).Gen.Tools.Ghc.TmpPath    = $$(Dev.$(1).Gen.Tools.Ghc.OutPath)/tmp
 Dev.$(1).Gen.Tools.Ghc.OutFile    = $$(Dev.$(1).Gen.OutFile)
 
-$$(Dev.$(1).Gen.RuleName): $$(Dev.$(1).Gen.Src)
+$$(Dev.$(1).Gen.RuleFile): $$(Dev.$(1).Gen.Src) _out
 	@$$(call LineH1,Building Dev $(1))
 	mkdir -p $$(Dev.$(1).Gen.BasePath)
 	@$$(call LineH2,Building Dev $(1) : Ghc)
 	mkdir -p $$(Dev.$(1).Gen.Tools.Ghc.OutPath)
 	mkdir -p $$(Dev.$(1).Gen.Tools.Ghc.TmpPath)
 	$(Cfg.Dev.Tools.Ghc.Invoke) --make -o $$(Dev.$(1).Gen.Tools.Ghc.OutFile) -odir $$(Dev.$(1).Gen.Tools.Ghc.TmpPath) -hidir $$(Dev.$(1).Gen.Tools.Ghc.TmpPath) $$(Dev.$(1).Gen.Tools.Ghc.HaskellSrc)
+	@$$(call LineH2,Building Dev $(1) : Done)
+	echo Done >> $$(Dev.$(1).Gen.RuleFile)
 endef
 
 $(foreach project,$(PrjSimGetProjects),$(eval $(call PrjSimBuildE,$(project))))
@@ -290,5 +310,8 @@ clean:
 	rm -rf $(Cfg.Prj.OutPath)
 	rm -rf $(Cfg.Dev.OutPath)
 
-.PHONY = $(PrjSimProjectsToRules) $(PrjFPGAProjectsToRules) $(DevProjectsToRules)
+_out:
+	mkdir -p $(Cfg.OutPath)
+	mkdir -p $(Cfg.RulePath)
+
 .DEFAULT_GOAL = all

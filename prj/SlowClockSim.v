@@ -1,16 +1,16 @@
 `timescale 1ns/10ps
 
-module Auto1Sim;
-   reg         clock;
-   reg 	       reset;
+module SlowClockSim;
+   reg  clock;
+   reg  reset;
 
-   wire [23:0] counter;
+   wire outclock;
 
    initial begin
       #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
-      #3000 $finish;
+      #1000 $finish;
    end
 
    initial begin
@@ -24,9 +24,9 @@ module Auto1Sim;
       #4 reset = 0;
    end
 
-   Auto1
-   auto1 (.clock(clock),
-	  .reset(reset),
+   SlowClock #(.SlowFactor(8))
+   slowclock (.clock(clock),
+	      .reset(reset),
 
-	  .counter(counter));
-endmodule // Auto1Sim
+	      .outclock(outclock));
+endmodule // SlowClockSim

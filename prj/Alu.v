@@ -48,7 +48,7 @@ module Alu(clock,reset,inst,inst_en,result);
    always @ * begin
       if (reset) begin
 	 n_State = `Alu_State_Reset;
-	 n_Accum = {8{1'bz}};
+	 n_Accum = {8{1'b0}};
       end
       else begin
 	case (c_State)
@@ -112,7 +112,7 @@ module Alu(clock,reset,inst,inst_en,result);
 
 		  default: begin
 		     n_State = `Alu_State_Error;
-		     n_Accum = {8{1'bz}};
+		     n_Accum = {8{1'b0}};
 		  end
 		endcase // case (w_inst_code)
 	     end // if (inst_en)
@@ -124,12 +124,12 @@ module Alu(clock,reset,inst,inst_en,result);
 
 	  `Alu_State_Error: begin
 	     n_State = `Alu_State_Error;
-	     n_Accum = {8{1'bz}};
+	     n_Accum = {8{1'b0}};
 	  end
 
 	  default: begin
 	     n_State = `Alu_State_Error;
-	     n_Accum = {8{1'bz}};
+	     n_Accum = {8{1'b0}};
 	  end
 	endcase // case (c_State)
       end // else: !if(reset)

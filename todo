@@ -40,4 +40,8 @@ x remove Seq prefix for SeqAsm type names.
 
 + add a Prj|Dev.$(1).Gen.OutFile representing the final output of a rule.
 
+* integrate Program into Makefile.
+
+* rethink build system. Our current system should provide the base but : we need to integrate separate targets and target actions into a project (So we no longer have Auto1.Sim and Auto1.FPGA etc., but just Auto1 with different targets and actions) AND we need to make available the option to build just all sim or all fpga actions for every target (to cut down in development time by omitting lengthy fpga build procedures) AND we need to make mock files for build actions (these would be useful to avoid building large actions when no changes occur) AND we need to integrate Program into all of this AND we need to rely less on built-in logic for targets (ideally we would have a file specifying each project, the targets and actions supported, as well as optional arguments, misc configurations etc., another file that describes targets and their actions and what files they make use of AND the makefile that ties these all together and provides a nice framework. In this configuration, you would have a target, with a number of actions. Each action should describe in a standard manner, which external scrips should be run and in what order. These external scripts would then provide the specific logic (for example, in the FPGA.Build rule, we would have scripts for each tool (making directories, creating command files, running the tool and finally moving resulting files to proper positions), and the Makefile framework would make sure to call them as the FPGA.Build action specifies).
+
 : the gimp can output .c or .h files with the contents of an image.

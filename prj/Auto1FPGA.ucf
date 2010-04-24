@@ -1,3 +1,4 @@
+NET "clock"    LOC = "C9"  | IOSTANDARD = LVCMOS33;
 NET "reset"    LOC = "K17" | IOSTANDARD = LVTTL | PULLDOWN;
 
 NET "leds<7>"  LOC = "F9"  | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;

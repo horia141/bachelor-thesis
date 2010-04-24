@@ -183,7 +183,7 @@ module SwcSim;
       #0 inst_en = 1;
    end // initial begin
 
-   Swc #()
+   Swc
    swc (.clock(clock),
 	.reset(reset),
 

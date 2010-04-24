@@ -24,7 +24,7 @@ module Auto1(clock,reset,counter);
 
    assign counter = swc_counter;
 
-   Seq #()
+   Seq
    seq (.clock(clock),
 	.reset(reset),
 
@@ -39,11 +39,11 @@ module Auto1(clock,reset,counter);
 	.oreg(seq_oreg),
 	.oreg_wen(seq_oreg_wen));
 
-   Auto1Rom #()
+   Auto1Rom
    rom (.addr(seq_next[3:0]),
 	.data_o(rom_data_o));
 
-   Alu #()
+   Alu
    alu (.clock(clock),
 	.reset(reset),
 
@@ -52,7 +52,7 @@ module Auto1(clock,reset,counter);
 
 	.result(alu_result));
 
-   Swc #()
+   Swc
    swc (.clock(clock),
 	.reset(reset),
 

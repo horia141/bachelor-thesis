@@ -99,7 +99,7 @@ module AluSim;
       #0 inst_en = 1;
    end
 
-   Alu #()
+   Alu
    alu (.clock(clock),
 	.reset(reset),
 	

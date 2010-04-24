@@ -134,7 +134,7 @@ module SeqSim;
       #0 inst_en = 1;
    end
 
-   Seq #()
+   Seq
    seq (.clock(clock),
 	.reset(reset),
 

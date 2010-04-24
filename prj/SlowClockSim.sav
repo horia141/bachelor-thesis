@@ -1,0 +1,9 @@
+[timestart] 0
+[size] 1678 989
+[pos] -1 -1
+*-13.000000 8000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] SlowClockSim.
+@28
+SlowClockSim.clock
+SlowClockSim.slowclock.reset
+SlowClockSim.slowclock.outclock
