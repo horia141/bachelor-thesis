@@ -264,8 +264,8 @@ DevProjectsToRules = $(foreach project,$(DevGetProjects),$(call DevProjectToRule
 define DevBuildE
 Dev.$(1).Gen.RuleName             = $(call DevProjectToRule,$(1))
 Dev.$(1).Gen.Src                  = $(call DevGetAllSrc,$(1))
-Dev.$(1).Gen.BasePath             = $(Cfg.Dev.OutPath)/$(1)
-Dev.$(1).Gen.OutFile              = $$(Dev.$(1).Gen.BasePath)/$(Dev.$(1).Out)
+Dev.$(1).Gen.BasePath             = $$(Cfg.Dev.OutPath)/$(1)
+Dev.$(1).Gen.OutFile              = $$(Dev.$(1).Gen.BasePath)/$$(Dev.$(1).Out)
 Dev.$(1).Gen.Tools.Ghc.HaskellSrc = $$(Dev.$(1).Gen.Src)
 Dev.$(1).Gen.Tools.Ghc.OutPath    = $$(Dev.$(1).Gen.BasePath)/Ghc
 Dev.$(1).Gen.Tools.Ghc.TmpPath    = $$(Dev.$(1).Gen.Tools.Ghc.OutPath)/tmp
