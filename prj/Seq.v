@@ -86,10 +86,10 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
    always @ * begin
       if (reset) begin
 	 n_State    = `Seq_State_Reset;
-	 n_Transfer = {8{1'b0}};
-	 n_Address  = {8{1'b0}};
-	 n_OReg     = {12{1'b0}};
-	 n_ORegWen  = {8{1'b0}};
+	 n_Transfer = 0;
+	 n_Address  = 0;
+	 n_OReg     = 0;
+	 n_ORegWen  = 0;
       end
       else begin
 	 case (c_State)
@@ -194,10 +194,10 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 
 		   default: begin
 		      n_State    = `Seq_State_Error;
-		      n_Transfer = {8{1'b0}};
-		      n_Address  = {8{1'b0}};
-		      n_OReg     = {12{1'b0}};
-		      n_ORegWen  = {8{1'b0}};
+		      n_Transfer = 0;
+		      n_Address  = 0;
+		      n_OReg     = 0;
+		      n_ORegWen  = 0;
 		   end
 		 endcase // case (w_inst_code)
 	      end // if (inst_en)
@@ -212,18 +212,18 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 
 	   `Seq_State_Error: begin
 	      n_State    = `Seq_State_Error;
-	      n_Transfer = {8{1'b0}};
-	      n_Address  = {8{1'b0}};
-	      n_OReg     = {12{1'b0}};
-	      n_ORegWen  = {8{1'b0}};
+	      n_Transfer = 0;
+	      n_Address  = 0;
+	      n_OReg     = 0;
+	      n_ORegWen  = 0;
 	   end
 
 	   default: begin
 	      n_State    = `Seq_State_Error;
-	      n_Transfer = {8{1'b0}};
-	      n_Address  = {8{1'b0}};
-	      n_OReg     = {12{1'b0}};
-	      n_ORegWen  = {8{1'b0}};
+	      n_Transfer = 0;
+	      n_Address  = 0;
+	      n_OReg     = 0;
+	      n_ORegWen  = 0;
 	   end
 	 endcase // case (c_State)
       end // else: !if(reset)
