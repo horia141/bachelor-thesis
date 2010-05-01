@@ -1,14 +1,14 @@
-module Auto1(clock,reset,counter);
+module Auto2(clock,reset,counter);
    input wire         clock;
-   input wire 	      reset;
+   input wire         reset;
 
    output wire [23:0] counter;
-   
+
    wire [7:0] 	      seq_next;
    wire [11:0] 	      seq_oreg;
    wire [7:0] 	      seq_oreg_wen;
 
-   wire [11:0] 	      rom_data_o;
+   wire [19:0] 	      rom_data_o;
 
    wire [7:0] 	      alu_result;
 
@@ -17,7 +17,7 @@ module Auto1(clock,reset,counter);
 
    assign counter = swc_counter;
 
-   Seq
+   Seq2
    seq (.clock(clock),
 	.reset(reset),
 
@@ -32,8 +32,8 @@ module Auto1(clock,reset,counter);
 	.oreg(seq_oreg),
 	.oreg_wen(seq_oreg_wen));
 
-   Auto1Rom
-   rom (.addr(seq_next[3:0]),
+   Auto2Rom
+   rom (.addr(seq_next[2:0]),
 	.data_o(rom_data_o));
 
    Alu
@@ -54,4 +54,4 @@ module Auto1(clock,reset,counter);
 
 	.counter(swc_counter),
 	.ready(swc_ready));
-endmodule // Auto1
+endmodule // Auto2

@@ -12,6 +12,18 @@ Prj.Auto1.FPGA.Ref = Auto1.All
 Prj.Auto1.FPGA.Out = Auto1FPGA
 Prj.Auto1.FPGA.Top = Auto1FPGA
 
+Prj.Auto2.All.Src = Auto2.v Auto2.mem
+Prj.Auto2.All.Ref = Alu.All Seq2.All Swc.All
+
+Prj.Auto2.Sim.Src = Auto2Sim.v Auto2Sim.sav
+Prj.Auto2.Sim.Ref = Auto2.All
+Prj.Auto2.Sim.Out = Auto2Sim
+
+Prj.Auto2.FPGA.Src = Auto2FPGA.v SlowClock.v Auto2FPGA.ucf
+Prj.Auto2.FPGA.Ref = Auto2.All
+Prj.Auto2.FPGA.Out = Auto2FPGA
+Prj.Auto2.FPGA.Top = Auto2FPGA
+
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =
 

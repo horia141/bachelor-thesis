@@ -4,12 +4,10 @@
 `define Seq2_JI 4'h3
 `define Seq2_JR 4'h4
 `define Seq2_JZ 4'h5
-`define Seq2_WN 4'h6
 
 `define Seq2_State_Reset       2'h0
 `define Seq2_State_Ready       2'h1
-`define Seq2_State_WaitNonZero 2'h2
-`define Seq2_State_Error       2'h3
+`define Seq2_State_Error       2'h2
 
 module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
    input wire         clock;
@@ -141,21 +139,6 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 		      n_ORegWen = 0;
 		   end
 
-		   `Seq2_WN: begin
-		      if (w_ireg_mux != 0) begin
-			 n_State   = `Seq2_State_Ready;
-			 n_Address = c_Address + 1;
-			 n_OReg    = 0;
-			 n_ORegWen = 0;
-		      end
-		      else begin
-			 n_State   = `Seq2_State_WaitNonZero;
-			 n_Address = c_Address;
-			 n_OReg    = 0;
-			 n_ORegWen = 0;
-		      end // else: !if(w_ireg_mux != 0)
-		   end // case: `Seq2_WN
-
 		   default: begin
 		      n_State   = `Seq2_State_Error;
 		      n_Address = 0;
@@ -172,21 +155,6 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 	      end // else: !if(inst_en)
 	   end // case: `Seq2_State_Ready
 
-	   `Seq2_State_WaitNonZero: begin
-	      if (w_ireg_mux != 0 && inst_en) begin
-		 n_State   = `Seq2_State_Ready;
-		 n_Address = c_Address + 1;
-		 n_OReg    = 0;
-		 n_ORegWen = 0;
-	      end
-	      else begin
-		 n_State   = `Seq2_State_WaitNonZero;
-		 n_Address = c_Address;
-		 n_OReg    = 0;
-		 n_ORegWen = 0;
-	      end // else: !if(w_ireg_mux != 0 && inst_en)
-	   end // case: `Seq2_State_WaitNonZero
-
 	   `Seq2_State_Error: begin
 	      n_State   = `Seq2_State_Error;
 	      n_Address = 0;
@@ -199,19 +167,19 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 
    always @ * begin
       case (c_State)
-	`Seq2_State_Reset:       d_c_State = "Reset";
-	`Seq2_State_Ready:       d_c_State = "Ready";
-	`Seq2_State_WaitNonZero: d_c_State = "WaitNonZero";
-	`Seq2_State_Error:       d_c_State = "Error";
+	`Seq2_State_Reset: d_c_State = "Reset";
+	`Seq2_State_Ready: d_c_State = "Ready";
+	`Seq2_State_Error: d_c_State = "Error";
+	default:           d_c_State = "Undefined State ~ Serious Error or PreReset!";
       endcase // case (c_State)
    end
 
    always @ * begin
       case (n_State)
-	`Seq2_State_Reset:       d_n_State = "Reset";
-	`Seq2_State_Ready:       d_n_State = "Ready";
-	`Seq2_State_WaitNonZero: d_n_State = "WaitNonZero";
-	`Seq2_State_Error:       d_n_State = "Error";
+	`Seq2_State_Reset: d_n_State = "Reset";
+	`Seq2_State_Ready: d_n_State = "Ready";
+	`Seq2_State_Error: d_n_State = "Error";
+	default:           d_n_State = "Undefined State ~ Serious Error or PreReset!";
       endcase // case (n_State)
    end
 
@@ -223,7 +191,6 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 	`Seq2_JI: d_w_inst_code = "JI";
 	`Seq2_JR: d_w_inst_code = "JR";
 	`Seq2_JZ: d_w_inst_code = "JZ";
-	`Seq2_WN: d_w_inst_code = "WN";
 	default:  d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
       endcase // case (w_inst_code)
    end // always @ *

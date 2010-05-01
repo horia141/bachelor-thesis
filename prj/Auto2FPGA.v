@@ -1,13 +1,13 @@
-module Auto1FPGA(clock,reset,leds);
+module Auto2FPGA(clock,reset,leds);
    input wire        clock;
    input wire        reset;
    output wire [7:0] leds;
 
    wire 	     slowc_outclock;
 
-   wire [23:0] 	     auto1_counter;
+   wire [23:0] 	     auto2_counter;
 
-   assign leds = auto1_counter[7:0];
+   assign leds = auto2_counter[7:0];
 
    SlowClock #(.SlowFactor(32'h00FFFFFF))
    slowc (.clock(clock),
@@ -15,9 +15,9 @@ module Auto1FPGA(clock,reset,leds);
 
 	  .outclock(slowc_outclock));
 
-   Auto1
-   auto1 (.clock(slowc_outclock),
+   Auto2
+   auto2 (.clock(slowc_outclock),
 	  .reset(reset),
 
-	  .counter(auto1_counter));
-endmodule // Auto1FPGA
+	  .counter(auto2_counter));
+endmodule // Auto2FPGA

@@ -72,45 +72,13 @@ module Seq2Sim;
       #4 inst = {`Seq2_NO,16'bxxxxxxxxxxxxxxxx};
       #0 inst_en = 1;
 
-      #4 inst = {`Seq2_WN,14'bxxxxxxxxxxxxxx,2'b01};
-      #0 ireg_1 = 8'h00;
+      #4 inst = {`Seq2_JR,14'bxxxxxxxxxxxxxx,2'b10};
+      #0 ireg_2 = 8'hBA;
       #0 inst_en = 1;
 
-      #20 ireg_1 = 8'h01;
-
-      #4 inst = {`Seq2_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
-
-      // Testing WN instruction in different cases
-
-      // Test inst_en being deasserted while waiting for a non-zero value.
-      // The state shouldn't change to Ready on next until inst_en is asserted,
-      // even if a non-zero value appears.
-      #4 inst = {`Seq2_WN,14'bxxxxxxxxxxxxxx,2'b01};
-      #0 ireg_1 = 8'h00;
-      #0 inst_en = 1;
-
-      // A little delay here from #4 to simulate the actual delay from a real
+      // A little delay from #4 to simulate the actual delay from a real
       // wire when receiving a new command from a controller.
       #5 inst_en = 0;
-
-      #4 ireg_1 = 8'h01;
-
-      #4 inst_en = 1;
-
-      #3 inst = {`Seq2_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
-
-      // What happenes when the input register is already non-zero or becomes so,
-      // before the next clock cycle.
-      #4 inst = {`Seq2_WN,14'bxxxxxxxxxxxxxx,2'b01};
-      #0 ireg_1 = 8'h00;
-      #0 inst_en = 1;
-
-      #2 ireg_1 = 8'h01;
-
-      #2 inst = {`Seq2_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
 
       // An invalid instruction. This will send the Seq2 into the error state.
       #4 inst = {4'hF,16'hFFEE};
