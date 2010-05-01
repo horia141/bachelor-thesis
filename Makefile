@@ -26,6 +26,13 @@ Prj.Seq.Sim.Src = SeqSim.v SeqSim.sav
 Prj.Seq.Sim.Ref = Seq.All
 Prj.Seq.Sim.Out = SeqSim
 
+Prj.Seq2.All.Src = Seq2.v
+Prj.Seq2.All.Ref = 
+
+Prj.Seq2.Sim.Src = Seq2Sim.v Seq2Sim.sav
+Prj.Seq2.Sim.Ref = Seq2.All
+Prj.Seq2.Sim.Out = Seq2Sim
+
 Prj.Swc.All.Src = Swc.v
 Prj.Swc.All.Ref =
 
@@ -118,7 +125,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 	mkdir -p $$(Prj.$(1).Gen.Tools.Sav.OutPath)
 	$$(Cfg.Prj.Targets.Sim.Tools.Sav.Invoke) $$(Prj.$(1).Gen.Tools.Sav.SavSrc) $$(Prj.$(1).Gen.Tools.Sav.OutPath)
 	@$$(call LineH2,Building Prj $(1) : Done)
-	echo Done >> $$(Prj.$(1).Gen.RuleFile)
+	echo Done > $$(Prj.$(1).Gen.RuleFile)
 endef
 
 PrjFPGAGetLibraryName = $(subst .,_,$(1))
@@ -271,7 +278,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.BgnFileMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.DrcFileMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	@$$(call LineH2,Building Prj $(1) : Done)
-	echo Done >> $$(Prj.$(1).Gen.RuleFile)
+	echo Done > $$(Prj.$(1).Gen.RuleFile)
 endef
 
 DevGetAllSrc = $(addprefix $(Cfg.Dev.SrcPath)/,$(call GetAllSrc,Dev,$(1)))
@@ -297,14 +304,20 @@ $$(Dev.$(1).Gen.RuleFile): $$(Dev.$(1).Gen.Src) _out
 	mkdir -p $$(Dev.$(1).Gen.Tools.Ghc.TmpPath)
 	$(Cfg.Dev.Tools.Ghc.Invoke) --make -o $$(Dev.$(1).Gen.Tools.Ghc.OutFile) -odir $$(Dev.$(1).Gen.Tools.Ghc.TmpPath) -hidir $$(Dev.$(1).Gen.Tools.Ghc.TmpPath) $$(Dev.$(1).Gen.Tools.Ghc.HaskellSrc)
 	@$$(call LineH2,Building Dev $(1) : Done)
-	echo Done >> $$(Dev.$(1).Gen.RuleFile)
+	echo Done > $$(Dev.$(1).Gen.RuleFile)
 endef
 
 $(foreach project,$(PrjSimGetProjects),$(eval $(call PrjSimBuildE,$(project))))
 $(foreach project,$(PrjFPGAGetProjects),$(eval $(call PrjFPGABuildE,$(project))))
 $(foreach project,$(DevGetProjects),$(eval $(call DevBuildE,$(project))))
 
-all: $(PrjSimProjectsToRules) $(PrjFPGAProjectsToRules) $(DevProjectsToRules)
+all: sim fpga dev
+
+sim: $(PrjSimProjectsToRules)
+
+fpga: $(PrjFPGAProjectsToRules)
+
+dev: $(DevProjectsToRules)
 
 clean:
 	rm -rf $(Cfg.Prj.OutPath)
@@ -316,4 +329,5 @@ _out:
 	mkdir -p $(Cfg.OutPath)
 	mkdir -p $(Cfg.RulePath)
 
+.PHONY = all
 .DEFAULT_GOAL = all

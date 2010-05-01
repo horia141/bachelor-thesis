@@ -37,11 +37,11 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
    reg [7:0] 	      n_ORegWen;
 
    wire [3:0] 	      w_inst_code;
-   wire [3:0] 	      w_inst_dst;
+   wire [2:0] 	      w_inst_dst;
    wire [3:0] 	      w_inst_dstcmd;
    wire [7:0] 	      w_inst_imm0;
    wire [7:0] 	      w_inst_imm1;
-   wire [3:0] 	      w_inst_src;
+   wire [1:0] 	      w_inst_src;
    wire [7:0] 	      w_ireg_mux;
    wire [7:0] 	      w_oreg_wen;
 
@@ -54,11 +54,11 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
    assign oreg_wen = n_ORegWen;
 
    assign w_inst_code   = inst[19:16];
-   assign w_inst_dst    = inst[15:12];
+   assign w_inst_dst    = inst[14:12];
    assign w_inst_dstcmd = inst[11:8];
    assign w_inst_imm0   = inst[15:8];
    assign w_inst_imm1   = inst[7:0];
-   assign w_inst_src    = inst[3:0];
+   assign w_inst_src    = inst[1:0];
 
    assign w_ireg_mux    = w_inst_src == 0 ? ireg_0 :
 			  w_inst_src == 1 ? ireg_1 :
@@ -136,7 +136,7 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 
 		   `Seq2_JZ: begin
 		      n_State   = `Seq2_State_Ready;
-		      n_Address = w_ireg_mux == 0 ? w_inst_imm1 : c_Address + 1;
+		      n_Address = w_ireg_mux == 0 ? w_inst_imm0 : c_Address + 1;
 		      n_OReg    = 0;
 		      n_ORegWen = 0;
 		   end

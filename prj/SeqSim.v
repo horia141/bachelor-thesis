@@ -111,7 +111,7 @@ module SeqSim;
       #0 inst_en = 1;
 
       // A little delay from #4 to simulate the actual delay from a real
-      // wire, when receiving a new command from a controller.
+      // wire when receiving a new command from a controller.
       #5 inst_en = 0;
 
       // An invalid instruction. This will send the Seq into the error state.

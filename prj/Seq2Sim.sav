@@ -1,0 +1,37 @@
+[timestart] 0
+[size] 1678 1004
+[pos] -1 -1
+*-14.192802 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] Seq2Sim.
+@28
+Seq2Sim.clock
+Seq2Sim.reset
+@820
+Seq2Sim.seq.d_c_State[511:0]
+Seq2Sim.seq.d_n_State[511:0]
+@28
+Seq2Sim.seq.inst_en
+@820
+Seq2Sim.seq.d_w_inst_code[511:0]
+@24
+Seq2Sim.seq.w_inst_dst[2:0]
+@22
+Seq2Sim.seq.w_inst_dstcmd[3:0]
+@24
+Seq2Sim.seq.w_inst_src[1:0]
+@22
+Seq2Sim.seq.w_inst_imm0[7:0]
+Seq2Sim.seq.w_inst_imm1[7:0]
+Seq2Sim.seq.c_Address[7:0]
+Seq2Sim.seq.n_Address[7:0]
+Seq2Sim.seq.c_OReg[11:0]
+Seq2Sim.seq.n_OReg[11:0]
+@28
+Seq2Sim.seq.c_ORegWen[7:0]
+@29
+Seq2Sim.seq.n_ORegWen[7:0]
+@22
+Seq2Sim.seq.ireg_0[7:0]
+Seq2Sim.seq.ireg_1[7:0]
+Seq2Sim.seq.ireg_2[7:0]
+Seq2Sim.seq.ireg_3[7:0]
