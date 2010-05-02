@@ -19,6 +19,13 @@ Prj.LedBank.Sim.Src = LedBankSim.v LedBankSim.sav
 Prj.LedBank.Sim.Ref = LedBank.All
 Prj.LedBank.Sim.Out = LedBankSim
 
+Prj.PushBtnBank.All.Src = PushBtnBank.v
+Prj.PushBtnBank.All.Ref =
+
+Prj.PushBtnBank.Sim.Src = PushBtnBankSim.v PushBtnBankSim.sav
+Prj.PushBtnBank.Sim.Ref = PushBtnBank.All
+Prj.PushBtnBank.Sim.Out = PushBtnBankSim
+
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =
 
