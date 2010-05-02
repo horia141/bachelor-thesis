@@ -161,6 +161,13 @@ module Seq2(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_
 	      n_OReg    = 0;
 	      n_ORegWen = 0;
 	   end
+
+	   default: begin
+	      n_State   = `Seq2_State_Error;
+	      n_Address = 0;
+	      n_OReg    = 0;
+	      n_ORegWen = 0;
+	   end
 	 endcase // case (c_State)
       end // else: !if(reset)
    end // always @ *
