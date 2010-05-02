@@ -80,8 +80,17 @@ module SeqSim;
       // wire when receiving a new command from a controller.
       #5 inst_en = 0;
 
+      #7 inst = {`Seq_JZ,8'hAA,8'bxxxxxx00};
+      #0 inst_en = 1;
+
+      // Same type of delay as above.
+      #5 inst_en = 0;
+
+      // Same type of delay as above.
+      #4 inst_en = 1;
+
       // An invalid instruction. This will send the Seq into the error state.
-      #4 inst = {4'hF,16'hFFEE};
+      #3 inst = {4'hF,16'hFFEE};
       #0 inst_en = 1;
 
       // This instruction won't execute, because the Seq is in the error state.

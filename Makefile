@@ -12,6 +12,13 @@ Prj.Auto2.FPGA.Ref = Auto2.All SlowClock.All
 Prj.Auto2.FPGA.Out = Auto2FPGA
 Prj.Auto2.FPGA.Top = Auto2FPGA
 
+Prj.LedBank.All.Src = LedBank.v
+Prj.LedBank.All.Ref =
+
+Prj.LedBank.Sim.Src = LedBankSim.v LedBankSim.sav
+Prj.LedBank.Sim.Ref = LedBank.All
+Prj.LedBank.Sim.Out = LedBankSim
+
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =
 

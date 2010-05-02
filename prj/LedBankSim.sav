@@ -1,0 +1,21 @@
+[timestart] 0
+[size] 1678 989
+[pos] -1 -1
+*-13.000000 12000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] SeqSim.
+@28
+SeqSim.clock
+SeqSim.reset
+@820
+SeqSim.ledbank.d_c_State[511:0]
+SeqSim.ledbank.d_n_State[511:0]
+@28
+SeqSim.ledbank.inst_en
+@820
+SeqSim.ledbank.d_w_inst_code[511:0]
+@28
+SeqSim.ledbank.w_inst_imm[7:0]
+SeqSim.ledbank.c_Leds[7:0]
+SeqSim.ledbank.n_Leds[7:0]
+@29
+SeqSim.ledbank.leds[7:0]

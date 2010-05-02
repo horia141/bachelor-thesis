@@ -5,9 +5,9 @@
 `define Seq_JR 4'h4
 `define Seq_JZ 4'h5
 
-`define Seq_State_Reset       2'h0
-`define Seq_State_Ready       2'h1
-`define Seq_State_Error       2'h2
+`define Seq_State_Reset 2'h0
+`define Seq_State_Ready 2'h1
+`define Seq_State_Error 2'h2
 
 module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
    input wire         clock;
@@ -51,25 +51,25 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
    assign oreg = n_OReg;
    assign oreg_wen = n_ORegWen;
 
-   assign w_inst_code   = inst[19:16];
-   assign w_inst_dst    = inst[14:12];
+   assign w_inst_code = inst[19:16];
+   assign w_inst_dst = inst[14:12];
    assign w_inst_dstcmd = inst[11:8];
-   assign w_inst_imm0   = inst[15:8];
-   assign w_inst_imm1   = inst[7:0];
-   assign w_inst_src    = inst[1:0];
+   assign w_inst_imm0 = inst[15:8];
+   assign w_inst_imm1 = inst[7:0];
+   assign w_inst_src = inst[1:0];
 
-   assign w_ireg_mux    = w_inst_src == 0 ? ireg_0 :
-			  w_inst_src == 1 ? ireg_1 :
-			  w_inst_src == 2 ? ireg_2 :
-			                    ireg_3;
-   assign w_oreg_wen    = w_inst_dst == 0 ? 8'b00000001 :
-			  w_inst_dst == 1 ? 8'b00000010 :
-			  w_inst_dst == 2 ? 8'b00000100 :
-			  w_inst_dst == 3 ? 8'b00001000 :
-			  w_inst_dst == 4 ? 8'b00010000 :
-			  w_inst_dst == 5 ? 8'b00100000 :
-			  w_inst_dst == 6 ? 8'b01000000 :
-			                    8'b10000000;
+   assign w_ireg_mux = w_inst_src == 0 ? ireg_0 :
+		       w_inst_src == 1 ? ireg_1 :
+		       w_inst_src == 2 ? ireg_2 :
+			                 ireg_3;
+   assign w_oreg_wen = w_inst_dst == 0 ? 8'b00000001 :
+	               w_inst_dst == 1 ? 8'b00000010 :
+		       w_inst_dst == 2 ? 8'b00000100 :
+		       w_inst_dst == 3 ? 8'b00001000 :
+		       w_inst_dst == 4 ? 8'b00010000 :
+		       w_inst_dst == 5 ? 8'b00100000 :
+		       w_inst_dst == 6 ? 8'b01000000 :
+			                 8'b10000000;
 
    always @ (posedge clock) begin
       c_State   = n_State;
@@ -177,7 +177,7 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 	`Seq_State_Reset: d_c_State = "Reset";
 	`Seq_State_Ready: d_c_State = "Ready";
 	`Seq_State_Error: d_c_State = "Error";
-	default:           d_c_State = "Undefined State ~ Serious Error or PreReset!";
+	default:          d_c_State = "Undefined State ~ Serious Error or PreReset!";
       endcase // case (c_State)
    end
 
@@ -186,7 +186,7 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 	`Seq_State_Reset: d_n_State = "Reset";
 	`Seq_State_Ready: d_n_State = "Ready";
 	`Seq_State_Error: d_n_State = "Error";
-	default:           d_n_State = "Undefined State ~ Serious Error or PreReset!";
+	default:          d_n_State = "Undefined State ~ Serious Error or PreReset!";
       endcase // case (n_State)
    end
 
@@ -198,7 +198,7 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 	`Seq_JI: d_w_inst_code = "JI";
 	`Seq_JR: d_w_inst_code = "JR";
 	`Seq_JZ: d_w_inst_code = "JZ";
-	default:  d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
+	default: d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
       endcase // case (w_inst_code)
    end // always @ *
 endmodule // Seq
