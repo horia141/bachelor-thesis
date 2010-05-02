@@ -1,26 +1,14 @@
 # Configuration Variables
 
-Prj.Auto1.All.Src = Auto1.v Auto1.mem
-Prj.Auto1.All.Ref = Alu.All Seq.All Swc.All
-
-Prj.Auto1.Sim.Src = Auto1Sim.v Auto1Sim.sav
-Prj.Auto1.Sim.Ref = Auto1.All
-Prj.Auto1.Sim.Out = Auto1Sim
-
-Prj.Auto1.FPGA.Src = Auto1FPGA.v SlowClock.v Auto1FPGA.ucf
-Prj.Auto1.FPGA.Ref = Auto1.All
-Prj.Auto1.FPGA.Out = Auto1FPGA
-Prj.Auto1.FPGA.Top = Auto1FPGA
-
 Prj.Auto2.All.Src = Auto2.v Auto2.mem
-Prj.Auto2.All.Ref = Alu.All Seq2.All Swc.All
+Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All
 
 Prj.Auto2.Sim.Src = Auto2Sim.v Auto2Sim.sav
 Prj.Auto2.Sim.Ref = Auto2.All
 Prj.Auto2.Sim.Out = Auto2Sim
 
-Prj.Auto2.FPGA.Src = Auto2FPGA.v SlowClock.v Auto2FPGA.ucf
-Prj.Auto2.FPGA.Ref = Auto2.All
+Prj.Auto2.FPGA.Src = Auto2FPGA.v Auto2FPGA.ucf
+Prj.Auto2.FPGA.Ref = Auto2.All SlowClock.All
 Prj.Auto2.FPGA.Out = Auto2FPGA
 Prj.Auto2.FPGA.Top = Auto2FPGA
 
@@ -37,13 +25,6 @@ Prj.Seq.All.Ref =
 Prj.Seq.Sim.Src = SeqSim.v SeqSim.sav
 Prj.Seq.Sim.Ref = Seq.All
 Prj.Seq.Sim.Out = SeqSim
-
-Prj.Seq2.All.Src = Seq2.v
-Prj.Seq2.All.Ref = 
-
-Prj.Seq2.Sim.Src = Seq2Sim.v Seq2Sim.sav
-Prj.Seq2.Sim.Ref = Seq2.All
-Prj.Seq2.Sim.Out = Seq2Sim
 
 Prj.Swc.All.Src = Swc.v
 Prj.Swc.All.Ref =

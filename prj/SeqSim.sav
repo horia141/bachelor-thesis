@@ -1,7 +1,7 @@
 [timestart] 0
-[size] 1678 989
+[size] 1678 1004
 [pos] -1 -1
-*-13.000000 124000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.192802 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] SeqSim.
 @28
 SeqSim.clock
@@ -13,24 +13,22 @@ SeqSim.seq.d_n_State[511:0]
 SeqSim.seq.inst_en
 @820
 SeqSim.seq.d_w_inst_code[511:0]
-@22
-SeqSim.seq.w_inst_imm[7:0]
-@24
-SeqSim.seq.w_inst_src[1:0]
-@22
-SeqSim.seq.w_inst_cmd[3:0]
 @24
 SeqSim.seq.w_inst_dst[2:0]
 @22
+SeqSim.seq.w_inst_dstcmd[3:0]
+@24
+SeqSim.seq.w_inst_src[1:0]
+@22
+SeqSim.seq.w_inst_imm0[7:0]
+SeqSim.seq.w_inst_imm1[7:0]
 SeqSim.seq.c_Address[7:0]
 SeqSim.seq.n_Address[7:0]
-SeqSim.seq.c_Transfer[7:0]
-SeqSim.seq.n_Transfer[7:0]
 SeqSim.seq.c_OReg[11:0]
-@23
 SeqSim.seq.n_OReg[11:0]
 @28
 SeqSim.seq.c_ORegWen[7:0]
+@29
 SeqSim.seq.n_ORegWen[7:0]
 @22
 SeqSim.seq.ireg_0[7:0]

@@ -17,7 +17,7 @@ module Auto2(clock,reset,counter);
 
    assign counter = swc_counter;
 
-   Seq2
+   Seq
    seq (.clock(clock),
 	.reset(reset),
 
