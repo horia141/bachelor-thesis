@@ -12,6 +12,18 @@ Prj.Auto2.FPGA.Ref = Auto2.All SlowClock.All
 Prj.Auto2.FPGA.Out = Auto2FPGA
 Prj.Auto2.FPGA.Top = Auto2FPGA
 
+Prj.PressCount.All.Src = PressCount.v PressCount.mem
+Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All
+
+Prj.PressCount.Sim.Src = PressCountSim.v PressCountSim.sav
+Prj.PressCount.Sim.Ref = PressCount.All
+Prj.PressCount.Sim.Out = PressCountSim
+
+Prj.PressCount.FPGA.Src = PressCountFPGA.v PressCountFPGA.ucf
+Prj.PressCount.FPGA.Ref = PressCount.All
+Prj.PressCount.FPGA.Out = PressCountFPGA
+Prj.PressCount.FPGA.Top = PressCountFPGA
+
 Prj.LedBank.All.Src = LedBank.v
 Prj.LedBank.All.Ref =
 
@@ -19,12 +31,12 @@ Prj.LedBank.Sim.Src = LedBankSim.v LedBankSim.sav
 Prj.LedBank.Sim.Ref = LedBank.All
 Prj.LedBank.Sim.Out = LedBankSim
 
-Prj.PushBtnBank.All.Src = PushBtnBank.v
-Prj.PushBtnBank.All.Ref =
+Prj.PushBtn.All.Src = PushBtn.v
+Prj.PushBtn.All.Ref = PushBtnInterface.All
 
-Prj.PushBtnBank.Sim.Src = PushBtnBankSim.v PushBtnBankSim.sav
-Prj.PushBtnBank.Sim.Ref = PushBtnBank.All
-Prj.PushBtnBank.Sim.Out = PushBtnBankSim
+Prj.PushBtn.Sim.Src = PushBtnSim.v PushBtnSim.sav
+Prj.PushBtn.Sim.Ref = PushBtn.All
+Prj.PushBtn.Sim.Out = PushBtnSim
 
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =
@@ -58,6 +70,13 @@ Prj.SlowClock.FPGA.Src = SlowClockFPGA.v SlowClockFPGA.ucf
 Prj.SlowClock.FPGA.Ref = SlowClock.All
 Prj.SlowClock.FPGA.Out = SlowClockFPGA
 Prj.SlowClock.FPGA.Top = SlowClockFPGA
+
+Prj.PushBtnInterface.All.Src = PushBtnInterface.v
+Prj.PushBtnInterface.All.Ref =
+
+Prj.PushBtnInterface.Sim.Src = PushBtnInterfaceSim.v PushBtnInterfaceSim.sav
+Prj.PushBtnInterface.Sim.Ref = PushBtnInterface.All
+Prj.PushBtnInterface.Sim.Out = PushBtnInterfaceSim
 
 Dev.MemGen.Src = MemGen/Main.hs
 Dev.MemGen.Ref =

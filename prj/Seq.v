@@ -9,6 +9,15 @@
 `define Seq_State_Ready 2'h1
 `define Seq_State_Error 2'h2
 
+// Instruction Format
+// no                      -> 0000_xxxx_xxxx_xxxx_xxxx
+// ci dev(d):cmd(c)        -> 0001_xddd_cccc_xxxx_xxxx
+// ci dev(d):cmd(c) arg(a) -> 0001_xddd_cccc_aaaa_aaaa
+// cr dev(d):cmd(c) src(s) -> 0010_xddd_cccc_xxxx_xxss
+// ji label(l)             -> 0011_llll_llll_xxxx_xxxx
+// jr src(s)               -> 0100_xxxx_xxxx_xxxx_xxss
+// jz label(l) src(s)      -> 0101_llll_llll_xxxx_xxss
+
 module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
    input wire         clock;
    input wire         reset;

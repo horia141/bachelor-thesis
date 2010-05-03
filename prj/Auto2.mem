@@ -4,7 +4,7 @@ WordSize: 20
 Format:   Bin
 
 # alu is device 0 : 000
-# seq is device 1 : 001
+# swc is device 1 : 001
 # alu:Result is input 0 : 00
 # swc:Ready is input 1  : 01
 # @start is 0 : 0000_0000
@@ -13,5 +13,5 @@ Format:   Bin
 0001_0000_0010_0000_0010 # 	  ci alu:add 02h
 0010_0001_0001_0000_0000 #	  cr swc:ld0 alu:Result
 0001_0001_0111_0000_0000 # 	  ci swc:ccd
-0101_0000_0100_0000_0001 # @loop  jz swc:Ready @loop
+0101_0000_0100_0000_0001 # @loop  jz @loop swc:Ready
 0011_0000_0000_0000_0000 #	  ji @start

@@ -1,0 +1,16 @@
+Name:     PressCountRom
+AddrSize: 3
+WordSize: 20
+Format:   Bin
+
+# alu is device 0 : 000
+# pushbtn is device 1 : 001
+# ledbank is device 2 : 010
+# alu:Result is input 0 : 00
+# pushbtn:ButtonStatus is input 1 : 01
+
+0001_0001_0001_0000_0000 # @start ci pushbtn:rbs
+0101_0000_0000_0000_0001 #        jz @start pushbtn:ButtonStatus
+0001_0000_0010_0000_0001 #        ci alu:add 1
+0010_0010_0001_0000_0000 #        cr ledbank:ldi alu:Result
+0011_0000_0000_0000_0000 #        ji @start

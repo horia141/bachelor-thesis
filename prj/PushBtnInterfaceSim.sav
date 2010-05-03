@@ -1,0 +1,11 @@
+[timestart] 0
+[size] 1101 1004
+[pos] -1 -1
+*-13.000000 8020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] PushBtnInterfaceSim.
+@28
+PushBtnInterfaceSim.clock
+PushBtnInterfaceSim.reset
+PushBtnInterfaceSim.pushbtnint.button
+PushBtnInterfaceSim.pushbtnint.c_Button
+PushBtnInterfaceSim.pushbtnint.button_pressed

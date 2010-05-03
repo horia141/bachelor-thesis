@@ -1,0 +1,23 @@
+[timestart] 150580
+[size] 1170 989
+[pos] -1 -1
+*-13.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] PushBtnSim.
+[treeopen] PushBtnSim.pushbtn.
+@28
+PushBtnSim.clock
+PushBtnSim.reset
+@820
+PushBtnSim.pushbtn.d_c_State[511:0]
+PushBtnSim.pushbtn.d_n_State[511:0]
+@28
+PushBtnSim.pushbtn.inst_en
+@820
+PushBtnSim.pushbtn.d_w_inst_code[511:0]
+PushBtnSim.pushbtn.d_n_IntButtonStatus[511:0]
+@821
+PushBtnSim.pushbtn.d_n_OutButtonStatus[511:0]
+@28
+PushBtnSim.pushbtn.button
+PushBtnSim.pushbtn.pushbtnint_button_pressed
+PushBtnSim.pushbtn.button_status
