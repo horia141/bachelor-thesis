@@ -1,9 +1,10 @@
-[timestart] 1106900
+[timestart] 0
 [size] 1680 1050
-[pos] -2 -31
+[pos] -1 -1
 *-13.778845 40300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PressCountSim.
 [treeopen] PressCountSim.presscount.
+[treeopen] PressCountSim.presscount.pushbtnu.
 @28
 PressCountSim.clock
 PressCountSim.reset
@@ -37,26 +38,38 @@ PressCountSim.presscount.alu.d_w_inst_code[511:0]
 PressCountSim.presscount.alu.w_inst_imm[7:0]
 PressCountSim.presscount.alu.result[7:0]
 @820
-PressCountSim.presscount.pushbtn.d_n_State[511:0]
-@28
-PressCountSim.presscount.pushbtn.inst_en
-@820
-PressCountSim.presscount.pushbtn.d_w_inst_code[511:0]
-@28
-PressCountSim.presscount.pushbtn.button
-PressCountSim.presscount.pushbtn.pushbtnint_button_pressed
-@820
-PressCountSim.presscount.pushbtn.d_c_IntButtonStatus[511:0]
-PressCountSim.presscount.pushbtn.d_n_IntButtonStatus[511:0]
-PressCountSim.presscount.pushbtn.d_c_OutButtonStatus[511:0]
-PressCountSim.presscount.pushbtn.d_n_OutButtonStatus[511:0]
-@28
-PressCountSim.presscount.pushbtn.button_status
-@820
 PressCountSim.presscount.ledbank.d_n_State[511:0]
 @28
 PressCountSim.presscount.ledbank.inst_en
-@821
+@820
 PressCountSim.presscount.ledbank.d_w_inst_code[511:0]
 @28
 PressCountSim.presscount.ledbank.leds[7:0]
+@820
+PressCountSim.presscount.pushbtnu.d_n_State[511:0]
+@28
+PressCountSim.presscount.pushbtnu.inst_en
+@820
+PressCountSim.presscount.pushbtnu.d_w_inst_code[511:0]
+@28
+PressCountSim.presscount.countu
+PressCountSim.presscount.pushbtnu.pushbtnint_button_pressed
+@820
+PressCountSim.presscount.pushbtnu.d_n_IntButtonStatus[511:0]
+PressCountSim.presscount.pushbtnu.d_n_OutButtonStatus[511:0]
+@28
+PressCountSim.presscount.pushbtnu.button_status
+@820
+PressCountSim.presscount.pushbtnd.d_n_State[511:0]
+@28
+PressCountSim.presscount.pushbtnd.inst_en
+@820
+PressCountSim.presscount.pushbtnd.d_w_inst_code[511:0]
+@28
+PressCountSim.presscount.countd
+PressCountSim.presscount.pushbtnd.pushbtnint_button_pressed
+@821
+PressCountSim.presscount.pushbtnd.d_n_IntButtonStatus[511:0]
+PressCountSim.presscount.pushbtnd.d_n_OutButtonStatus[511:0]
+@28
+PressCountSim.presscount.pushbtnd.button_status

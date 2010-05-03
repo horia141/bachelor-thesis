@@ -3,14 +3,20 @@ AddrSize: 3
 WordSize: 20
 Format:   Bin
 
-# alu is device 0 : 000
-# pushbtn is device 1 : 001
-# ledbank is device 2 : 010
-# alu:Result is input 0 : 00
-# pushbtn:ButtonStatus is input 1 : 01
+# alu      is device 0 : 000
+# pushbtnu is device 1 : 001
+# pushbtnd is device 2 : 010
+# ledbank  is device 2 : 011
 
-0001_0001_0001_0000_0000 # @start ci pushbtn:rbs
-0101_0000_0000_0000_0001 #        jz @start pushbtn:ButtonStatus
-0001_0000_0010_0000_0001 #        ci alu:add 1
-0010_0010_0001_0000_0000 #        cr ledbank:ldi alu:Result
-0011_0000_0000_0000_0000 #        ji @start
+# alu:Result            is input 0 : 00
+# pushbtnu:ButtonStatus is input 1 : 01
+# pushbtnd:ButtonStatus is input 2 : 10
+
+0001_0001_0001_0000_0000 # @startu  ci pushbtnu:rbs
+0001_0010_0001_0000_0000 # @startd  ci pushbtnd:rbs
+0101_0000_0100_0000_0001 # @testu   jz @testd pushbtnu:ButtonStatus
+0001_0000_0010_0000_0001 #          ci alu:add 1
+0101_0000_0110_0000_0010 # @testd   jz @display pushbtnd:ButtonStatus
+0001_0000_0011_0000_0001 #          ci alu:sub 1
+0010_0011_0001_0000_0000 # @display cr ledbank:ldi alu:Result
+0011_0000_0000_0000_0000 #	    ji @startu	

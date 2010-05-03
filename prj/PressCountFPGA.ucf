@@ -1,7 +1,8 @@
 NET "clock"          LOC = "C9"  | IOSTANDARD = LVCMOS33;
 NET "reset"          LOC = "K17" | IOSTANDARD = LVTTL | PULLDOWN;
 
-NET "count"          LOC = "D18" | IOSTANDARD = LVTTL | PULLDOWN;
+NET "countu"         LOC = "D18" | IOSTANDARD = LVTTL | PULLDOWN;
+NET "countd"         LOC = "V4"  | IOSTANDARD = LVTTL | PULLDOWN;
 
 NET "nr_presses<7>"  LOC = "F9"  | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;
 NET "nr_presses<6>"  LOC = "E9"  | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;

@@ -1,8 +1,9 @@
-module PressCountFPGA(clock,reset,count,nr_presses);
+module PressCountFPGA(clock,reset,countu,countd,nr_presses);
    input wire        clock;
    input wire 	     reset;
 
-   input wire 	     count;
+   input wire 	     countu;
+   input wire 	     countd;
 
    output wire [7:0] nr_presses;
 
@@ -10,7 +11,8 @@ module PressCountFPGA(clock,reset,count,nr_presses);
    presscount (.clock(clock),
 	       .reset(reset),
 
-	       .count(count),
+	       .countu(countu),
+	       .countd(countd),
 
 	       .nr_presses(nr_presses));
 endmodule // PressCountFPGA
