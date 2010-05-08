@@ -32,7 +32,10 @@ module PushBtnInterfaceSim;
       #6 button = 0;
 
       #9 button = 1;
-      #20 button = 0;
+      #50 button = 0;
+
+      #5 button = 1;
+      #100 button = 0;
 
       #5 button = 1;
       #4 button = 0;

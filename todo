@@ -50,4 +50,6 @@ x remove Seq prefix for SeqAsm type names.
 
 * change Btn to Button or Button to Btn everywhere in the button modules.
 
+* add a pertarget Def field where specific defines are set per-target.
+
 : the gimp can output .c or .h files with the contents of an image.

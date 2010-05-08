@@ -6,6 +6,9 @@
 `define PushBtn_State_Error 2'h2 
 
 module PushBtn(clock,reset,inst,inst_en,button,button_status);
+   parameter         DebounceWait = 40000;
+   parameter         DebounceSize = 16;
+   
    input wire        clock;
    input wire 	     reset;
 
@@ -40,7 +43,8 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
    assign w_inst_code = inst[11:8];
 
-   PushBtnInterface
+   PushBtnInterface #(.Wait(DebounceWait),
+		      .Size(DebounceSize))
    pushbtnint (.clock(clock),
 	       .reset(reset),
 

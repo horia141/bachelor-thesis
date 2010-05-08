@@ -14,7 +14,7 @@ module PushBtnSim;
       #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
-      #1000 $finish;
+      #10000 $finish;
    end
 
    initial begin
@@ -75,7 +75,7 @@ module PushBtnSim;
       // Simulate basic behaviour of a button.
       #3 button = 1;
       
-      #2 button = 0;
+      #202 button = 0;
 
       #3 inst = {`PushBtn_RBS,8'bxxxxxxxx};
       #0 inst_en = 1;
@@ -111,7 +111,7 @@ module PushBtnSim;
       #8 inst = {`PushBtn_RBS,8'bxxxxxxxx};
       #0 inst_en = 1;
 
-      #2 button = 0;
+      #220 button = 0;
 
       #6 inst = {`PushBtn_RBS,8'bxxxxxxxx};
       #0 inst_en = 1;
@@ -122,15 +122,15 @@ module PushBtnSim;
       // We simulate the opposite now : lots of button presses and a very late read.
       #3 button = 1;
 
-      #3 button = 0;
+      #300 button = 0;
 
       #3 button = 1;
 
-      #5 button = 0;
+      #230 button = 0;
 
       #4 button = 1;
 
-      #4 button = 0;
+      #220 button = 0;
 
       #2 inst = {`PushBtn_RBS,8'bxxxxxxxx};
       #0 inst_en = 1;
@@ -140,22 +140,65 @@ module PushBtnSim;
 
       // A test for doing a RBS exactly when a button is triggered.
       #4 inst = {`PushBtn_RBS,8'bxxxxxxxx};
-      #0 inst_en = 1;
+      inst_en = 1;
 
       #4 inst = {`PushBtn_RBS,8'bxxxxxxxx};
       inst_en = 1;
       button = 1;
 
-      #4 inst = {`PushBtn_RBS,8'bxxxxxxxx};
+      #200 inst = {`PushBtn_RBS,8'bxxxxxxxx};
       inst_en = 1;
 
       #1 button = 0;
 
       #3 inst = {`PushBtn_NOP,8'bxxxxxxxx};
       inst_en = 1;
+
+      // A test for debouncer behaviour.
+      #4 button = 1;
+
+      #4 button = 0;
+
+      #10 button = 1;
+
+      #12 button = 0;
+
+      #4 button = 1;
+
+      #4 button = 0;
+
+      #4 inst = {`PushBtn_RBS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`PushBtn_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // A second test for debouncer behaviour.
+      #4 button = 1;
+
+      #4 button = 0;
+
+      #10 button = 1;
+
+      #12 button = 0;
+
+      #4 button = 1;
+
+      #4 button = 0;
+
+      #4 button = 1;
+
+      #240 button = 0;
+
+      #4 inst = {`PushBtn_RBS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`PushBtn_NOP,8'bxxxxxxxx};
+      inst_en = 1;
    end      
 
-   PushBtn #()
+   PushBtn #(.DebounceWait(50),
+	     .DebounceSize(6))
    pushbtn (.clock(clock),
 	    .reset(reset),
 

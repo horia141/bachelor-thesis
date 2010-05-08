@@ -13,7 +13,7 @@ module PressCountSim;
       #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
-      #3000 $finish;
+      #5000 $finish;
    end
 
    initial begin
@@ -42,6 +42,14 @@ module PressCountSim;
       #124 countd = 1;
       
       #233 countd = 0;
+
+      #4 countu = 1;
+
+      #100 countu = 0;
+
+      #4 countu = 1;
+
+      #100 countu = 0;
    end
 
    PressCount

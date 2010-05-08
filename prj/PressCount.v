@@ -51,7 +51,8 @@ module PressCount(clock,reset,countu,countd,nr_presses);
 
 	.result(alu_result));
 
-   PushBtn
+   PushBtn #(.DebounceWait(40000),
+	     .DebounceSize(16))
    pushbtnu (.clock(clock),
 	     .reset(reset),
 
@@ -61,7 +62,8 @@ module PressCount(clock,reset,countu,countd,nr_presses);
 
 	     .button_status(pushbtnu_button_status));
 
-   PushBtn
+   PushBtn #(.DebounceWait(40000),
+	     .DebounceSize(16))
    pushbtnd (.clock(clock),
 	     .reset(reset),
 
