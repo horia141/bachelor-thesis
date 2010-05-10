@@ -50,7 +50,7 @@ module PushBtnInterfaceSim;
       #7 button = 0;
    end
 
-   PushBtnInterface #()
+   PushBtnInterface
    pushbtnint (.clock(clock),
 	       .reset(reset),
 

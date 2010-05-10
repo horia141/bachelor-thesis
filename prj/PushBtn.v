@@ -53,7 +53,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 	       .button_pressed(pushbtnint_button_pressed));
 
    always @ (posedge clock) begin
-      c_State <= n_State;
+      c_State           <= n_State;
       c_IntButtonStatus <= n_IntButtonStatus;
       c_OutButtonStatus <= n_OutButtonStatus;
    end
@@ -136,29 +136,29 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
    always @ * begin
       case (c_IntButtonStatus)
-	1: d_c_IntButtonStatus = "Pressed";
-	0: d_c_IntButtonStatus = "Released";
+	1: d_c_IntButtonStatus = "Triggered";
+	0: d_c_IntButtonStatus = "Free";
       endcase // case (c_IntButtonStatus)
    end
    
    always @ * begin
       case (n_IntButtonStatus)
-	1: d_n_IntButtonStatus = "Pressed";
-	0: d_n_IntButtonStatus = "Released";
+	1: d_n_IntButtonStatus = "Triggered";
+	0: d_n_IntButtonStatus = "Free";
       endcase // case (n_IntButtonStatus)
    end
    
    always @ * begin
       case (c_OutButtonStatus)
-	1: d_c_OutButtonStatus = "Pressed";
-	0: d_c_OutButtonStatus = "Released";
+	1: d_c_OutButtonStatus = "Triggered";
+	0: d_c_OutButtonStatus = "Free";
       endcase // case (c_OutButtonStatus)
    end
    
    always @ * begin
       case (n_OutButtonStatus)
-	1: d_n_OutButtonStatus = "Pressed";
-	0: d_n_OutButtonStatus = "Released";
+	1: d_n_OutButtonStatus = "Triggered";
+	0: d_n_OutButtonStatus = "Free";
       endcase // case (n_OutButtonStatus)
    end
 

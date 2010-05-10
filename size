@@ -5,3 +5,4 @@ Index   Build   Dev     Prj     Total   Commit
 3       351     224     2074    2649    Added PushBtnBank module.
 4       370     224     2126    2720    Added PressCount project.
 5       370     224     2234    2828    Added debounce logic to PushBtnInterface.
+6       377     224     2603    3204    Preliminary work on Rotary.

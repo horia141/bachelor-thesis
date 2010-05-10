@@ -78,6 +78,13 @@ Prj.PushBtnInterface.Sim.Src = PushBtnInterfaceSim.v PushBtnInterfaceSim.sav
 Prj.PushBtnInterface.Sim.Ref = PushBtnInterface.All
 Prj.PushBtnInterface.Sim.Out = PushBtnInterfaceSim
 
+Prj.RotaryInterface.All.Src = RotaryInterface.v
+Prj.RotaryInterface.All.Ref =
+
+Prj.RotaryInterface.Sim.Src = RotaryInterfaceSim.v RotaryInterfaceSim.sav
+Prj.RotaryInterface.Sim.Ref = RotaryInterface.All
+Prj.RotaryInterface.Sim.Out = RotaryInterfaceSim
+
 Dev.MemGen.Src = MemGen/Main.hs
 Dev.MemGen.Ref =
 Dev.MemGen.Out = memgen
