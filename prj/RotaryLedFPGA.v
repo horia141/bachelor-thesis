@@ -10,7 +10,7 @@ module RotaryLedFPGA(clock,reset,rotary,leds);
    rotaryled (.clock(clock),
 	      .reset(reset),
 
-	      .rotary(~rotary),
+	      .rotary(rotary),
 
 	      .leds(leds));
 endmodule // RotaryLedFPGA

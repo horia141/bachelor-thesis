@@ -28,14 +28,20 @@ module RotaryLedSim;
 
    initial begin
       #7 rotary = 2'b01;
+
+      #8 rotary = 2'b11;
       
       #8 rotary = 2'b00;
 
       #6 rotary = 2'b01;
 
+      #8 rotary = 2'b11;
+
       #13 rotary = 2'b00;
 
       #43 rotary = 2'b10;
+
+      #16 rotary = 2'b11;
       
       #11 rotary = 2'b00;
    end

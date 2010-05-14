@@ -78,6 +78,8 @@ module RotarySim;
       inst_en = 1;
       rotary = 2'b01;
 
+      #8 rotary = 2'b11;
+
       #7 rotary = 2'b00;
 
       #9 inst = {`Rotary_RDL,8'bxxxxxxxx};
@@ -94,6 +96,8 @@ module RotarySim;
       inst_en = 1;
 
       #3 rotary = 2'b10;
+
+      #8 rotary = 2'b11;
 
       #5 rotary = 2'b00;
 
@@ -122,6 +126,12 @@ module RotarySim;
       #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
       inst_en = 1;
 
+      #2 rotary = 2'b11;
+
+      #6 inst = {`Rotary_RDL,8'bxxxxxxxx};
+      rotary = 2'b00;
+      inst_en = 1;
+
       #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
       inst_en = 1;
 
@@ -143,6 +153,12 @@ module RotarySim;
       #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
       inst_en = 1;
 
+      #2 rotary = 2'b11;
+
+      #6 inst = {`Rotary_RDR,8'bxxxxxxxx};
+      rotary = 2'b00;
+      inst_en = 1;
+
       #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
       inst_en = 1;
 
@@ -154,13 +170,19 @@ module RotarySim;
 
       #4 rotary = 2'b01;
 
+      #8 rotary = 2'b11;
+
       #7 rotary = 2'b00;
 
       #5 rotary = 2'b01;
 
+      #8 rotary = 2'b11;
+
       #4 rotary = 2'b00;
 
       #12 rotary = 2'b01;
+
+      #12 rotary = 2'b11;
 
       #7 rotary = 2'b00;
 
@@ -176,13 +198,19 @@ module RotarySim;
 
       #4 rotary = 2'b10;
 
+      #8 rotary = 2'b11;
+
       #7 rotary = 2'b00;
 
       #5 rotary = 2'b10;
 
+      #8 rotary = 2'b11;
+
       #4 rotary = 2'b00;
 
       #12 rotary = 2'b10;
+
+      #12 rotary = 2'b11;
 
       #7 rotary = 2'b00;
 

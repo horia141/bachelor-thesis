@@ -30,23 +30,27 @@ module RotaryInterfaceSim;
    initial begin
       #0 rotary = 2'b00;
 
+      #10 rotary = 2'b01;
+
+      #11 rotary = 2'b11;
+
+      #9 rotary = 2'b00;
+
       #10 rotary = 2'b10;
 
-      #4 rotary = 2'b11;
+      #12 rotary = 2'b11;
 
-      #4 rotary = 2'b00;
+      #7 rotary = 2'b00;
 
-      #20 rotary = 2'b01;
+      #10 rotary = 2'b10;
 
-      #40 rotary = 2'b00;
+      #2 rotary = 2'b00;
 
-      #20 rotary = 2'b01;
+      #10 rotary = 2'b10;
 
-      #20 rotary = 2'b10;
+      #7 rotary = 2'b11;
 
-      #4 rotary = 2'b00;
-
-      #6 rotary = 2'b10;
+      #8 rotary = 2'b00;
    end
 
    RotaryInterface

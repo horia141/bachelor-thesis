@@ -4,6 +4,7 @@ module PushBtnInterface(clock,reset,button,button_pressed);
    
    input wire     clock;
    input wire 	  reset;
+   
    input wire 	  button;
 
    output wire 	  button_pressed;

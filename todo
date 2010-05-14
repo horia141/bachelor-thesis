@@ -46,9 +46,11 @@ x remove Seq prefix for SeqAsm type names.
 
 * if we still have propagation errors and combinatorial loops even with more complex designs (that fully generate a circuit) I should investigate chaning the design to use module outputs linked to c_ signals instead of n_ signals. Such a module is basically a Moore machine (outputs depend only on the current state c_) whereas what we have now is a Mealy machine (outputs depend on the current state and on inputs, and in our specific case, they depend only on inputs, since n_ signals are combinatorial derivations of the inputs), and, because of their nature, will make the designs more robust in the presence of hazards as well as able to scale to higher clock frequencies. The only downside is a more complex execution model (outputs from a controller apear at time t+d, are registered at (t+1) by a slave, and the slave's output appears at (t+1)+d and the controller can work with it at (t+2)). It's worth investigating using multiple clocks (either two clocks in oposition, or four clocks in quadrature) and linking the master to a clock, and all slaves to a opposite clock. The main problem here is working with deep hierarchies where a master, has several slaves, each slave containing a master and slaves configuration as well.
 
+* change Seq,Alu,Swc and all "small name modules" to larger names: Sequencer, ArithmeticalLogicalUnit, StopWatchCounter etc.
+
 * make *Sim modules more uniform : a test of all instructions, a inst_en test, a error state test and custom tests. use PushBtnBankSim as a model. Eliminate #0 delays because they are not the same as no delay :|.
 
-* change Btn to Button or Button to Btn everywhere in the button modules.
++ change Btn to Button or Button to Btn everywhere in the button modules.
 
 * add a pertarget Def field where specific defines are set per-target.
 

@@ -1,19 +1,19 @@
 [timestart] 0
-[size] 1226 989
-[pos] -1 -1
-*-13.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1678 1019
+[pos] -1 -503
+*-13.000000 16000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] RotaryInterfaceSim.
 @28
 RotaryInterfaceSim.clock
 RotaryInterfaceSim.reset
 RotaryInterfaceSim.rotaryint.rotary[1:0]
-RotaryInterfaceSim.rotaryint.c_RotaryLeft
-RotaryInterfaceSim.rotaryint.n_RotaryLeft
-RotaryInterfaceSim.rotaryint.c_RotaryRight
-RotaryInterfaceSim.rotaryint.n_RotaryRight
-RotaryInterfaceSim.rotaryint.c_DoneLeft
-RotaryInterfaceSim.rotaryint.n_DoneLeft
-RotaryInterfaceSim.rotaryint.c_DoneRight
-RotaryInterfaceSim.rotaryint.n_DoneRight
 RotaryInterfaceSim.rotaryint.rotary_left
 RotaryInterfaceSim.rotaryint.rotary_right
+RotaryInterfaceSim.rotaryint.s_Filter1
+RotaryInterfaceSim.rotaryint.s_Filter2
+RotaryInterfaceSim.rotaryint.s_Filter1Delay
+RotaryInterfaceSim.rotaryint.s_RotaryLeft
+RotaryInterfaceSim.rotaryint.s_DoneRotaryLeft
+RotaryInterfaceSim.rotaryint.s_RotaryRight
+@29
+RotaryInterfaceSim.rotaryint.s_DoneRotaryRight
