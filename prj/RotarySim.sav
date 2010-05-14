@@ -1,0 +1,29 @@
+[timestart] 0
+[size] 1678 1004
+[pos] -1 -1
+*-13.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] RotarySim.
+@28
+RotarySim.clock
+RotarySim.reset
+@820
+RotarySim.rotary.d_c_State[511:0]
+RotarySim.rotary.d_n_State[511:0]
+RotarySim.rotary.d_w_inst_code[511:0]
+@28
+RotarySim.rotary.inst_en
+RotarySim.rotary.rotary[1:0]
+@821
+RotarySim.rotary.d_c_IntRotaryLeftStatus[511:0]
+RotarySim.rotary.d_n_IntRotaryLeftStatus[511:0]
+RotarySim.rotary.d_c_OutRotaryLeftStatus[511:0]
+RotarySim.rotary.d_n_OutRotaryLeftStatus[511:0]
+RotarySim.rotary.d_c_IntRotaryRightStatus[511:0]
+RotarySim.rotary.d_n_IntRotaryRightStatus[511:0]
+RotarySim.rotary.d_c_OutRotaryRightStatus[511:0]
+RotarySim.rotary.d_n_OutRotaryRightStatus[511:0]
+@28
+RotarySim.rotary.rotaryint_rotary_left
+RotarySim.rotary.rotaryint_rotary_right
+RotarySim.rotary.rotary_left
+RotarySim.rotary.rotary_right

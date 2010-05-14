@@ -6,3 +6,4 @@ Index   Build   Dev     Prj     Total   Commit
 4       370     224     2126    2720    Added PressCount project.
 5       370     224     2234    2828    Added debounce logic to PushBtnInterface.
 6       377     224     2603    3204    Preliminary work on Rotary.
+7       396     224     2977    3597    More work on Rotary.

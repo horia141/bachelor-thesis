@@ -90,7 +90,7 @@ module PushBtnSim;
       #0 inst_en = 1;
 
       // Simulate a button being pressed for a long time and reads being made simultaneously. 
-      // Only one read/clear cycle should return Pressed, the others should be Released.
+      // Only one read/clear cycle should return Triggered, the others should be Free.
       #3 button = 1;
 
       #1 inst = {`PushBtn_NOP,8'bxxxxxxxx};

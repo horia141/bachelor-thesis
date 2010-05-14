@@ -153,19 +153,19 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left,rotary_right);
 
    always @ * begin
       case (c_State)
-	`PushBtn_State_Reset: d_c_State = "Reset";
-	`PushBtn_State_Ready: d_c_State = "Ready";
-	`PushBtn_State_Error: d_c_State = "Error";
-	default:              d_c_State = "Undefined State ~ Serious Error or PreReset!";
+	`Rotary_State_Reset: d_c_State = "Reset";
+	`Rotary_State_Ready: d_c_State = "Ready";
+	`Rotary_State_Error: d_c_State = "Error";
+	default:             d_c_State = "Undefined State ~ Serious Error or PreReset!";
       endcase // case (c_State)
    end
 
    always @ * begin
       case (n_State)
-	`PushBtn_State_Reset: d_n_State = "Reset";
-	`PushBtn_State_Ready: d_n_State = "Ready";
-	`PushBtn_State_Error: d_n_State = "Error";
-	default:              d_n_State = "Undefined State ~ Serious Error or PreReset!";
+	`Rotary_State_Reset: d_n_State = "Reset";
+	`Rotary_State_Ready: d_n_State = "Ready";
+	`Rotary_State_Error: d_n_State = "Error";
+	default:             d_n_State = "Undefined State ~ Serious Error or PreReset!";
       endcase // case (n_State)
    end
 

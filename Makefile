@@ -24,6 +24,18 @@ Prj.PressCount.FPGA.Ref = PressCount.All
 Prj.PressCount.FPGA.Out = PressCountFPGA
 Prj.PressCount.FPGA.Top = PressCountFPGA
 
+Prj.RotaryLed.All.Src = RotaryLed.v RotaryLed.mem
+Prj.RotaryLed.All.Ref = Seq.All Alu.All Rotary.All LedBank.All
+
+Prj.RotaryLed.Sim.Src = RotaryLedSim.v RotaryLedSim.sav
+Prj.RotaryLed.Sim.Ref = RotaryLed.All
+Prj.RotaryLed.Sim.Out = RotaryLedSim
+
+Prj.RotaryLed.FPGA.Src = RotaryLedFPGA.v RotaryLedFPGA.ucf
+Prj.RotaryLed.FPGA.Ref = RotaryLed.All
+Prj.RotaryLed.FPGA.Out = RotaryLedFPGA
+Prj.RotaryLed.FPGA.Top = RotaryLedFPGA
+
 Prj.LedBank.All.Src = LedBank.v
 Prj.LedBank.All.Ref =
 
@@ -37,6 +49,13 @@ Prj.PushBtn.All.Ref = PushBtnInterface.All
 Prj.PushBtn.Sim.Src = PushBtnSim.v PushBtnSim.sav
 Prj.PushBtn.Sim.Ref = PushBtn.All
 Prj.PushBtn.Sim.Out = PushBtnSim
+
+Prj.Rotary.All.Src = Rotary.v
+Prj.Rotary.All.Ref = RotaryInterface.All
+
+Prj.Rotary.Sim.Src = RotarySim.v RotarySim.sav
+Prj.Rotary.Sim.Ref = Rotary.All
+Prj.Rotary.Sim.Out = RotarySim
 
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =

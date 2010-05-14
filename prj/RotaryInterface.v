@@ -16,8 +16,8 @@ module RotaryInterface(clock,reset,rotary,rotary_left,rotary_right);
    reg 		    n_DoneLeft;
    reg 		    n_DoneRight;
 
-   assign rotary_left = n_RotaryLeft;
-   assign rotary_right = n_RotaryRight;
+   assign rotary_left = c_RotaryLeft;
+   assign rotary_right = c_RotaryRight;
 
    always @ (posedge clock) begin
       c_RotaryLeft  <= n_RotaryLeft;

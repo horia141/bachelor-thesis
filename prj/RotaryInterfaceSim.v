@@ -43,6 +43,10 @@ module RotaryInterfaceSim;
       #20 rotary = 2'b01;
 
       #20 rotary = 2'b10;
+
+      #4 rotary = 2'b00;
+
+      #6 rotary = 2'b10;
    end
 
    RotaryInterface
