@@ -18,37 +18,26 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left,rotary_right);
    output wire 	     rotary_left;
    output wire 	     rotary_right;
 
-   reg [1:0] 	     c_State;
-   reg 		     c_IntRotaryLeftStatus;
-   reg 		     c_OutRotaryLeftStatus;
-   reg 		     c_IntRotaryRightStatus;
-   reg 		     c_OutRotaryRightStatus;
-
-   reg [1:0] 	     n_State;
-   reg 		     n_IntRotaryLeftStatus;
-   reg 		     n_OutRotaryLeftStatus;
-   reg 		     n_IntRotaryRightStatus;
-   reg 		     n_OutRotaryRightStatus;
+   reg [1:0] 	     s_State;
+   reg 		     s_IntRotaryLeftStatus;
+   reg 		     s_OutRotaryLeftStatus;
+   reg 		     s_IntRotaryRightStatus;
+   reg 		     s_OutRotaryRightStatus;
 
    wire [3:0] 	     w_inst_code;
 
    wire 	     rotaryint_rotary_left;
    wire 	     rotaryint_rotary_right;
 
-   reg [64*8-1:0]    d_c_State;
-   reg [64*8-1:0]    d_n_State;
-   reg [64*8-1:0]    d_c_IntRotaryLeftStatus;
-   reg [64*8-1:0]    d_n_IntRotaryLeftStatus;
-   reg [64*8-1:0]    d_c_OutRotaryLeftStatus;
-   reg [64*8-1:0]    d_n_OutRotaryLeftStatus;
-   reg [64*8-1:0]    d_c_IntRotaryRightStatus;
-   reg [64*8-1:0]    d_n_IntRotaryRightStatus;
-   reg [64*8-1:0]    d_c_OutRotaryRightStatus;
-   reg [64*8-1:0]    d_n_OutRotaryRightStatus;
+   reg [64*8-1:0]    d_s_State;
+   reg [64*8-1:0]    d_s_IntRotaryLeftStatus;
+   reg [64*8-1:0]    d_s_OutRotaryLeftStatus;
+   reg [64*8-1:0]    d_s_IntRotaryRightStatus;
+   reg [64*8-1:0]    d_s_OutRotaryRightStatus;
    reg [64*8-1:0]    d_w_inst_code;
 
-   assign rotary_left = n_OutRotaryLeftStatus;
-   assign rotary_right = n_OutRotaryRightStatus;
+   assign rotary_left = s_OutRotaryLeftStatus;
+   assign rotary_right = s_OutRotaryRightStatus;
 
    assign w_inst_code = inst[11:8];
 
@@ -62,167 +51,122 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left,rotary_right);
 	      .rotary_right(rotaryint_rotary_right));
 
    always @ (posedge clock) begin
-      c_State                <= n_State;
-      c_IntRotaryLeftStatus  <= n_IntRotaryLeftStatus;
-      c_OutRotaryLeftStatus  <= n_OutRotaryLeftStatus;
-      c_IntRotaryRightStatus <= n_IntRotaryRightStatus;
-      c_OutRotaryRightStatus <= n_OutRotaryRightStatus;
-   end
-
-   always @ * begin
       if (reset) begin
-	 n_State                = `Rotary_State_Reset;
-	 n_IntRotaryLeftStatus  = 0;
-	 n_OutRotaryLeftStatus  = 0;
-	 n_IntRotaryRightStatus = 0;
-	 n_OutRotaryRightStatus = 0;
+	 s_State                <= `Rotary_State_Reset;
+	 s_IntRotaryLeftStatus  <= 0;
+	 s_OutRotaryLeftStatus  <= 0;
+	 s_IntRotaryRightStatus <= 0;
+	 s_OutRotaryRightStatus <= 0;
       end
       else begin
-	 case (c_State)
+	 case (s_State)
 	   `Rotary_State_Reset: begin
-	      n_State                = `Rotary_State_Ready;
-	      n_IntRotaryLeftStatus  = 0;
-	      n_OutRotaryLeftStatus  = 0;
-	      n_IntRotaryRightStatus = 0;
-	      n_OutRotaryRightStatus = 0;
+	      s_State                <= `Rotary_State_Ready;
+	      s_IntRotaryLeftStatus  <= 0;
+	      s_OutRotaryLeftStatus  <= 0;
+	      s_IntRotaryRightStatus <= 0;
+	      s_OutRotaryRightStatus <= 0;
 	   end
 
 	   `Rotary_State_Ready: begin
 	      if (inst_en) begin
 		 case (w_inst_code)
 		   `Rotary_NOP: begin
-		      n_State                = `Rotary_State_Ready;
-		      n_IntRotaryLeftStatus  = rotaryint_rotary_left | c_IntRotaryLeftStatus;
-		      n_OutRotaryLeftStatus  = c_OutRotaryLeftStatus;
-		      n_IntRotaryRightStatus = rotaryint_rotary_right | c_IntRotaryRightStatus;
-		      n_OutRotaryRightStatus = c_OutRotaryRightStatus;
+		      s_State                <= `Rotary_State_Ready;
+		      s_IntRotaryLeftStatus  <= rotaryint_rotary_left | s_IntRotaryLeftStatus;
+		      s_OutRotaryLeftStatus  <= s_OutRotaryLeftStatus;
+		      s_IntRotaryRightStatus <= rotaryint_rotary_right | s_IntRotaryRightStatus;
+		      s_OutRotaryRightStatus <= s_OutRotaryRightStatus;
 		   end
 
 		   `Rotary_RDL: begin
-		      n_State                = `Rotary_State_Ready;
-		      n_IntRotaryLeftStatus  = rotaryint_rotary_left | 0;
-		      n_OutRotaryLeftStatus  = c_IntRotaryLeftStatus;
-		      n_IntRotaryRightStatus = rotaryint_rotary_right | c_IntRotaryRightStatus;
-		      n_OutRotaryRightStatus = c_OutRotaryRightStatus;
+		      s_State                <= `Rotary_State_Ready;
+		      s_IntRotaryLeftStatus  <= rotaryint_rotary_left | 0;
+		      s_OutRotaryLeftStatus  <= s_IntRotaryLeftStatus;
+		      s_IntRotaryRightStatus <= rotaryint_rotary_right | s_IntRotaryRightStatus;
+		      s_OutRotaryRightStatus <= s_OutRotaryRightStatus;
 		   end
 
 		   `Rotary_RDR: begin
-		      n_State                = `Rotary_State_Ready;
-		      n_IntRotaryLeftStatus  = rotaryint_rotary_left | c_IntRotaryLeftStatus;
-		      n_OutRotaryLeftStatus  = c_OutRotaryLeftStatus;
-		      n_IntRotaryRightStatus = rotaryint_rotary_right | 0;
-		      n_OutRotaryRightStatus = c_IntRotaryRightStatus;
+		      s_State                <= `Rotary_State_Ready;
+		      s_IntRotaryLeftStatus  <= rotaryint_rotary_left | s_IntRotaryLeftStatus;
+		      s_OutRotaryLeftStatus  <= s_OutRotaryLeftStatus;
+		      s_IntRotaryRightStatus <= rotaryint_rotary_right | 0;
+		      s_OutRotaryRightStatus <= s_IntRotaryRightStatus;
 		   end
 
 		   default: begin
-		      n_State                = `Rotary_State_Error;
-		      n_IntRotaryLeftStatus  = 0;
-		      n_OutRotaryLeftStatus  = 0;
-		      n_IntRotaryRightStatus = 0;
-		      n_OutRotaryRightStatus = 0;
+		      s_State                <= `Rotary_State_Error;
+		      s_IntRotaryLeftStatus  <= 0;
+		      s_OutRotaryLeftStatus  <= 0;
+		      s_IntRotaryRightStatus <= 0;
+		      s_OutRotaryRightStatus <= 0;
 		   end
 		 endcase // case (w_inst_code)
 	      end // if (inst_en)
 	      else begin
-		 n_State                = `Rotary_State_Ready;
-		 n_IntRotaryLeftStatus  = rotaryint_rotary_left | c_IntRotaryLeftStatus;
-		 n_OutRotaryLeftStatus  = c_OutRotaryLeftStatus;
-		 n_IntRotaryRightStatus = rotaryint_rotary_right | c_IntRotaryRightStatus;
-		 n_OutRotaryRightStatus = c_OutRotaryRightStatus;
+		 s_State                <= `Rotary_State_Ready;
+		 s_IntRotaryLeftStatus  <= rotaryint_rotary_left | s_IntRotaryLeftStatus;
+		 s_OutRotaryLeftStatus  <= s_OutRotaryLeftStatus;
+		 s_IntRotaryRightStatus <= rotaryint_rotary_right | s_IntRotaryRightStatus;
+		 s_OutRotaryRightStatus <= s_OutRotaryRightStatus;
 	      end // else: !if(inst_en)
 	   end // case: `Rotary_State_Ready
 
 	   `Rotary_State_Error: begin
-	      n_State                = `Rotary_State_Error;
-	      n_IntRotaryLeftStatus  = 0;
-	      n_OutRotaryLeftStatus  = 0;
-	      n_IntRotaryRightStatus = 0;
-	      n_OutRotaryRightStatus = 0;
+	      s_State                <= `Rotary_State_Error;
+	      s_IntRotaryLeftStatus  <= 0;
+	      s_OutRotaryLeftStatus  <= 0;
+	      s_IntRotaryRightStatus <= 0;
+	      s_OutRotaryRightStatus <= 0;
 	   end
 
 	   default: begin
-	      n_State                = `Rotary_State_Error;
-	      n_IntRotaryLeftStatus  = 0;
-	      n_OutRotaryLeftStatus  = 0;
-	      n_IntRotaryRightStatus = 0;
-	      n_OutRotaryRightStatus = 0;
+	      s_State                <= `Rotary_State_Error;
+	      s_IntRotaryLeftStatus  <= 0;
+	      s_OutRotaryLeftStatus  <= 0;
+	      s_IntRotaryRightStatus <= 0;
+	      s_OutRotaryRightStatus <= 0;
 	   end
-	 endcase // case (c_State)
+	 endcase // case (s_State)
       end // else: !if(reset)
-   end // always @ *
+   end // always @ (posedge clock)
 
    always @ * begin
-      case (c_State)
-	`Rotary_State_Reset: d_c_State = "Reset";
-	`Rotary_State_Ready: d_c_State = "Ready";
-	`Rotary_State_Error: d_c_State = "Error";
-	default:             d_c_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (c_State)
+      case (s_State)
+	`Rotary_State_Reset: d_s_State = "Reset";
+	`Rotary_State_Ready: d_s_State = "Ready";
+	`Rotary_State_Error: d_s_State = "Error";
+	default:             d_s_State = "Undefined State ~ Serious Error or PreReset!";
+      endcase // case (s_State)
    end
 
    always @ * begin
-      case (n_State)
-	`Rotary_State_Reset: d_n_State = "Reset";
-	`Rotary_State_Ready: d_n_State = "Ready";
-	`Rotary_State_Error: d_n_State = "Error";
-	default:             d_n_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (n_State)
+      case (s_IntRotaryLeftStatus)
+	1: d_s_IntRotaryLeftStatus = "Triggered";
+	0: d_s_IntRotaryLeftStatus = "Free";
+      endcase // case (s_IntRotaryLeftStatus)
    end
 
    always @ * begin
-      case (c_IntRotaryLeftStatus)
-	1: d_c_IntRotaryLeftStatus = "Triggered";
-	0: d_c_IntRotaryLeftStatus = "Free";
-      endcase // case (c_IntRotaryLeftStatus)
+      case (s_OutRotaryLeftStatus)
+	1: d_s_OutRotaryLeftStatus = "Triggered";
+	0: d_s_OutRotaryLeftStatus = "Free";
+      endcase // case (s_OutRotaryLeftStatus)
    end
 
    always @ * begin
-      case (n_IntRotaryLeftStatus)
-	1: d_n_IntRotaryLeftStatus = "Triggered";
-	0: d_n_IntRotaryLeftStatus = "Free";
-      endcase // case (n_IntRotaryLeftStatus)
+      case (s_IntRotaryRightStatus)
+	1: d_s_IntRotaryRightStatus = "Triggered";
+	0: d_s_IntRotaryRightStatus = "Free";
+      endcase // case (s_IntRotaryRightStatus)
    end
 
    always @ * begin
-      case (c_OutRotaryLeftStatus)
-	1: d_c_OutRotaryLeftStatus = "Triggered";
-	0: d_c_OutRotaryLeftStatus = "Free";
-      endcase // case (c_OutRotaryLeftStatus)
-   end
-
-   always @ * begin
-      case (n_OutRotaryLeftStatus)
-	1: d_n_OutRotaryLeftStatus = "Triggered";
-	0: d_n_OutRotaryLeftStatus = "Free";
-      endcase // case (n_OutRotaryLeftStatus)
-   end
-
-   always @ * begin
-      case (c_IntRotaryRightStatus)
-	1: d_c_IntRotaryRightStatus = "Triggered";
-	0: d_c_IntRotaryRightStatus = "Free";
-      endcase // case (c_IntRotaryRightStatus)
-   end
-
-   always @ * begin
-      case (n_IntRotaryRightStatus)
-	1: d_n_IntRotaryRightStatus = "Triggered";
-	0: d_n_IntRotaryRightStatus = "Free";
-      endcase // case (n_IntRotaryRightStatus)
-   end
-
-   always @ * begin
-      case (c_OutRotaryRightStatus)
-	1: d_c_OutRotaryRightStatus = "Triggered";
-	0: d_c_OutRotaryRightStatus = "Free";
-      endcase // case (c_OutRotaryRightStatus)
-   end
-
-   always @ * begin
-      case (n_OutRotaryRightStatus)
-	1: d_n_OutRotaryRightStatus = "Triggered";
-	0: d_n_OutRotaryRightStatus = "Free";
-      endcase // case (n_OutRotaryRightStatus)
+      case (s_OutRotaryRightStatus)
+	1: d_s_OutRotaryRightStatus = "Triggered";
+	0: d_s_OutRotaryRightStatus = "Free";
+      endcase // case (s_OutRotaryRightStatus)
    end
 
    always @ * begin

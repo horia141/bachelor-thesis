@@ -22,135 +22,117 @@ module LedBank(clock,reset,inst,inst_en,leds);
 
    output wire [7:0] leds;
 
-   reg [1:0] 	     c_State;
-   reg [7:0] 	     c_Leds;
-
-   reg [1:0] 	     n_State;
-   reg [7:0] 	     n_Leds;
+   reg [1:0] 	     s_State;
+   reg [7:0] 	     s_Leds;
 
    wire [3:0] 	     w_inst_code;
    wire [7:0] 	     w_inst_imm;
 
-   reg [64*8-1:0]    d_c_State;
-   reg [64*8-1:0]    d_n_State;
+   reg [64*8-1:0]    d_s_State;
    reg [64*8-1:0]    d_w_inst_code;
 
-   assign leds = n_Leds;
+   assign leds = s_Leds;
 
    assign w_inst_code = inst[11:8];
    assign w_inst_imm = inst[7:0];
 
    always @ (posedge clock) begin
-      c_State <= n_State;
-      c_Leds  <= n_Leds;
-   end
-
-   always @ * begin
       if (reset) begin
-	 n_State = `LedBank_State_Reset;
-	 n_Leds  = 0;
+	 s_State <= `LedBank_State_Reset;
+	 s_Leds  <= 0;
       end
       else begin
-	 case (c_State)
+	 case (s_State)
 	   `LedBank_State_Reset: begin
-	      n_State = `LedBank_State_Ready;
-	      n_Leds  = 0;
+	      s_State <= `LedBank_State_Ready;
+	      s_Leds  <= 0;
 	   end
 
 	   `LedBank_State_Ready: begin
 	      if (inst_en) begin
 		 case (w_inst_code)
 		   `LedBank_NOP: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = c_Leds;
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= s_Leds;
 		   end
 
 		   `LedBank_LDI: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = w_inst_imm;
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= w_inst_imm;
 		   end
 
 		   `LedBank_LD0: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:1],w_inst_imm[0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:1],w_inst_imm[0]};
 		   end
 
 		   `LedBank_LD1: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:2],w_inst_imm[0],c_Leds[0:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:2],w_inst_imm[0],s_Leds[0:0]};
 		   end
 
 		   `LedBank_LD2: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:3],w_inst_imm[0],c_Leds[1:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:3],w_inst_imm[0],s_Leds[1:0]};
 		   end
 
 		   `LedBank_LD3: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:4],w_inst_imm[0],c_Leds[2:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:4],w_inst_imm[0],s_Leds[2:0]};
 		   end
 
 		   `LedBank_LD4: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:5],w_inst_imm[0],c_Leds[3:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:5],w_inst_imm[0],s_Leds[3:0]};
 		   end
 
 		   `LedBank_LD5: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:6],w_inst_imm[0],c_Leds[4:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:6],w_inst_imm[0],s_Leds[4:0]};
 		   end
 
 		   `LedBank_LD6: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {c_Leds[7:7],w_inst_imm[0],c_Leds[5:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {s_Leds[7:7],w_inst_imm[0],s_Leds[5:0]};
 		   end
 
 		   `LedBank_LD7: begin
-		      n_State = `LedBank_State_Ready;
-		      n_Leds  = {w_inst_imm[0],c_Leds[6:0]};
+		      s_State <= `LedBank_State_Ready;
+		      s_Leds  <= {w_inst_imm[0],s_Leds[6:0]};
 		   end
 
 		   default: begin
-		      n_State = `LedBank_State_Error;
-		      n_Leds  = 0;
+		      s_State <= `LedBank_State_Error;
+		      s_Leds  <= 0;
 		   end
 		 endcase // case (w_inst_code)
 	      end // if (inst_en)
 	      else begin
-		 n_State = `LedBank_State_Ready;
-		 n_Leds  = c_Leds;
+		 s_State <= `LedBank_State_Ready;
+		 s_Leds  <= s_Leds;
 	      end // else: !if(inst_en)
 	   end // case: `LedBank_State_Ready
 
 	   `LedBank_State_Error: begin
-	      n_State = `LedBank_State_Error;
-	      n_Leds  = 0;
+	      s_State <= `LedBank_State_Error;
+	      s_Leds  <= 0;
 	   end
 
 	   default: begin
-	      n_State = `LedBank_State_Error;
-	      n_Leds  = 0;
+	      s_State <= `LedBank_State_Error;
+	      s_Leds  <= 0;
 	   end
-	 endcase // case (c_State)
+	 endcase // case (s_State)
       end // else: !if(reset)
-   end // always @ *
+   end // always @ (posedge clock)
 
    always @ * begin
-      case (c_State)
-	`LedBank_State_Reset: d_c_State = "Reset";
-	`LedBank_State_Ready: d_c_State = "Ready";
-	`LedBank_State_Error: d_c_State = "Error";
-	default:              d_c_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (c_State)
-   end
-
-   always @ * begin
-      case (n_State)
-	`LedBank_State_Reset: d_n_State = "Reset";
-	`LedBank_State_Ready: d_n_State = "Ready";
-	`LedBank_State_Error: d_n_State = "Error";
-	default:              d_n_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (n_State)
+      case (s_State)
+	`LedBank_State_Reset: d_s_State = "Reset";
+	`LedBank_State_Ready: d_s_State = "Ready";
+	`LedBank_State_Error: d_s_State = "Error";
+	default:              d_s_State = "Undefined State ~ Serious Error or PreReset!";
+      endcase // case (s_State)
    end
 
    always @ * begin

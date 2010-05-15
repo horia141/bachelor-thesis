@@ -33,15 +33,10 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
    output wire [11:0] oreg;
    output wire [7:0]  oreg_wen;
 
-   reg [1:0] 	      c_State;
-   reg [7:0] 	      c_Address;
-   reg [11:0] 	      c_OReg;
-   reg [7:0] 	      c_ORegWen;
-
-   reg [1:0] 	      n_State;
-   reg [7:0] 	      n_Address;
-   reg [11:0] 	      n_OReg;
-   reg [7:0] 	      n_ORegWen;
+   reg [1:0] 	      s_State;
+   reg [7:0] 	      s_Address;
+   reg [11:0] 	      s_OReg;
+   reg [7:0] 	      s_ORegWen;
 
    wire [3:0] 	      w_inst_code;
    wire [2:0] 	      w_inst_dst;
@@ -52,13 +47,12 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
    wire [7:0] 	      w_ireg_mux;
    wire [7:0] 	      w_oreg_wen;
 
-   reg [64*8-1:0]     d_c_State;
-   reg [64*8-1:0]     d_n_State;
+   reg [64*8-1:0]     d_s_State;
    reg [64*8-1:0]     d_w_inst_code;
 
-   assign next = c_Address;
-   assign oreg = n_OReg;
-   assign oreg_wen = n_ORegWen;
+   assign next = s_Address;
+   assign oreg = s_OReg;
+   assign oreg_wen = s_ORegWen;
 
    assign w_inst_code = inst[19:16];
    assign w_inst_dst = inst[14:12];
@@ -81,122 +75,106 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 			                 8'b10000000;
 
    always @ (posedge clock) begin
-      c_State   = n_State;
-      c_Address = n_Address;
-      c_OReg    = n_OReg;
-      c_ORegWen = n_ORegWen;
-   end
-
-   always @ * begin
       if (reset) begin
-	 n_State   = `Seq_State_Reset;
-	 n_Address = 0;
-	 n_OReg    = 0;
-	 n_ORegWen = 0;
+	 s_State   <= `Seq_State_Reset;
+	 s_Address <= 0;
+	 s_OReg    <= 0;
+	 s_ORegWen <= 0;
       end
       else begin
-	 case (c_State)
+	 case (s_State)
 	   `Seq_State_Reset: begin
-	      n_State   = `Seq_State_Ready;
-	      n_Address = 0;
-	      n_OReg    = 0;
-	      n_ORegWen = 0;
+	      s_State   <= `Seq_State_Ready;
+	      s_Address <= 0;
+	      s_OReg    <= 0;
+	      s_ORegWen <= 0;
 	   end
 
 	   `Seq_State_Ready: begin
 	      if (inst_en) begin
 		 case (w_inst_code)
 		   `Seq_NO: begin
-		      n_State   = `Seq_State_Ready;
-		      n_Address = c_Address + 1;
-		      n_OReg    = 0;
-		      n_ORegWen = 0;
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= s_Address + 1;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
 		   end
 
 		   `Seq_CI: begin
-		      n_State   = `Seq_State_Ready;
-		      n_Address = c_Address + 1;
-		      n_OReg    = {w_inst_dstcmd,w_inst_imm1};
-		      n_ORegWen = w_oreg_wen;
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= s_Address + 1;
+		      s_OReg    <= {w_inst_dstcmd,w_inst_imm1};
+		      s_ORegWen <= w_oreg_wen;
 		   end
 
 		   `Seq_CR: begin
-		      n_State   = `Seq_State_Ready;
-		      n_Address = c_Address + 1;
-		      n_OReg    = {w_inst_dstcmd,w_ireg_mux};
-		      n_ORegWen = w_oreg_wen;
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= s_Address + 1;
+		      s_OReg    <= {w_inst_dstcmd,w_ireg_mux};
+		      s_ORegWen <= w_oreg_wen;
 		   end
 
 		   `Seq_JI: begin
-		      n_State   = `Seq_State_Ready;
-		      n_Address = w_inst_imm0;
-		      n_OReg    = 0;
-		      n_ORegWen = 0;
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= w_inst_imm0;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
 		   end
 
 		   `Seq_JR: begin
-		      n_State   = `Seq_State_Ready;
-		      n_Address = w_ireg_mux;
-		      n_OReg    = 0;
-		      n_ORegWen = 0;
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= w_ireg_mux;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
 		   end
 
 		   `Seq_JZ: begin
-		      n_State   = `Seq_State_Ready;
-		      n_Address = w_ireg_mux == 0 ? w_inst_imm0 : c_Address + 1;
-		      n_OReg    = 0;
-		      n_ORegWen = 0;
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= w_ireg_mux == 0 ? w_inst_imm0 : s_Address + 1;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
 		   end
 
 		   default: begin
-		      n_State   = `Seq_State_Error;
-		      n_Address = 0;
-		      n_OReg    = 0;
-		      n_ORegWen = 0;
+		      s_State   <= `Seq_State_Error;
+		      s_Address <= 0;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
 		   end
 		 endcase // case (w_inst_code)
 	      end // if (inst_en)
 	      else begin
-		 n_State   = `Seq_State_Ready;
-		 n_Address = c_Address;
-		 n_OReg    = 0;
-		 n_ORegWen = 0;
+		 s_State   <= `Seq_State_Ready;
+		 s_Address <= s_Address;
+		 s_OReg    <= 0;
+		 s_ORegWen <= 0;
 	      end // else: !if(inst_en)
 	   end // case: `Seq_State_Ready
 
 	   `Seq_State_Error: begin
-	      n_State   = `Seq_State_Error;
-	      n_Address = 0;
-	      n_OReg    = 0;
-	      n_ORegWen = 0;
+	      s_State   <= `Seq_State_Error;
+	      s_Address <= 0;
+	      s_OReg    <= 0;
+	      s_ORegWen <= 0;
 	   end
 
 	   default: begin
-	      n_State   = `Seq_State_Error;
-	      n_Address = 0;
-	      n_OReg    = 0;
-	      n_ORegWen = 0;
+	      s_State   <= `Seq_State_Error;
+	      s_Address <= 0;
+	      s_OReg    <= 0;
+	      s_ORegWen <= 0;
 	   end
-	 endcase // case (c_State)
+	 endcase // case (s_State)
       end // else: !if(reset)
-   end // always @ *
+   end // always @ (posedge clock)
 
    always @ * begin
-      case (c_State)
-	`Seq_State_Reset: d_c_State = "Reset";
-	`Seq_State_Ready: d_c_State = "Ready";
-	`Seq_State_Error: d_c_State = "Error";
-	default:          d_c_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (c_State)
-   end
-
-   always @ * begin
-      case (n_State)
-	`Seq_State_Reset: d_n_State = "Reset";
-	`Seq_State_Ready: d_n_State = "Ready";
-	`Seq_State_Error: d_n_State = "Error";
-	default:          d_n_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (n_State)
+      case (s_State)
+	`Seq_State_Reset: d_s_State = "Reset";
+	`Seq_State_Ready: d_s_State = "Ready";
+	`Seq_State_Error: d_s_State = "Error";
+	default:          d_s_State = "Undefined State ~ Serious Error or PreReset!";
+      endcase // case (s_State)
    end
 
    always @ * begin

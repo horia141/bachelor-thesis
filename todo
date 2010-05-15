@@ -54,4 +54,10 @@ x remove Seq prefix for SeqAsm type names.
 
 * add a pertarget Def field where specific defines are set per-target.
 
+x change RDL and RDR Rotary instructions to RLS and RRS (Read Left Status etc.).
+
+* Standardize RD for reading something and LD for loading something. for PushBtn : RDBS and for Rotary RDLS and RDRS.
+
+* add a more compact human readable representation of components internal state.
+
 : the gimp can output .c or .h files with the contents of an image.

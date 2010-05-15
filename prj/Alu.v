@@ -22,135 +22,117 @@ module Alu(clock,reset,inst,inst_en,result);
 
    output wire [7:0] result;
 
-   reg [1:0] 	     c_State;
-   reg [7:0] 	     c_Accum;
-
-   reg [1:0] 	     n_State;
-   reg [7:0] 	     n_Accum;
+   reg [1:0] 	     s_State;
+   reg [7:0] 	     s_Accum;
 
    wire [3:0] 	     w_inst_code;
    wire [7:0] 	     w_inst_imm;
 
-   reg [64*8-1:0]    d_c_State;
-   reg [64*8-1:0]    d_n_State;
+   reg [64*8-1:0]    d_s_State;
    reg [64*8-1:0]    d_w_inst_code;
 
-   assign result = n_Accum;
+   assign result = s_Accum;
 
    assign w_inst_code = inst[11:8];
    assign w_inst_imm = inst[7:0];
 
    always @ (posedge clock) begin
-      c_State <= n_State;
-      c_Accum <= n_Accum;
-   end
-
-   always @ * begin
       if (reset) begin
-	 n_State = `Alu_State_Reset;
-	 n_Accum = 0;
+	 s_State <= `Alu_State_Reset;
+	 s_Accum <= 0;
       end
       else begin
-	case (c_State)
+	case (s_State)
 	  `Alu_State_Reset: begin
-	     n_State = `Alu_State_Ready;
-	     n_Accum = 0;
+	     s_State <= `Alu_State_Ready;
+	     s_Accum <= 0;
 	  end
 
 	  `Alu_State_Ready: begin
 	     if (inst_en) begin
 		case (w_inst_code)
 		  `Alu_NOP: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum;
 		  end
 
 		  `Alu_LDI: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = w_inst_imm;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= w_inst_imm;
 		  end
 
 		  `Alu_ADD: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum + w_inst_imm;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum + w_inst_imm;
 		  end
 
 		  `Alu_SUB: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum - w_inst_imm;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum - w_inst_imm;
 		  end
 
 		  `Alu_NOT: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = ~c_Accum;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= ~s_Accum;
 		  end
 
 		  `Alu_AND: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum & w_inst_imm;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum & w_inst_imm;
 		  end
 		  
 		  `Alu_IOR: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum | w_inst_imm;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum | w_inst_imm;
 		  end
 
 		  `Alu_XOR: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum ^ w_inst_imm;
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum ^ w_inst_imm;
 		  end
 
 		  `Alu_SHL: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum << w_inst_imm[2:0];
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum << w_inst_imm[2:0];
 		  end
 
 		  `Alu_SHR: begin
-		     n_State = `Alu_State_Ready;
-		     n_Accum = c_Accum >> w_inst_imm[2:0];
+		     s_State <= `Alu_State_Ready;
+		     s_Accum <= s_Accum >> w_inst_imm[2:0];
 		  end
 
 		  default: begin
-		     n_State = `Alu_State_Error;
-		     n_Accum = 0;
+		     s_State <= `Alu_State_Error;
+		     s_Accum <= 0;
 		  end
 		endcase // case (w_inst_code)
 	     end // if (inst_en)
 	     else begin
-		n_State = `Alu_State_Ready;
-		n_Accum = c_Accum;
+		s_State <= `Alu_State_Ready;
+		s_Accum <= s_Accum;
 	     end // else: !if(inst_en)
 	  end // case: `Alu_State_Ready
 
 	  `Alu_State_Error: begin
-	     n_State = `Alu_State_Error;
-	     n_Accum = 0;
+	     s_State <= `Alu_State_Error;
+	     s_Accum <= 0;
 	  end
 
 	  default: begin
-	     n_State = `Alu_State_Error;
-	     n_Accum = 0;
+	     s_State <= `Alu_State_Error;
+	     s_Accum <= 0;
 	  end
-	endcase // case (c_State)
+	endcase // case (s_State)
       end // else: !if(reset)
-   end // always @ *
+   end // always @ (posedge clock)
 
    always @ * begin
-      case (c_State)
-	`Alu_State_Reset: d_c_State = "Reset";
-	`Alu_State_Ready: d_c_State = "Ready";
-	`Alu_State_Error: d_c_State = "Error";
-	default:          d_c_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (c_State)
-   end
-
-   always @ * begin
-      case (n_State)
-	`Alu_State_Reset: d_n_State = "Reset";
-	`Alu_State_Ready: d_n_State = "Ready";
-	`Alu_State_Error: d_n_State = "Error";
-	default:          d_n_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (n_State)
+      case (s_State)
+	`Alu_State_Reset: d_s_State = "Reset";
+	`Alu_State_Ready: d_s_State = "Ready";
+	`Alu_State_Error: d_s_State = "Error";
+	default:          d_s_State = "Undefined State ~ Serious Error or PreReset!";
+      endcase // case (s_State)
    end
 
    always @ * begin

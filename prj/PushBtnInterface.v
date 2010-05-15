@@ -9,45 +9,43 @@ module PushBtnInterface(clock,reset,button,button_pressed);
 
    output wire 	  button_pressed;
 
-   reg [Size-1:0] c_Counter;
-   reg 		  c_DoneCount;
+   reg [Size-1:0] s_Counter;
+   reg 		  s_DoneCount;
+   reg 		  s_ButtonPressed;
 
-   reg [Size-1:0] n_Counter;
-   reg 	          n_DoneCount;
-
-   assign button_pressed = n_Counter == Wait;
+   assign button_pressed = s_ButtonPressed;
 
    always @ (posedge clock) begin
-      c_Counter   <= n_Counter;
-      c_DoneCount <= n_DoneCount;
-   end
-
-   always @ * begin
       if (reset) begin
-	 n_Counter   = 0;
-	 n_DoneCount = 0;
+	 s_Counter       <= 0;
+	 s_DoneCount     <= 0;
+	 s_ButtonPressed <= 0;
       end
       else begin
 	 if (button) begin
-	    if (!c_DoneCount) begin
-	       if (c_Counter < Wait) begin
-		  n_Counter   = c_Counter + 1;
-		  n_DoneCount = 0;
+	    if (!s_DoneCount) begin
+	       if (s_Counter < Wait) begin
+		  s_Counter       <= s_Counter + 1;
+		  s_DoneCount     <= 0;
+		  s_ButtonPressed <= 0;
 	       end
 	       else begin
-		  n_Counter   = 0;
-		  n_DoneCount = 1;
+		  s_Counter       <= 0;
+		  s_DoneCount     <= 1;
+		  s_ButtonPressed <= 1;
 	       end
 	    end
 	    else begin
-	       n_Counter   = 0;
-	       n_DoneCount = 1;
-	    end // else: !if(!c_DoneCount)
+	       s_Counter       <= 0;
+	       s_DoneCount     <= 1;
+	       s_ButtonPressed <= 0;
+	    end // else: !if(!s_DoneCount)
 	 end // if (button)
 	 else begin
-	    n_Counter   = 0;
-	    n_DoneCount = 0;
+	    s_Counter       <= 0;
+	    s_DoneCount     <= 0;
+	    s_ButtonPressed <= 0;
 	 end // else: !if(button)
       end // else: !if(reset)
-   end // always @ *
+   end // always @ (posedge clock)
 endmodule // PushBtnInterface
