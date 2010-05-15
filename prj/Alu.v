@@ -28,8 +28,8 @@ module Alu(clock,reset,inst,inst_en,result);
    wire [3:0] 	     w_inst_code;
    wire [7:0] 	     w_inst_imm;
 
-   reg [64*8-1:0]    d_s_State;
-   reg [64*8-1:0]    d_w_inst_code;
+   reg [256*8-1:0]   d_Input;
+   reg [256*8-1:0]   d_State;
 
    assign result = s_Accum;
 
@@ -93,12 +93,12 @@ module Alu(clock,reset,inst,inst_en,result);
 
 		  `Alu_SHL: begin
 		     s_State <= `Alu_State_Ready;
-		     s_Accum <= s_Accum << w_inst_imm[2:0];
+		     s_Accum <= s_Accum << 1;
 		  end
 
 		  `Alu_SHR: begin
 		     s_State <= `Alu_State_Ready;
-		     s_Accum <= s_Accum >> w_inst_imm[2:0];
+		     s_Accum <= s_Accum >> 1;
 		  end
 
 		  default: begin
@@ -127,27 +127,32 @@ module Alu(clock,reset,inst,inst_en,result);
    end // always @ (posedge clock)
 
    always @ * begin
-      case (s_State)
-	`Alu_State_Reset: d_s_State = "Reset";
-	`Alu_State_Ready: d_s_State = "Ready";
-	`Alu_State_Error: d_s_State = "Error";
-	default:          d_s_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (s_State)
-   end
+      if (inst_en) begin
+	 case (w_inst_code)
+	   `Alu_NOP: $sformat(d_Input,"EN|NOP|**");
+	   `Alu_LDI: $sformat(d_Input,"EN|LDI|%2x",w_inst_imm);
+	   `Alu_ADD: $sformat(d_Input,"EN|ADD|%2x",w_inst_imm);
+	   `Alu_SUB: $sformat(d_Input,"EN|SUB|%2x",w_inst_imm);
+	   `Alu_NOT: $sformat(d_Input,"EN|NOT|%2x",w_inst_imm);
+	   `Alu_AND: $sformat(d_Input,"EN|AND|%2x",w_inst_imm);
+	   `Alu_IOR: $sformat(d_Input,"EN|IOR|%2x",w_inst_imm);
+	   `Alu_XOR: $sformat(d_Input,"EN|XOR|%2x",w_inst_imm);
+	   `Alu_SHL: $sformat(d_Input,"EN|SHL|**");
+	   `Alu_SHR: $sformat(d_Input,"EN|SHR|**");
+	   default:  $sformat(d_Input,"EN|XXX|%2x",w_inst_imm);
+	 endcase // case (w_inst_code)
+      end // if (inst_en)
+      else begin
+	 $sformat(d_Input,"NN");
+      end // else: !if(inst_en)
+   end // always @ *
 
    always @ * begin
-      case (w_inst_code)
-	`Alu_NOP: d_w_inst_code = "NOP";
-	`Alu_LDI: d_w_inst_code = "LDI";
-	`Alu_ADD: d_w_inst_code = "ADD";
-	`Alu_SUB: d_w_inst_code = "SUB";
-	`Alu_NOT: d_w_inst_code = "NOT";
-	`Alu_AND: d_w_inst_code = "AND";
-	`Alu_IOR: d_w_inst_code = "IOR";
-	`Alu_XOR: d_w_inst_code = "XOR";
-	`Alu_SHL: d_w_inst_code = "SHL";
-	`Alu_SHR: d_w_inst_code = "SHR";
-	default:  d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
-      endcase // case (w_inst_code)
-   end // always @ *
+      case (s_State)
+	`Alu_State_Reset: $sformat(d_State,"X");
+	`Alu_State_Ready: $sformat(d_State,"R|%2x",s_Accum);
+	`Alu_State_Error: $sformat(d_State,"E");
+	default:          $sformat(d_State,"Unknown State");
+      endcase // case (s_State)
+   end
 endmodule // Alu

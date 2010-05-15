@@ -1,4 +1,4 @@
-* Alu.v
++ Alu.v
   AluSim.sav
   AluSim.v
   Auto2.mem
@@ -7,7 +7,7 @@
   Auto2FPGA.v
   Auto2Sim.sav
   Auto2Sim.v
-* LedBank.v
++ LedBank.v
   LedBankSim.sav
   LedBankSim.v
   PressCount.mem
@@ -16,14 +16,14 @@
   PressCountFPGA.v
   PressCountSim.sav
   PressCountSim.v
-* PushBtn.v
-* PushBtnInterface.v
++ PushBtn.v
++ PushBtnInterface.v
   PushBtnInterfaceSim.sav
   PushBtnInterfaceSim.v
   PushBtnSim.sav
   PushBtnSim.v
-* Rotary.v
-* RotaryInterface.v
++ Rotary.v
++ RotaryInterface.v
   RotaryInterfaceSim.sav
   RotaryInterfaceSim.v
   RotaryLed.mem
@@ -34,14 +34,14 @@
   RotaryLedSim.v
   RotarySim.sav
   RotarySim.v
-* Seq.v
++ Seq.v
   SeqSim.sav
   SeqSim.v
-* SlowClock.v
++ SlowClock.v
   SlowClockFPGA.ucf
   SlowClockFPGA.v
   SlowClockSim.sav
   SlowClockSim.v
-* Swc.v
++ Swc.v
   SwcSim.sav
   SwcSim.v
