@@ -90,6 +90,14 @@ Prj.SlowClock.FPGA.Ref = SlowClock.All
 Prj.SlowClock.FPGA.Out = SlowClockFPGA
 Prj.SlowClock.FPGA.Top = SlowClockFPGA
 
+Prj.ClockManager.All.Src = ClockManager.v
+Prj.ClockManager.All.Ref =
+
+Prj.ClockManager.FPGA.Src = ClockManagerFPGA.v ClockManagerFPGA.ucf
+Prj.ClockManager.FPGA.Ref = ClockManager.All SlowClock.All
+Prj.ClockManager.FPGA.Out = ClockManagerFPGA
+Prj.ClockManager.FPGA.Top = ClockManagerFPGA
+
 Prj.PushBtnInterface.All.Src = PushBtnInterface.v
 Prj.PushBtnInterface.All.Ref =
 
