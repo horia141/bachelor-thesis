@@ -1,5 +1,6 @@
-module Auto2(clock,reset,counter);
-   input wire         clock;
+module Auto2(clock0,clock180,reset,counter);
+   input wire         clock0;
+   input wire 	      clock180;
    input wire         reset;
 
    output wire [23:0] counter;
@@ -18,7 +19,7 @@ module Auto2(clock,reset,counter);
    assign counter = swc_counter;
 
    Seq
-   seq (.clock(clock),
+   seq (.clock(clock0),
 	.reset(reset),
 
 	.inst(rom_data_o),
@@ -37,7 +38,7 @@ module Auto2(clock,reset,counter);
 	.data_o(rom_data_o));
 
    Alu
-   alu (.clock(clock),
+   alu (.clock(clock180),
 	.reset(reset),
 
 	.inst(seq_oreg),
@@ -46,7 +47,7 @@ module Auto2(clock,reset,counter);
 	.result(alu_result));
 
    Swc
-   swc (.clock(clock),
+   swc (.clock(clock180),
 	.reset(reset),
 
 	.inst(seq_oreg),

@@ -1,7 +1,8 @@
 `timescale 1ns/10ps
 
 module Auto2Sim;
-   reg         clock;
+   reg         clock0;
+   reg 	       clock180;
    reg 	       reset;
 
    wire [23:0] counter;
@@ -14,8 +15,13 @@ module Auto2Sim;
    end
 
    initial begin
-      #0 clock = 1;
-      forever #2 clock = ~clock;
+      #0 clock0 = 1;
+      forever #2 clock0 = ~clock0;
+   end
+
+   initial begin
+      #0 clock180 = 0;
+      forever #2 clock180 = ~clock180;
    end
 
    initial begin
@@ -25,7 +31,8 @@ module Auto2Sim;
    end
 
    Auto2
-   auto2 (.clock(clock),
+   auto2 (.clock0(clock0),
+	  .clock180(clock180),
 	  .reset(reset),
 
 	  .counter(counter));

@@ -16,7 +16,8 @@ module Auto2FPGA(clock,reset,leds);
 	  .outclock(slowc_outclock));
 
    Auto2
-   auto2 (.clock(slowc_outclock),
+   auto2 (.clock0(slowc_outclock),
+	  .clock180(~slowc_outclock),
 	  .reset(reset),
 
 	  .counter(auto2_counter));
