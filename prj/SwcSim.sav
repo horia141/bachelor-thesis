@@ -1,27 +1,11 @@
 [timestart] 0
-[size] 1242 1004
+[size] 1678 1004
 [pos] -1 -1
 *-13.000000 196000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] SwcSim.
-@29
+@28
 SwcSim.clock
-@28
 SwcSim.reset
-@820
-SwcSim.swc.d_c_State[511:0]
-SwcSim.swc.d_n_State[511:0]
-@28
-SwcSim.swc.inst_en
-@820
-SwcSim.swc.d_w_inst_code[511:0]
-@22
-SwcSim.swc.w_inst_imm[7:0]
-@820
-SwcSim.swc.d_c_ContInst[511:0]
-SwcSim.swc.d_n_ContInst[511:0]
-@22
-SwcSim.swc.c_Counter[23:0]
-SwcSim.swc.n_Counter[23:0]
-@28
-SwcSim.swc.c_Ready
-SwcSim.swc.n_Ready
+@821
+SwcSim.swc.d_Input[2047:0]
+SwcSim.swc.d_State[2047:0]

@@ -6,5 +6,6 @@ module SlowClockFPGA(clock,reset,led);
    SlowClock #(.SlowFactor(32'h00FFFFFF))
    slowc (.clock(clock),
 	  .reset(reset),
+	  
 	  .outclock(led));
 endmodule // SlowClockFPGA

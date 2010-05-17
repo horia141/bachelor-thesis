@@ -1,6 +1,6 @@
 + Alu.v
-  AluSim.sav
-  AluSim.v
++ AluSim.sav
++ AluSim.v
   Auto2.mem
   Auto2.v
   Auto2FPGA.ucf
@@ -35,13 +35,13 @@
   RotarySim.sav
   RotarySim.v
 + Seq.v
-  SeqSim.sav
-  SeqSim.v
++ SeqSim.sav
++ SeqSim.v
 + SlowClock.v
-  SlowClockFPGA.ucf
-  SlowClockFPGA.v
-  SlowClockSim.sav
-  SlowClockSim.v
++ SlowClockFPGA.ucf
++ SlowClockFPGA.v
++ SlowClockSim.sav
++ SlowClockSim.v
 + Swc.v
-  SwcSim.sav
-  SwcSim.v
++ SwcSim.sav
++ SwcSim.v

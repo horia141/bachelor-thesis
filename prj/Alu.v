@@ -129,17 +129,49 @@ module Alu(clock,reset,inst,inst_en,result);
    always @ * begin
       if (inst_en) begin
 	 case (w_inst_code)
-	   `Alu_NOP: $sformat(d_Input,"EN|NOP|**");
-	   `Alu_LDI: $sformat(d_Input,"EN|LDI|%2x",w_inst_imm);
-	   `Alu_ADD: $sformat(d_Input,"EN|ADD|%2x",w_inst_imm);
-	   `Alu_SUB: $sformat(d_Input,"EN|SUB|%2x",w_inst_imm);
-	   `Alu_NOT: $sformat(d_Input,"EN|NOT|%2x",w_inst_imm);
-	   `Alu_AND: $sformat(d_Input,"EN|AND|%2x",w_inst_imm);
-	   `Alu_IOR: $sformat(d_Input,"EN|IOR|%2x",w_inst_imm);
-	   `Alu_XOR: $sformat(d_Input,"EN|XOR|%2x",w_inst_imm);
-	   `Alu_SHL: $sformat(d_Input,"EN|SHL|**");
-	   `Alu_SHR: $sformat(d_Input,"EN|SHR|**");
-	   default:  $sformat(d_Input,"EN|XXX|%2x",w_inst_imm);
+	   `Alu_NOP: begin
+	      $sformat(d_Input,"EN NOP");
+	   end
+	   
+	   `Alu_LDI: begin
+	      $sformat(d_Input,"EN (LDI %2X)",w_inst_imm);
+	   end
+	   
+	   `Alu_ADD: begin
+	      $sformat(d_Input,"EN (ADD %2X)",w_inst_imm);
+	   end
+	   
+	   `Alu_SUB: begin
+	      $sformat(d_Input,"EN (SUB %2X)",w_inst_imm);
+	   end
+	   
+	   `Alu_NOT: begin
+	      $sformat(d_Input,"EN NOT");
+	   end
+	   
+	   `Alu_AND: begin
+	      $sformat(d_Input,"EN (AND %2X)",w_inst_imm);
+	   end
+	   
+	   `Alu_IOR: begin
+	      $sformat(d_Input,"EN (IOR %2X)",w_inst_imm);
+	   end
+	   
+	   `Alu_XOR: begin
+	      $sformat(d_Input,"EN (XOR %2X)",w_inst_imm);
+	   end
+	   
+	   `Alu_SHL: begin
+	      $sformat(d_Input,"EN SHL");
+	   end
+	   
+	   `Alu_SHR: begin
+	      $sformat(d_Input,"EN SHR");
+	   end
+	   
+	   default: begin
+	      $sformat(d_Input,"EN (??? %2X)",w_inst_imm);
+	   end
 	 endcase // case (w_inst_code)
       end // if (inst_en)
       else begin
@@ -149,10 +181,21 @@ module Alu(clock,reset,inst,inst_en,result);
 
    always @ * begin
       case (s_State)
-	`Alu_State_Reset: $sformat(d_State,"X");
-	`Alu_State_Ready: $sformat(d_State,"R|%2x",s_Accum);
-	`Alu_State_Error: $sformat(d_State,"E");
-	default:          $sformat(d_State,"Unknown State");
+	`Alu_State_Reset: begin
+	   $sformat(d_State,"X");
+	end
+	
+	`Alu_State_Ready: begin
+	   $sformat(d_State,"R %2X",s_Accum);
+	end
+	
+	`Alu_State_Error: begin
+	   $sformat(d_State,"E");
+	end
+	
+	default: begin
+	   $sformat(d_State,"?");
+	end
       endcase // case (s_State)
    end
 endmodule // Alu

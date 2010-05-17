@@ -47,8 +47,8 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
    wire [7:0] 	      w_ireg_mux;
    wire [7:0] 	      w_oreg_wen;
 
-   reg [64*8-1:0]     d_s_State;
-   reg [64*8-1:0]     d_w_inst_code;
+   reg [256*8-1:0]    d_Input;
+   reg [256*8-1:0]    d_State;
 
    assign next = s_Address;
    assign oreg = s_OReg;
@@ -169,23 +169,59 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
    end // always @ (posedge clock)
 
    always @ * begin
-      case (s_State)
-	`Seq_State_Reset: d_s_State = "Reset";
-	`Seq_State_Ready: d_s_State = "Ready";
-	`Seq_State_Error: d_s_State = "Error";
-	default:          d_s_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (s_State)
-   end
+      if (inst_en) begin
+	 case (w_inst_code)
+	   `Seq_NO: begin
+	      $sformat(d_Input,"EN NO %2X %2X %2X %2X",ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
 
+	   `Seq_CI: begin
+	      $sformat(d_Input,"EN (CI %1D %1X %2X) %2X %2X %2X %2X",w_inst_dst,w_inst_dstcmd,w_inst_imm1,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   `Seq_CR: begin
+	      $sformat(d_Input,"EN (CR %1D %1X %1D) %2X %2X %2X %2X",w_inst_dst,w_inst_dstcmd,w_inst_src,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   `Seq_JI: begin
+	      $sformat(d_Input,"EN (JI %2X) %2X %2X %2X %2X",w_inst_imm0,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   `Seq_JR: begin
+	      $sformat(d_Input,"EN (JR %1D) %2X %2X %2X %2X",w_inst_src,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   `Seq_JZ: begin
+	      $sformat(d_Input,"EN (JZ %2X %1D) %2X %2X %2X %2X",w_inst_imm0,w_inst_src,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   default: begin
+	      $sformat(d_Input,"EN (?? %4X) %2X %2X %2X %2X",inst[15:0],ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+	 endcase // case (w_inst_code)
+      end // if (inst_en)
+      else begin
+	 $sformat(d_Input,"NN");
+      end // else: !if(inst_en)
+   end // always @ *
+   
    always @ * begin
-      case (w_inst_code)
-	`Seq_NO: d_w_inst_code = "NO";
-	`Seq_CI: d_w_inst_code = "CI";
-	`Seq_CR: d_w_inst_code = "CR";
-	`Seq_JI: d_w_inst_code = "JI";
-	`Seq_JR: d_w_inst_code = "JR";
-	`Seq_JZ: d_w_inst_code = "JZ";
-	default: d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
-      endcase // case (w_inst_code)
+      case (s_State)
+	`Seq_State_Reset: begin
+	   $sformat(d_State,"X");
+	end
+
+	`Seq_State_Ready: begin
+	   $sformat(d_State,"R %2X %3X %8B",s_Address,s_OReg,s_ORegWen);
+	end
+
+	`Seq_State_Error: begin
+	   $sformat(d_State,"E");
+	end
+
+	default: begin
+	   $sformat(d_State,"?");
+	end
+      endcase // case (s_State)
    end // always @ *
 endmodule // Seq

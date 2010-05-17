@@ -25,27 +25,27 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
    reg [1:0] 	      s_State;
    reg [3:0] 	      s_ContInst;
    reg [23:0] 	      s_Counter;
-   reg 		      s_Ready;
+   wire 	      i_Ready;
 
    wire [3:0] 	      w_inst_code;
    wire [7:0] 	      w_inst_imm;
 
-   reg [64*8-1:0]     d_s_State;
-   reg [64*8-1:0]     d_s_ContInst;
-   reg [64*8-1:0]     d_w_inst_code;
+   reg [256*8-1:0]    d_Input;
+   reg [256*8-1:0]    d_State;
 
    assign counter = s_Counter;
-   assign ready = s_Ready;
+   assign ready = i_Ready;
 
    assign w_inst_code = inst[11:8];
    assign w_inst_imm = inst[7:0];
+
+   assign i_Ready = s_Counter == 0;
 
    always @ (posedge clock) begin
       if (reset) begin
 	 s_State    <= `Swc_State_Reset;
 	 s_ContInst <= 0;
 	 s_Counter  <= 0;
-	 s_Ready    <= 0;
       end
       else begin
 	 case (s_State)
@@ -53,7 +53,6 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 	      s_State    <= `Swc_State_Ready;
 	      s_ContInst <= `Swc_NOP;
 	      s_Counter  <= 0;
-	      s_Ready    <= 1;
 	   end
 
 	   `Swc_State_Ready: begin
@@ -63,70 +62,60 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= s_Counter;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_LD0: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= {s_Counter[23:8],w_inst_imm};
-		      s_Ready    <= s_Counter == 0;
 		   end
 		   
 		   `Swc_LD1: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= {s_Counter[23:16],w_inst_imm,s_Counter[7:0]};
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_LD2: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= {w_inst_imm,s_Counter[15:0]};
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_COU: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= s_Counter + 1;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_COD: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= s_Counter - 1;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_CCU: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_CCU;
 		      s_Counter  <= s_Counter + 1;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_CCD: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_CCD;
 		      s_Counter  <= s_Counter - 1;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_CCS: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= s_Counter;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   default: begin
 		      s_State    <= `Swc_State_Error;
 		      s_ContInst <= 0;
 		      s_Counter  <= 0;
-		      s_Ready    <= 0;
 		   end
 		 endcase // case (w_inst_code)
 	      end // if (inst_en)
@@ -136,44 +125,38 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
 		      s_Counter  <= s_Counter;
-		      s_Ready    <= s_Counter == 0;
 		   end
 
 		   `Swc_CCU: begin
-		      if (s_Ready) begin
+		      if (i_Ready) begin
 			 s_State    <= `Swc_State_Ready;
 			 s_ContInst <= `Swc_NOP;
 			 s_Counter  <= s_Counter;
-			 s_Ready    <= s_Counter == 0;
 		      end
 		      else begin
 			 s_State    <= `Swc_State_Ready;
 			 s_ContInst <= `Swc_CCU;
 			 s_Counter  <= s_Counter + 1;
-			 s_Ready    <= s_Counter == 0;
-		      end // else: !if(s_Ready)
+		      end // else: !if(i_Ready)
 		   end // case: `Swc_CCU
 
 		   `Swc_CCD: begin
-		      if (s_Ready) begin
+		      if (i_Ready) begin
 			 s_State    <= `Swc_State_Ready;
 			 s_ContInst <= `Swc_NOP;
 			 s_Counter  <= s_Counter;
-			 s_Ready    <= s_Counter == 0;
 		      end
 		      else begin
 			 s_State    <= `Swc_State_Ready;
 			 s_ContInst <= `Swc_CCD;
 			 s_Counter  <= s_Counter - 1;
-			 s_Ready    <= s_Counter == 0;
-		      end // else: !if(s_Ready)
+		      end // else: !if(i_Ready)
 		   end // case: `Swc_CCD
 
 		   default: begin
 		      s_State    <= `Swc_State_Error;
 		      s_ContInst <= 0;
 		      s_Counter  <= 0;
-		      s_Ready    <= 0;
 		   end
 		 endcase // case (s_ContInst)
 	      end // else: !if(inst_en)
@@ -183,49 +166,119 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 	      s_State    <= `Swc_State_Error;
 	      s_ContInst <= 0;
 	      s_Counter  <= 0;
-	      s_Ready    <= 0;
 	   end
 
 	   default: begin
 	      s_State    <= `Swc_State_Error;
 	      s_ContInst <= 0;
 	      s_Counter  <= 0;
-	      s_Ready    <= 0;
 	   end
 	 endcase // case (s_State)
       end // else: !if(reset)
    end // always @ (posedge clock)
 
    always @ * begin
+      if (inst_en) begin
+	 case (w_inst_code)
+	   `Swc_NOP: begin
+	      $sformat(d_Input,"EN NOP");
+	   end
+
+	   `Swc_LD0: begin
+	      $sformat(d_Input,"EN (LD0 %2X)",w_inst_imm);
+	   end
+
+	   `Swc_LD1: begin
+	      $sformat(d_Input,"EN (LD1 %2X)",w_inst_imm);
+	   end
+
+	   `Swc_LD2: begin
+	      $sformat(d_Input,"EN (LD2 %2X)",w_inst_imm);
+	   end
+
+	   `Swc_COU: begin
+	      $sformat(d_Input,"EN COU");
+	   end
+
+	   `Swc_COD: begin
+	      $sformat(d_Input,"EN COD");
+	   end
+
+	   `Swc_CCU: begin
+	      $sformat(d_Input,"EN CCU");
+	   end
+
+	   `Swc_CCD: begin
+	      $sformat(d_Input,"EN CCD");
+	   end
+
+	   `Swc_CCS: begin
+	      $sformat(d_Input,"EN CCS");
+	   end
+
+	   default: begin
+	      $sformat(d_Input,"EN (??? %2X)",w_inst_imm);
+	   end
+	 endcase // case (w_inst_code)
+      end // if (inst_en)
+      else begin
+	 $sformat(d_Input,"NN");
+      end // else: !if(inst_en)
+   end // always @ *
+
+   always @ * begin
       case (s_State)
-	`Swc_State_Reset: d_s_State = "Reset";
-	`Swc_State_Ready: d_s_State = "Ready";
-	`Swc_State_Error: d_s_State = "Error";
-	default:          d_s_State = "Undefined State ~ Serious Error or PreReset!";
+	`Swc_State_Reset: begin
+	   $sformat(d_State,"X");
+	end
+	
+	`Swc_State_Ready: begin
+	   case (s_ContInst)
+	     `Swc_NOP: begin
+		if (i_Ready) begin
+		   $sformat(d_State,"R NOP %6X Ready",s_Counter);
+		end
+		else begin
+		   $sformat(d_State,"R NOP %6X NotReady",s_Counter);
+		end
+	     end
+
+	     `Swc_CCU: begin
+		if (i_Ready) begin
+		   $sformat(d_State,"R CCU %6X Ready",s_Counter);
+		end
+		else begin
+		   $sformat(d_State,"R CCU %6X NotReady",s_Counter);
+		end
+	     end
+
+	     `Swc_CCD: begin
+		if (i_Ready) begin
+		   $sformat(d_State,"R CCD %6X Ready",s_Counter);
+		end
+		else begin
+		   $sformat(d_State,"R CCD %6X NotReady",s_Counter);
+		end
+	     end
+
+	     default: begin
+		if (i_Ready) begin
+		   $sformat(d_State,"R ??? %6X Ready",s_Counter);
+		end
+		else begin
+		   $sformat(d_State,"R ??? %6X NotReady",s_Counter);
+		end
+	     end
+	   endcase // case (s_ContInst)
+	end // case: `Swc_State_Ready
+	
+	`Swc_State_Error: begin
+	   $sformat(d_State,"E");
+	end
+
+	default: begin
+	   $sformat(d_State,"?");
+	end
       endcase // case (s_State)
-   end
-
-   always @ * begin
-      case (s_ContInst)
-	`Swc_NOP: d_s_ContInst = "NOP";
-	`Swc_CCU: d_s_ContInst = "CCU";
-	`Swc_CCD: d_s_ContInst = "CCD";
-	default:  d_s_ContInst = "Undefined Continous Instruction ~ Serious Error or PreReset!";
-      endcase // case (s_ContInst)
-   end
-
-   always @ * begin
-      case (w_inst_code)
-	`Swc_NOP: d_w_inst_code = "NOP";
-	`Swc_LD0: d_w_inst_code = "LD0";
-	`Swc_LD1: d_w_inst_code = "LD1";
-	`Swc_LD2: d_w_inst_code = "LD2";
-	`Swc_COU: d_w_inst_code = "COU";
-	`Swc_COD: d_w_inst_code = "COD";
-	`Swc_CCU: d_w_inst_code = "CCU";
-	`Swc_CCD: d_w_inst_code = "CCD";
-	`Swc_CCS: d_w_inst_code = "CCS";
-	default:  d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
-      endcase // case (w_inst_code)
    end // always @ *
 endmodule // Swc

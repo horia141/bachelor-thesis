@@ -60,4 +60,6 @@ x change RDL and RDR Rotary instructions to RLS and RRS (Read Left Status etc.).
 
 * add a more compact human readable representation of components internal state.
 
+* change w_* variables to be like s_* variables in naming by using camel case.
+
 : the gimp can output .c or .h files with the contents of an image.

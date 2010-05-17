@@ -34,79 +34,59 @@ module SeqSim;
    end
 
    initial begin
-      // Test for all instructions after reset.
-      #8 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
+      #0.1 inst_en = 0;
 
-      #4 inst = {`Seq_CI,4'bx001,4'h2,8'hAA};
-      #0 inst_en = 1;
+      // Test each instruction
+      #8 inst = {`Seq_CI,1'bx,3'b010,4'h1,8'hAA};
+      inst_en = 1;
 
-      #4 inst = {`Seq_CR,4'bx010,4'h3,8'bxxxxxx01};
-      #0 ireg_1 = 8'hAA;
-      #0 inst_en = 1;
+      #4 inst = {`Seq_CR,1'bx,3'b011,4'h2,6'bxxxxxx,2'h2};
+      inst_en = 1;
+      ireg_2 = 8'hEE;
 
-      #4 inst = {`Seq_JI,8'hA0,8'bxxxxxxxx};
-      #0 inst_en = 1;
+      #4 inst = {`Seq_JI,8'h1A,8'bxxxxxxxx};
+      inst_en = 1;
 
-      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
+      #4 inst = {`Seq_JR,14'bxxxxxxxxxxxxxx,2'h1};
+      inst_en = 1;
+      ireg_1 = 8'h7B;
 
-      #4 inst = {`Seq_JR,14'bxxxxxxxxxxxxxx,2'b10};
-      #0 ireg_2 = 8'hBA;
-      #0 inst_en = 1;
+      #4 inst = {`Seq_JZ,8'h2A,6'bxxxxxx,2'h3};
+      inst_en = 1;
+      ireg_3 = 8'h00;
 
-      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
-
-      #4 inst = {`Seq_JZ,8'hE0,8'bxxxxxx11};
-      #0 ireg_3 = 8'h00;
-      #0 inst_en = 1;
+      #4 inst = {`Seq_JZ,8'h4A,6'bxxxxxx,2'h0};
+      inst_en = 1;
+      ireg_0 = 8'h11;
 
       #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
+      inst_en = 1;
 
-      #4 inst = {`Seq_JZ,8'hF0,8'bxxxxxx00};
-      #0 ireg_0 = 8'h10;
-      #0 inst_en = 1;
+      // Test disabled instruction
+      #4 inst = {`Seq_CI,1'bx,3'b011,4'h4,8'hBE};
+      inst_en = 0;
 
-      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
+      #4 inst = {`Seq_JR,14'bxxxxxxxxxxxxxx,2'h2};
+      inst_en = 1;
+      ireg_2 = 8'h07;
 
-      #4 inst = {`Seq_JR,14'bxxxxxxxxxxxxxx,2'b10};
-      #0 ireg_2 = 8'hBA;
-      #0 inst_en = 1;
+      // Test bad instruction
+      #4 inst = {8'hF,16'hAEF0};
+      inst_en = 1;
 
-      // A little delay from #4 to simulate the actual delay from a real
-      // wire when receiving a new command from a controller.
-      #5 inst_en = 0;
+      #4 inst = {`Seq_JZ,8'hEF,6'bxxxxxx,2'h3};
+      inst_en = 1;
+      ireg_3 = 8'h00;
 
-      #7 inst = {`Seq_JZ,8'hAA,8'bxxxxxx00};
-      #0 inst_en = 1;
+      #4 reset = 1;
 
-      // Same type of delay as above.
-      #5 inst_en = 0;
+      #8 reset = 0;
 
-      // Same type of delay as above.
-      #4 inst_en = 1;
-
-      // An invalid instruction. This will send the Seq into the error state.
-      #3 inst = {4'hF,16'hFFEE};
-      #0 inst_en = 1;
-
-      // This instruction won't execute, because the Seq is in the error state.
-      #4 inst = {`Seq_JI,8'hBB,8'bxxxxxxxx};
-      #0 inst_en = 1;
-
-      // Only a reset will return the Seq into a normal, ready, state.
-      #9 reset = 1;
-      #4 reset = 0;
-
-      // This instruction will execute properly.
-      #4 inst = {`Seq_JI,8'hBB,8'bxxxxxxxx};
-      #0 inst_en = 1;
+      #4 inst = {`Seq_JI,8'h48,8'bxxxxxxxx};
+      inst_en = 1;
 
       #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
-      #0 inst_en = 1;
+      inst_en = 1;
    end
 
    Seq
