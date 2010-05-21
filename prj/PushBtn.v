@@ -1,5 +1,5 @@
-`define PushBtn_NOP 4'h0
-`define PushBtn_RBS 4'h1
+`define PushBtn_NOP  4'h0
+`define PushBtn_RDBS 4'h1
 
 `define PushBtn_State_Reset 2'h0
 `define PushBtn_State_Ready 2'h1
@@ -27,10 +27,8 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
    wire 	     pushbtnint_button_pressed;
 
-   reg [64*8-1:0]    d_s_State;
-   reg [64*8-1:0]    d_s_IntButtonStatus;
-   reg [64*8-1:0]    d_s_OutButtonStatus;
-   reg [64*8-1:0]    d_w_inst_code;
+   reg [256*8-1:0]   d_Input;
+   reg [256*8-1:0]   d_State;
 
    assign button_status = s_OutButtonStatus;
 
@@ -68,7 +66,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 		      s_OutButtonStatus <= s_OutButtonStatus;
 		   end
 
-		   `PushBtn_RBS: begin
+		   `PushBtn_RDBS: begin
 		      s_State           <= `PushBtn_State_Ready;
 		      s_IntButtonStatus <= pushbtnint_button_pressed | 0;
 		      s_OutButtonStatus <= s_IntButtonStatus;
@@ -104,33 +102,60 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
    end // always @ (posedge clock)
 
    always @ * begin
-      case (s_State)
-	`PushBtn_State_Reset: d_s_State = "Reset";
-	`PushBtn_State_Ready: d_s_State = "Ready";
-	`PushBtn_State_Error: d_s_State = "Error";
-	default:              d_s_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (s_State)
-   end
+      if (inst_en) begin
+	 case (w_inst_code)
+	   `PushBtn_NOP: begin
+	      $sformat(d_Input,"EN NOP");
+	   end
+
+	   `PushBtn_RDBS: begin
+	      $sformat(d_Input,"EN RDBS");
+	   end
+
+	   default: begin
+	      $sformat(d_Input,"EN (? %2X)",inst[7:0]);
+	   end
+	 endcase // case (w_inst_code)
+      end // if (inst_en)
+      else begin
+	 $sformat(d_Input,"NN");
+      end // else: !if(inst_en)
+   end // always @ *
 
    always @ * begin
-      case (s_IntButtonStatus)
-	1: d_s_IntButtonStatus = "Triggered";
-	0: d_s_IntButtonStatus = "Free";
-      endcase // case (s_IntButtonStatus)
-   end
-   
-   always @ * begin
-      case (s_OutButtonStatus)
-	1: d_s_OutButtonStatus = "Triggered";
-	0: d_s_OutButtonStatus = "Free";
-      endcase // case (s_OutButtonStatus)
-   end
-   
-   always @ * begin
-      case (w_inst_code)
-	`PushBtn_NOP: d_w_inst_code = "NOP";
-	`PushBtn_RBS: d_w_inst_code = "RBS";
-	default:      d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
-      endcase // case (w_inst_code)
-   end
+      case (s_State)
+	`PushBtn_State_Reset: begin
+	   $sformat(d_State,"X");
+	end
+
+	`PushBtn_State_Ready: begin
+	   case ({s_IntButtonStatus,s_OutButtonStatus})
+	     2'b00: begin
+		$sformat(d_State,"R F F %1B %1B",button,pushbtnint_button_pressed);
+	     end
+
+	     2'b01: begin
+		$sformat(d_State,"R F T %1B %1B",button,pushbtnint_button_pressed);
+	     end
+
+	     2'b10: begin
+		$sformat(d_State,"R T F %1B %1B",button,pushbtnint_button_pressed);
+	     end
+
+	     2'b11: begin
+		$sformat(d_State,"R T T %1B %1B",button,pushbtnint_button_pressed);
+	     end
+	   endcase // case ({s_IntButtonStatus,s_OutButtonStatus})
+	end // case: `PushBtn_State_Ready
+	
+
+	`PushBtn_State_Error: begin
+	   $sformat(d_State,"E");
+	end
+
+	default: begin
+	   $sformat(d_State,"?");
+	end
+      endcase // case (s_State)
+   end // always @ *
 endmodule // PushBtn

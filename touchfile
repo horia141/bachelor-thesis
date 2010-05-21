@@ -1,15 +1,15 @@
 + Alu.v
 + AluSim.sav
 + AluSim.v
-  Auto2.mem
-  Auto2.v
-  Auto2FPGA.ucf
-  Auto2FPGA.v
-  Auto2Sim.sav
-  Auto2Sim.v
++ Auto2.mem
++ Auto2.v
++ Auto2FPGA.ucf
++ Auto2FPGA.v
++ Auto2Sim.sav
++ Auto2Sim.v
 + LedBank.v
-  LedBankSim.sav
-  LedBankSim.v
++ LedBankSim.sav
++ LedBankSim.v
   PressCount.mem
   PressCount.v
   PressCountFPGA.ucf
@@ -18,10 +18,10 @@
   PressCountSim.v
 + PushBtn.v
 + PushBtnInterface.v
-  PushBtnInterfaceSim.sav
-  PushBtnInterfaceSim.v
-  PushBtnSim.sav
-  PushBtnSim.v
++ PushBtnInterfaceSim.sav
++ PushBtnInterfaceSim.v
++ PushBtnSim.sav
++ PushBtnSim.v
 + Rotary.v
 + RotaryInterface.v
   RotaryInterfaceSim.sav

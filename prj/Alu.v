@@ -170,7 +170,7 @@ module Alu(clock,reset,inst,inst_en,result);
 	   end
 	   
 	   default: begin
-	      $sformat(d_Input,"EN (??? %2X)",w_inst_imm);
+	      $sformat(d_Input,"EN (? %2X)",w_inst_imm);
 	   end
 	 endcase // case (w_inst_code)
       end // if (inst_en)

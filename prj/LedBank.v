@@ -28,8 +28,8 @@ module LedBank(clock,reset,inst,inst_en,leds);
    wire [3:0] 	     w_inst_code;
    wire [7:0] 	     w_inst_imm;
 
-   reg [64*8-1:0]    d_s_State;
-   reg [64*8-1:0]    d_w_inst_code;
+   reg [256*8-1:0]   d_Input;
+   reg [256*8-1:0]   d_State;
 
    assign leds = s_Leds;
 
@@ -127,27 +127,75 @@ module LedBank(clock,reset,inst,inst_en,leds);
    end // always @ (posedge clock)
 
    always @ * begin
-      case (s_State)
-	`LedBank_State_Reset: d_s_State = "Reset";
-	`LedBank_State_Ready: d_s_State = "Ready";
-	`LedBank_State_Error: d_s_State = "Error";
-	default:              d_s_State = "Undefined State ~ Serious Error or PreReset!";
-      endcase // case (s_State)
-   end
+      if (inst_en) begin
+	 case (w_inst_code)
+	   `LedBank_NOP: begin
+	      $sformat(d_Input,"EN NOP");
+	   end
+
+	   `LedBank_LDI: begin
+	      $sformat(d_Input,"EN (LDI %8B)",w_inst_imm);
+	   end
+
+	   `LedBank_LD0: begin
+	      $sformat(d_Input,"EN (LD0 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD1: begin
+	      $sformat(d_Input,"EN (LD1 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD2: begin
+	      $sformat(d_Input,"EN (LD2 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD3: begin
+	      $sformat(d_Input,"EN (LD3 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD4: begin
+	      $sformat(d_Input,"EN (LD4 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD5: begin
+	      $sformat(d_Input,"EN (LD5 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD6: begin
+	      $sformat(d_Input,"EN (LD6 %1B)",w_inst_imm[0]);
+	   end
+
+	   `LedBank_LD7: begin
+	      $sformat(d_Input,"EN (LD7 %1B)",w_inst_imm[0]);
+	   end
+
+	   default: begin
+	      $sformat(d_Input,"EN (? %8B)",w_inst_imm);
+	   end
+	 endcase // case (w_inst_code)
+      end // if (inst_en)
+      else begin
+	 $sformat(d_Input,"NN");
+      end // else: !if(inst_en)
+   end // always @ *
 
    always @ * begin
-      case (w_inst_code)
-	`LedBank_NOP: d_w_inst_code = "NOP";
-	`LedBank_LDI: d_w_inst_code = "LDI";
-	`LedBank_LD0: d_w_inst_code = "LD0";
-	`LedBank_LD1: d_w_inst_code = "LD1";
-	`LedBank_LD2: d_w_inst_code = "LD2";
-	`LedBank_LD3: d_w_inst_code = "LD3";
-	`LedBank_LD4: d_w_inst_code = "LD4";
-	`LedBank_LD5: d_w_inst_code = "LD5";
-	`LedBank_LD6: d_w_inst_code = "LD6";
-	`LedBank_LD7: d_w_inst_code = "LD7";
-	default: d_w_inst_code = "Undefined Instruction ~ Serious Error or PreReset!";
-      endcase // case (w_inst_code)
+      case (s_State)
+	`LedBank_State_Reset: begin
+	   $sformat(d_State,"X");
+	end
+
+	`LedBank_State_Ready: begin
+	   $sformat(d_State,"R %8B",s_Leds);
+	end
+
+	`LedBank_State_Error: begin
+	   $sformat(d_State,"E");
+	end
+
+	default: begin
+	   $sformat(d_State,"?");
+	end
+      endcase // case (s_State)
    end // always @ *
 endmodule // LedBank

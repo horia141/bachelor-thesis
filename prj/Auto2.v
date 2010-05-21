@@ -1,9 +1,14 @@
-module Auto2(clock0,clock180,reset,counter);
+module Auto2(clock0,clock180,reset,leds,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    input wire         clock0;
    input wire 	      clock180;
    input wire         reset;
 
-   output wire [23:0] counter;
+   output wire [7:0]  leds;
+   output wire 	      vga_hsync;
+   output wire 	      vga_vsync;
+   output wire 	      vga_r;
+   output wire 	      vga_g;
+   output wire 	      vga_b;
 
    wire [7:0] 	      seq_next;
    wire [11:0] 	      seq_oreg;
@@ -13,10 +18,7 @@ module Auto2(clock0,clock180,reset,counter);
 
    wire [7:0] 	      alu_result;
 
-   wire [23:0] 	      swc_counter;
    wire 	      swc_ready;
-
-   assign counter = swc_counter;
 
    Seq
    seq (.clock(clock0),
@@ -34,7 +36,7 @@ module Auto2(clock0,clock180,reset,counter);
 	.oreg_wen(seq_oreg_wen));
 
    Auto2Rom
-   rom (.addr(seq_next[2:0]),
+   rom (.addr(seq_next[3:0]),
 	.data_o(rom_data_o));
 
    Alu
@@ -53,6 +55,27 @@ module Auto2(clock0,clock180,reset,counter);
 	.inst(seq_oreg),
 	.inst_en(seq_oreg_wen[1]),
 
-	.counter(swc_counter),
 	.ready(swc_ready));
+
+   LedBank
+   ledbank (.clock(clock180),
+	    .reset(reset),
+
+	    .inst(seq_oreg),
+	    .inst_en(seq_oreg_wen[2]),
+
+	    .leds(leds));
+
+   VGA
+   vga (.clock(clock180),
+	.reset(reset),
+
+	.inst(seq_oreg),
+	.inst_en(seq_oreg_wen[3]),
+
+	.vga_hsync(vga_hsync),
+	.vga_vsync(vga_vsync),
+	.vga_r(vga_r),
+	.vga_g(vga_g),
+	.vga_b(vga_b));
 endmodule // Auto2

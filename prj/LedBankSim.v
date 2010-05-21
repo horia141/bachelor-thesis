@@ -28,75 +28,65 @@ module SeqSim;
    end
 
    initial begin
-      // Test for all instructions after reset.
-      #8 inst = {`LedBank_NOP,8'bxxxxxxxx};
-      #0 inst_en = 1;
+      #0.1 inst_en = 0;
 
-      #4 inst = {`LedBank_LDI,8'b11010111};
-      #0 inst_en = 1;
+      // Test each instruction
+      #8 inst = {`LedBank_LDI,8'b00101100};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD0,8'bxxxxxxx0};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD0,7'bxxxxxxx,1'b1};
+      inst_en = 1;
+      
+      #4 inst = {`LedBank_LD1,7'bxxxxxxx,1'b1};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD1,8'bxxxxxxx0};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD2,7'bxxxxxxx,1'b0};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD2,8'bxxxxxxx0};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD3,7'bxxxxxxx,1'b0};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD3,8'bxxxxxxx1};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD4,7'bxxxxxxx,1'b1};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD4,8'bxxxxxxx0};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD5,7'bxxxxxxx,1'b0};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD5,8'bxxxxxxx1};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD6,7'bxxxxxxx,1'b1};
+      inst_en = 1;
 
-      #4 inst = {`LedBank_LD6,8'bxxxxxxx0};
-      #0 inst_en = 1;
-
-      #4 inst = {`LedBank_LD7,8'bxxxxxxx0};
-      #0 inst_en = 1;
-
-      #4 inst = {`LedBank_LD6,8'bxxxxxxx1};
-      #0 inst_en = 1;
-
-      // A little delay from #4 to simulate the actual delay from a real
-      // wire when receiving a new command from a controller.
-      #5 inst_en = 0;
-
-      #7 inst = {`LedBank_LDI,8'b10100101};
-      #0 inst_en = 1;
-
-      // Same type of delay as above.
-      #5 inst_en = 0;
-
-      // Same type of delay as above.
-      #4 inst_en = 1;
-
-      // An invalid instruction
-      #3 inst = {4'hE,8'hAA};
-      #0 inst_en = 1;
-
-      // This instruction won't execute, because we are in the error state.
-      #4 inst = {`LedBank_LDI,8'b10010010};
-      #0 inst_en = 1;
-
-      // We need to reset the system to be able to pull
-      // it out of the error state.
-      #2 reset = 1;
-      #4 reset = 0;
-
-      // This instruction will execute properly.
-      #2 inst = {`LedBank_LDI,8'b00100101};
-      #0 inst_en = 1;
+      #4 inst = {`LedBank_LD7,7'bxxxxxxx,1'b1};
+      inst_en = 1;
 
       #4 inst = {`LedBank_NOP,8'bxxxxxxxx};
-      #0 inst_en = 1;
+      inst_en = 1;
+
+      // Test disabled instruction
+      #4 inst = {`LedBank_LDI,8'b11001100};
+      inst_en = 0;
+
+      #4 inst = {`LedBank_LD1,7'bxxxxxxx,1'b0};
+      inst_en = 1;
+
+      // Test badinstruction
+      #4 inst = {8'hF,8'h10};
+      inst_en = 1;
+
+      #4 inst = {`LedBank_LDI,8'b11010101};
+      inst_en = 1;
+
+      #4 reset = 1;
+
+      #8 reset = 0;
+
+      #4 inst = {`LedBank_LDI,8'b10100101};
+      inst_en = 1;
+
+      #4 inst = {`LedBank_NOP,8'bxxxxxxxx};
+      inst_en = 1;
    end
 
-   LedBank #()
+   LedBank
    ledbank (.clock(clock),
 	    .reset(reset),
 

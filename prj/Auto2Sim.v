@@ -5,7 +5,7 @@ module Auto2Sim;
    reg 	       clock180;
    reg 	       reset;
 
-   wire [23:0] counter;
+   wire [7:0]  leds;
 
    initial begin
       #0 $dumpfile(`VCDFILE);
@@ -35,5 +35,5 @@ module Auto2Sim;
 	  .clock180(clock180),
 	  .reset(reset),
 
-	  .counter(counter));
+	  .leds(leds));
 endmodule // Auto2Sim

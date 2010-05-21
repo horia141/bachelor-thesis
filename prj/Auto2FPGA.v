@@ -1,24 +1,37 @@
-module Auto2FPGA(clock,reset,leds);
+module Auto2FPGA(clock,reset,leds,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    input wire        clock;
    input wire        reset;
+   
    output wire [7:0] leds;
+   output wire 	     vga_hsync;
+   output wire 	     vga_vsync;
+   output wire 	     vga_r;
+   output wire 	     vga_g;
+   output wire 	     vga_b;
 
-   wire 	     slowc_outclock;
 
-   wire [23:0] 	     auto2_counter;
+   wire 	     cm_locked;
+   wire 	     cm_clock0;
+   wire 	     cm_clock180;
 
-   assign leds = auto2_counter[7:0];
+   ClockManager
+   cm (.clock(clock),
+       .reset(reset),
+       
+       .locked(cm_locked),
+       .clock0(cm_clock0),
+       .clock180(cm_clock180));
 
-   SlowClock #(.SlowFactor(32'h00FFFFFF))
-   slowc (.clock(clock),
-	  .reset(reset),
-
-	  .outclock(slowc_outclock));
 
    Auto2
-   auto2 (.clock0(slowc_outclock),
-	  .clock180(~slowc_outclock),
-	  .reset(reset),
+   auto2 (.clock0(cm_clock0),
+	  .clock180(cm_clock180),
+	  .reset(reset & cm_locked),
 
-	  .counter(auto2_counter));
+	  .leds(leds),
+	  .vga_hsync(vga_hsync),
+	  .vga_vsync(vga_vsync),
+	  .vga_r(vga_r),
+	  .vga_g(vga_g),
+	  .vga_b(vga_b));
 endmodule // Auto2FPGA

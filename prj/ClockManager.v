@@ -1,4 +1,4 @@
-module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clock2x,clock2x180);
+module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clockdv,clock2x,clock2x180);
    input wire  clock;
    input wire  reset;
 
@@ -7,6 +7,7 @@ module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clock2x,
    output wire clock90;
    output wire clock180;
    output wire clock270;
+   output wire clockdv;
    output wire clock2x;
    output wire clock2x180;
 
@@ -41,6 +42,7 @@ module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clock2x,
 	  .CLK90(clock90),
 	  .CLK180(clock180),
 	  .CLK270(clock270),
+	  .CLKDV(clockdv),
 	  .CLK2X(clock2x),
 	  .CLK2X180(clock2x180));
 

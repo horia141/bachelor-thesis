@@ -1,14 +1,14 @@
 # Configuration Variables
 
 Prj.Auto2.All.Src = Auto2.v Auto2.mem
-Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All
+Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All LedBank.All VGA.All
 
 Prj.Auto2.Sim.Src = Auto2Sim.v Auto2Sim.sav
 Prj.Auto2.Sim.Ref = Auto2.All
 Prj.Auto2.Sim.Out = Auto2Sim
 
 Prj.Auto2.FPGA.Src = Auto2FPGA.v Auto2FPGA.ucf
-Prj.Auto2.FPGA.Ref = Auto2.All SlowClock.All
+Prj.Auto2.FPGA.Ref = Auto2.All ClockManager.All
 Prj.Auto2.FPGA.Out = Auto2FPGA
 Prj.Auto2.FPGA.Top = Auto2FPGA
 
@@ -42,6 +42,9 @@ Prj.LedBank.All.Ref =
 Prj.LedBank.Sim.Src = LedBankSim.v LedBankSim.sav
 Prj.LedBank.Sim.Ref = LedBank.All
 Prj.LedBank.Sim.Out = LedBankSim
+
+Prj.VGA.All.Src = VGA.v 
+Prj.VGA.All.Ref = VGAInterface.All
 
 Prj.PushBtn.All.Src = PushBtn.v
 Prj.PushBtn.All.Ref = PushBtnInterface.All
@@ -97,6 +100,9 @@ Prj.ClockManager.FPGA.Src = ClockManagerFPGA.v ClockManagerFPGA.ucf
 Prj.ClockManager.FPGA.Ref = ClockManager.All SlowClock.All
 Prj.ClockManager.FPGA.Out = ClockManagerFPGA
 Prj.ClockManager.FPGA.Top = ClockManagerFPGA
+
+Prj.VGAInterface.All.Src = VGAInterfaceBad.v
+Prj.VGAInterface.All.Ref =
 
 Prj.PushBtnInterface.All.Src = PushBtnInterface.v
 Prj.PushBtnInterface.All.Ref =

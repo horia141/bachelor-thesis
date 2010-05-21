@@ -217,7 +217,7 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 	   end
 
 	   default: begin
-	      $sformat(d_Input,"EN (??? %2X)",w_inst_imm);
+	      $sformat(d_Input,"EN (? %2X)",w_inst_imm);
 	   end
 	 endcase // case (w_inst_code)
       end // if (inst_en)
@@ -263,10 +263,10 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 
 	     default: begin
 		if (i_Ready) begin
-		   $sformat(d_State,"R ??? %6X Ready",s_Counter);
+		   $sformat(d_State,"R ? %6X Ready",s_Counter);
 		end
 		else begin
-		   $sformat(d_State,"R ??? %6X NotReady",s_Counter);
+		   $sformat(d_State,"R ? %6X NotReady",s_Counter);
 		end
 	     end
 	   endcase // case (s_ContInst)
