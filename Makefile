@@ -12,6 +12,14 @@ Prj.Auto2.FPGA.Ref = Auto2.All ClockManager.All
 Prj.Auto2.FPGA.Out = Auto2FPGA
 Prj.Auto2.FPGA.Top = Auto2FPGA
 
+Prj.BlockFall.All.Src = BlockFall.v BlockFall.mem
+Prj.BlockFall.All.Ref = Alu.All Seq.All Swc.All VGA.All
+
+Prj.BlockFall.FPGA.Src = BlockFallFPGA.v BlockFallFPGA.ucf
+Prj.BlockFall.FPGA.Ref = BlockFall.All ClockManager.All
+Prj.BlockFall.FPGA.Out = BlockFallFPGA
+Prj.BlockFall.FPGA.Top = BlockFallFPGA
+
 Prj.PressCount.All.Src = PressCount.v PressCount.mem
 Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All
 

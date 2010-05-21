@@ -2,7 +2,7 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
    input wire         clock;
    input wire 	      reset;
 
-   input wire [7:0]   framebuffer;
+   input wire [63:0]  framebuffer;
 
    output wire 	      vga_hsync;
    output wire 	      vga_vsync;
@@ -54,6 +54,7 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
    assign vga_vsync = ~vga_VS;
 
    reg [2:0] ix;
+   reg [2:0] iy;
 
    always @ (posedge clock2) begin
       if (CounterX < 80) begin
@@ -82,9 +83,36 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
       end
    end // always @ (posedge clock2)
 
-   assign value = framebuffer[ix];
+   always @ (posedge clock2) begin
+      if (CounterY < 60) begin
+	 iy = 0;
+      end
+      else if (CounterY < 120) begin
+	 iy = 1;
+      end
+      else if (CounterY < 180) begin
+	 iy = 2;
+      end
+      else if (CounterY < 240) begin
+	 iy = 3;
+      end
+      else if (CounterY < 300) begin
+	 iy = 4;
+      end
+      else if (CounterY < 360) begin
+	 iy = 5;
+      end
+      else if (CounterY < 420) begin
+	 iy = 6;
+      end
+      else if (CounterY < 480) begin
+	 iy = 7;
+      end
+   end // always @ (posedge clock2)
 
-   assign vga_r = value & (CounterY > 210 && CounterY < 270) & inDisplayArea;
-   assign vga_g = value & (CounterY > 210 && CounterY < 270) & inDisplayArea;
-   assign vga_b = value & (CounterY > 210 && CounterY < 270) & inDisplayArea;
+   assign value = framebuffer[{iy,ix}];
+
+   assign vga_r = value & inDisplayArea;
+   assign vga_g = value & inDisplayArea;
+   assign vga_b = value & inDisplayArea;
 endmodule // Pong1

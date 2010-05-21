@@ -19,5 +19,5 @@ Format:   Bin
 0101_0000_0100_0000_0001 # @loop  jz @loop swc:Ready
 0001_0000_0010_0000_0001 #        ci alu:add 01h
 0010_0010_0001_0000_0000 #        cr ledbank:ldi alu:Result
-0010_0011_0001_0000_0000 #        cr vga:ldi alu:Result
+0010_0011_0100_0000_0000 #        cr vga:ld3 alu:Result
 0011_0000_0000_0000_0000 #        ji @start
