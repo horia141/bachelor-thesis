@@ -21,14 +21,14 @@ Prj.BlockFall.FPGA.Out = BlockFallFPGA
 Prj.BlockFall.FPGA.Top = BlockFallFPGA
 
 Prj.PressCount.All.Src = PressCount.v PressCount.mem
-Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All
+Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All VGA.All
 
 Prj.PressCount.Sim.Src = PressCountSim.v PressCountSim.sav
 Prj.PressCount.Sim.Ref = PressCount.All
 Prj.PressCount.Sim.Out = PressCountSim
 
 Prj.PressCount.FPGA.Src = PressCountFPGA.v PressCountFPGA.ucf
-Prj.PressCount.FPGA.Ref = PressCount.All
+Prj.PressCount.FPGA.Ref = PressCount.All ClockManager.All
 Prj.PressCount.FPGA.Out = PressCountFPGA
 Prj.PressCount.FPGA.Top = PressCountFPGA
 

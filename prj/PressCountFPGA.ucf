@@ -12,3 +12,8 @@ NET "nr_presses<3>"  LOC = "F11" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;
 NET "nr_presses<2>"  LOC = "E11" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;
 NET "nr_presses<1>"  LOC = "E12" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;
 NET "nr_presses<0>"  LOC = "F12" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8;
+NET "vga_hsync"      LOC = "F15" | IOSTANDARD = LVTTL | DRIVE = 8 | SLEW = FAST ;
+NET "vga_vsync"      LOC = "F14" | IOSTANDARD = LVTTL | DRIVE = 8 | SLEW = FAST ;
+NET "vga_r"          LOC = "H14" | IOSTANDARD = LVTTL | DRIVE = 8 | SLEW = FAST ;
+NET "vga_g"          LOC = "H15" | IOSTANDARD = LVTTL | DRIVE = 8 | SLEW = FAST ;
+NET "vga_b"          LOC = "G15" | IOSTANDARD = LVTTL | DRIVE = 8 | SLEW = FAST ;

@@ -1,11 +1,17 @@
-module PressCount(clock,reset,countu,countd,nr_presses);
-   input wire        clock;
+module PressCount(clock0,clock180,reset,countu,countd,nr_presses,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
+   input wire        clock0;
+   input wire 	     clock180;
    input wire        reset;
 
    input wire        countu;
    input wire 	     countd;
 
    output wire [7:0] nr_presses;
+   output wire 	     vga_hsync;
+   output wire 	     vga_vsync;
+   output wire 	     vga_r;
+   output wire 	     vga_g;
+   output wire 	     vga_b;
 
    wire [7:0] 	     seq_next;
    wire [11:0] 	     seq_oreg;
@@ -24,7 +30,7 @@ module PressCount(clock,reset,countu,countd,nr_presses);
    assign nr_presses = ledbank_leds;
    
    Seq
-   seq (.clock(clock),
+   seq (.clock(clock0),
 	.reset(reset),
 
 	.inst(coderom_data_o),
@@ -39,11 +45,11 @@ module PressCount(clock,reset,countu,countd,nr_presses);
 	.oreg_wen(seq_oreg_wen));
 
    PressCountRom
-   coderom (.addr(seq_next[2:0]),
+   coderom (.addr(seq_next[3:0]),
 	    .data_o(coderom_data_o));
 
    Alu
-   alu (.clock(clock),
+   alu (.clock(clock180),
 	.reset(reset),
 
 	.inst(seq_oreg),
@@ -53,7 +59,7 @@ module PressCount(clock,reset,countu,countd,nr_presses);
 
    PushBtn #(.DebounceWait(40000),
 	     .DebounceSize(16))
-   pushbtnu (.clock(clock),
+   pushbtnu (.clock(clock180),
 	     .reset(reset),
 
 	     .inst(seq_oreg),
@@ -64,7 +70,7 @@ module PressCount(clock,reset,countu,countd,nr_presses);
 
    PushBtn #(.DebounceWait(40000),
 	     .DebounceSize(16))
-   pushbtnd (.clock(clock),
+   pushbtnd (.clock(clock180),
 	     .reset(reset),
 
 	     .inst(seq_oreg),
@@ -74,11 +80,24 @@ module PressCount(clock,reset,countu,countd,nr_presses);
 	     .button_status(pushbtnd_button_status));
 
    LedBank
-   ledbank (.clock(clock),
+   ledbank (.clock(clock180),
 	    .reset(reset),
 
 	    .inst(seq_oreg),
 	    .inst_en(seq_oreg_wen[3]),
 
 	    .leds(ledbank_leds));
+
+   VGA
+   vga (.clock(clock180),
+	.reset(reset),
+
+	.inst(seq_oreg),
+	.inst_en(seq_oreg_wen[4]),
+
+	.vga_hsync(vga_hsync),
+	.vga_vsync(vga_vsync),
+	.vga_r(vga_r),
+	.vga_g(vga_g),
+	.vga_b(vga_b));
 endmodule // PressCount
