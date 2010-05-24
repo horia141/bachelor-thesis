@@ -3,15 +3,24 @@ AddrSize: 4
 WordSize: 20
 Format:   Bin
 
-# alu      is device 0 : 000
-# pushbtnu is device 1 : 001
-# pushbtnd is device 2 : 010
-# ledbank  is device 3 : 011
-# vga      is device 4 : 100
+# Name                  Output  Code
+# alu                   0       0000
+# pushbtnu              1       0001
+# pushbtnd              2       0010
+# ledbank               3       0011
+# vga                   4       0100
 
-# alu:Result            is input 0 : 00
-# pushbtnu:ButtonStatus is input 1 : 01
-# pushbtnd:ButtonStatus is input 2 : 10
+# Name                  Input   Code
+# alu:Result            0       0000
+# pushbtnu:ButtonStatus 1       0001
+# pushbtnd:ButtonStatus 2       0010
+
+# Name                  Address Code
+# @startu               0       0000_0000
+# @startd               1       0000_0001
+# @testu                2       0000_0010
+# @testd                4       0000_0100
+# @display              6       0000_0110
 
 0001_0001_0001_0000_0000 # @startu  ci pushbtnu:rbs
 0001_0010_0001_0000_0000 # @startd  ci pushbtnd:rbs

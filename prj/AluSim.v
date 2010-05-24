@@ -30,7 +30,7 @@ module AluSim;
    initial begin
       #0.1 inst_en = 0;
 
-      // Test each instruction
+      // Test each instruction.
       #8 inst = {`Alu_LDI,8'hAB};
       inst_en = 1;
 
@@ -61,14 +61,14 @@ module AluSim;
       #4 inst = {`Alu_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      // Test disabled instruction
+      // Test disabled instruction.
       #4 inst = {`Alu_LDI,8'h0A};
       inst_en = 0;
 
       #4 inst = {`Alu_ADD,8'h01};
       inst_en = 1;
 
-      // Test bad instruction
+      // Test bad instruction.
       #4 inst = {8'hF,8'h10};
       inst_en = 1;
 

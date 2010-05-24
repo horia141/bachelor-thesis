@@ -12,7 +12,6 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
 
    input wire [11:0] inst;
    input wire 	     inst_en;
-
    input wire [1:0]  rotary;
 
    output wire 	     rotary_left_status;
@@ -24,7 +23,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
    reg 		     s_IntRotaryRightStatus;
    reg 		     s_OutRotaryRightStatus;
 
-   wire [3:0] 	     w_inst_code;
+   wire [3:0] 	     w_InstCode;
 
    wire 	     rotaryint_rotary_left;
    wire 	     rotaryint_rotary_right;
@@ -35,7 +34,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
    assign rotary_left_status = s_OutRotaryLeftStatus;
    assign rotary_right_status = s_OutRotaryRightStatus;
 
-   assign w_inst_code = inst[11:8];
+   assign w_InstCode = inst[11:8];
 
    RotaryInterface
    rotaryint (.clock(clock),
@@ -66,7 +65,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
 
 	   `Rotary_State_Ready: begin
 	      if (inst_en) begin
-		 case (w_inst_code)
+		 case (w_InstCode)
 		   `Rotary_NOP: begin
 		      s_State                <= `Rotary_State_Ready;
 		      s_IntRotaryLeftStatus  <= rotaryint_rotary_left | s_IntRotaryLeftStatus;
@@ -98,7 +97,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
 		      s_IntRotaryRightStatus <= 0;
 		      s_OutRotaryRightStatus <= 0;
 		   end
-		 endcase // case (w_inst_code)
+		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
 		 s_State                <= `Rotary_State_Ready;
@@ -130,7 +129,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
 
    always @ * begin
       if (inst_en) begin
-	 case (w_inst_code)
+	 case (w_InstCode)
 	   `Rotary_NOP: begin
 	      $sformat(d_Input,"EN NOP");
 	   end
@@ -146,7 +145,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
 	   default: begin
 	      $sformat(d_Input,"EN (? %2X)",inst[7:0]);
 	   end
-	 endcase // case (w_inst_code)
+	 endcase // case (w_InstCode)
       end // if (inst_en)
       else begin
 	 $sformat(d_Input,"NN");

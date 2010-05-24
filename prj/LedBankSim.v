@@ -30,7 +30,7 @@ module SeqSim;
    initial begin
       #0.1 inst_en = 0;
 
-      // Test each instruction
+      // Test each instruction.
       #8 inst = {`LedBank_LDI,8'b00101100};
       inst_en = 1;
 
@@ -61,14 +61,14 @@ module SeqSim;
       #4 inst = {`LedBank_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      // Test disabled instruction
+      // Test disabled instruction.
       #4 inst = {`LedBank_LDI,8'b11001100};
       inst_en = 0;
 
       #4 inst = {`LedBank_LD1,7'bxxxxxxx,1'b0};
       inst_en = 1;
 
-      // Test badinstruction
+      // Test badinstruction.
       #4 inst = {8'hF,8'h10};
       inst_en = 1;
 

@@ -28,14 +28,14 @@ module VGA(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    reg [1:0] 	     s_State;
    reg [63:0] 	     s_FrameBuffer;
 
-   wire [3:0] 	     w_inst_code;
-   wire [7:0] 	     w_inst_imm;
+   wire [3:0] 	     w_InstCode;
+   wire [7:0] 	     w_InstImm;
 
    reg [256*8-1:0]   d_Input;
    reg [256*8-1:0]   d_State;
 
-   assign w_inst_code = inst[11:8];
-   assign w_inst_imm = inst[7:0];
+   assign w_InstCode = inst[11:8];
+   assign w_InstImm = inst[7:0];
 
    VGAInterfaceBad
    vgaint (.clock(clock),
@@ -62,7 +62,7 @@ module VGA(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 
 	   `VGA_State_Ready: begin
 	      if (inst_en) begin
-		 case (w_inst_code)
+		 case (w_InstCode)
 		   `VGA_NOP: begin
 		      s_State       <= `VGA_State_Ready;
 		      s_FrameBuffer <= s_FrameBuffer;
@@ -70,49 +70,49 @@ module VGA(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 
 		   `VGA_LD0: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:8],w_inst_imm};
+		      s_FrameBuffer <= {s_FrameBuffer[63:8],w_InstImm};
 		   end
 
 		   `VGA_LD1: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:16],w_inst_imm,s_FrameBuffer[7:0]};
+		      s_FrameBuffer <= {s_FrameBuffer[63:16],w_InstImm,s_FrameBuffer[7:0]};
 		   end
 
 		   `VGA_LD2: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:24],w_inst_imm,s_FrameBuffer[15:0]};
+		      s_FrameBuffer <= {s_FrameBuffer[63:24],w_InstImm,s_FrameBuffer[15:0]};
 		   end
 
 		   `VGA_LD3: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:32],w_inst_imm,s_FrameBuffer[23:0]};
+		      s_FrameBuffer <= {s_FrameBuffer[63:32],w_InstImm,s_FrameBuffer[23:0]};
 		   end
 
 		   `VGA_LD4: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:40],w_inst_imm,s_FrameBuffer[31:0]};
+		      s_FrameBuffer <= {s_FrameBuffer[63:40],w_InstImm,s_FrameBuffer[31:0]};
 		   end
 
 		   `VGA_LD5: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:48],w_inst_imm,s_FrameBuffer[39:0]};
+		      s_FrameBuffer <= {s_FrameBuffer[63:48],w_InstImm,s_FrameBuffer[39:0]};
 		   end
 
 		   `VGA_LD6: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {s_FrameBuffer[63:56],w_inst_imm,s_FrameBuffer[47:0]};
+		      s_FrameBuffer <= {s_FrameBuffer[63:56],w_InstImm,s_FrameBuffer[47:0]};
 		   end
 
 		   `VGA_LD7: begin
 		      s_State       <= `VGA_State_Ready;
-		      s_FrameBuffer <= {w_inst_imm,s_FrameBuffer[55:0]};
+		      s_FrameBuffer <= {w_InstImm,s_FrameBuffer[55:0]};
 		   end
 
 		   default: begin
 		      s_State       <= `VGA_State_Error;
 		      s_FrameBuffer <= 0;
 		   end
-		 endcase // case (w_inst_code)
+		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
 		 s_State       <= `VGA_State_Ready;
@@ -135,47 +135,47 @@ module VGA(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 
    always @ * begin
       if (inst_en) begin
-	 case (w_inst_code)
+	 case (w_InstCode)
 	   `VGA_NOP: begin
 	      $sformat(d_Input,"EN NOP");
 	   end
 
 	   `VGA_LD0: begin
-	      $sformat(d_Input,"EN (LD0 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD0 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD1: begin
-	      $sformat(d_Input,"EN (LD1 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD1 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD2: begin
-	      $sformat(d_Input,"EN (LD2 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD2 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD3: begin
-	      $sformat(d_Input,"EN (LD3 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD3 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD4: begin
-	      $sformat(d_Input,"EN (LD4 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD4 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD5: begin
-	      $sformat(d_Input,"EN (LD5 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD5 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD6: begin
-	      $sformat(d_Input,"EN (LD6 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD6 %8B)",w_InstImm);
 	   end
 
 	   `VGA_LD7: begin
-	      $sformat(d_Input,"EN (LD7 %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD7 %8B)",w_InstImm);
 	   end
 
 	   default: begin
-	      $sformat(d_Input,"EN (? %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (? %8B)",w_InstImm);
 	   end
-	 endcase // case (w_inst_code)
+	 endcase // case (w_InstCode)
       end // if (inst_en)
       else begin
 	 $sformat(d_Input,"NN");

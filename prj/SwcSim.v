@@ -31,7 +31,7 @@ module SwcSim;
    initial begin
       #0.1 inst_en = 0;
 
-      // Test each instruction
+      // Test each instruction.
       #8 inst = {`Swc_LD0,8'hA0};
       inst_en = 1;
 
@@ -68,14 +68,14 @@ module SwcSim;
       #4 inst = {`Swc_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      // Test disabled instruction
+      // Test disabled instruction.
       #4 inst = {`Swc_LD0,8'hEE};
       inst_en = 0;
 
       #4 inst = {`Swc_LD0,8'hAE};
       inst_en = 1;
 
-      // Test bad instruction
+      // Test bad instruction.
       #4 inst = {8'hF,8'h10};
       inst_en = 1;
 
@@ -92,7 +92,7 @@ module SwcSim;
       #4 inst = {`Swc_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      // Test a complete count up
+      // Test a complete count up.
       #4 inst = {`Swc_LD0,8'hF0};
       inst_en = 1;
 
@@ -107,7 +107,7 @@ module SwcSim;
 
       #4 inst_en = 0;
 
-      // Test a complete count down
+      // Test a complete count down.
       #72 inst = {`Swc_LD0,8'h0F};
       inst_en = 1;
 
@@ -116,7 +116,7 @@ module SwcSim;
 
       #4 inst_en = 0;
 
-      // Test an incomplete count up
+      // Test an incomplete count up.
       #72 inst = {`Swc_LD0,8'hF0};
       inst_en = 1;
 
@@ -137,7 +137,7 @@ module SwcSim;
       #4 inst = {`Swc_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      // Test an incomplete count down
+      // Test an incomplete count down.
       #4 inst = {`Swc_LD0,8'h0F};
       inst_en = 1;
 

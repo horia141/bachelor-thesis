@@ -3,36 +3,41 @@ AddrSize: 8
 WordSize: 20
 Format:   Bin
 
-# alu is device 0 : 000
-# swc is device 1 : 001
-# vga is device 2 : 010
-# alu:Result is input 0 : 00
-# swc:Ready  is input 1 : 01
-# @start  is  0 : 0000_0000
-# @round7 is  8 : 0000_1000
-# @test7  is  9 : 0000_1001
-# @wait7  is 13 : 0000_1101
-# @round6 is 18 : 0001_0010
-# @test6  is 19 : 0001_0011
-# @wait6  is 23 : 0001_0111
-# @round5 is 28 : 0001_1100
-# @test5  is 29 : 0001_1101
-# @wait5  is 33 : 0010_0001
-# @round4 is 38 : 0010_0110
-# @test4  is 39 : 0010_0111
-# @wait4  is 43 : 0010_1011
-# @round3 is 48 : 0011_0000
-# @test3  is 49 : 0011_0001
-# @wait3  is 53 : 0011_0101
-# @round2 is 58 : 0011_1010
-# @test2  is 59 : 0011_1011
-# @wait2  is 63 : 0011_1111
-# @round1 is 68 : 0100_0100
-# @test1  is 69 : 0100_0101
-# @wait1  is 73 : 0100_1001
-# @round0 is 78 : 0100_1110
-# @test0  is 79 : 0100_1111
-# @wait0  is 83 : 0101_0011
+# Name       Output  Code
+# alu        0       0000
+# swc        1       0001
+# vga        2       0010
+
+# Name       Input   Code
+# alu:Result 0       0000
+# swc:Ready  1       0001
+
+# Name       Address Code
+# @start     0       0000_0000
+# @round7    8       0000_1000
+# @test7     9       0000_1001
+# @wait7     13      0000_1101
+# @round6    18      0001_0010
+# @test6     19      0001_0011
+# @wait6     23      0001_0111
+# @round5    28      0001_1100
+# @test5     29      0001_1101
+# @wait5     33      0010_0001
+# @round4    38      0010_0110
+# @test4     39      0010_0111
+# @wait4     43      0010_1011
+# @round3    48      0011_0000
+# @test3     49      0011_0001
+# @wait3     53      0011_0101
+# @round2    58      0011_1010
+# @test2     59      0011_1011
+# @wait2     63      0011_1111
+# @round1    68      0100_0100
+# @test1     69      0100_0101
+# @wait1     73      0100_1001
+# @round0    78      0100_1110
+# @test0     79      0100_1111
+# @wait0     83      0101_0011
 
 0001_0010_0001_0000_0000 # @start  ci vga:ld0 00000000b
 0001_0010_0010_0000_0000 #         ci vga:ld1 00000000b

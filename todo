@@ -3,7 +3,8 @@
 
 + change inst_wen to inst_en.
 
-* investigate relationship between next and n_Address and c_Address in Seq.
++ investigate relationship between next and n_Address and c_Address in Seq.
+/ by changing to a more synchronous design, all outputs are derived from c_ or i_ signals, which represent the current state, and not the next one.
 
 x add proper tests for Rom16x12.
 
@@ -44,31 +45,37 @@ x remove Seq prefix for SeqAsm type names.
 
 * rethink build system. Our current system should provide the base but : we need to integrate separate targets and target actions into a project (So we no longer have Auto1.Sim and Auto1.FPGA etc., but just Auto1 with different targets and actions) AND we need to make available the option to build just all sim or all fpga actions for every target (to cut down in development time by omitting lengthy fpga build procedures) AND we need to make mock files for build actions (these would be useful to avoid building large actions when no changes occur) AND we need to integrate Program into all of this AND we need to rely less on built-in logic for targets (ideally we would have a file specifying each project, the targets and actions supported, as well as optional arguments, misc configurations etc., another file that describes targets and their actions and what files they make use of AND the makefile that ties these all together and provides a nice framework. In this configuration, you would have a target, with a number of actions. Each action should describe in a standard manner, which external scrips should be run and in what order. These external scripts would then provide the specific logic (for example, in the FPGA.Build rule, we would have scripts for each tool (making directories, creating command files, running the tool and finally moving resulting files to proper positions), and the Makefile framework would make sure to call them as the FPGA.Build action specifies).
 
-* if we still have propagation errors and combinatorial loops even with more complex designs (that fully generate a circuit) I should investigate chaning the design to use module outputs linked to c_ signals instead of n_ signals. Such a module is basically a Moore machine (outputs depend only on the current state c_) whereas what we have now is a Mealy machine (outputs depend on the current state and on inputs, and in our specific case, they depend only on inputs, since n_ signals are combinatorial derivations of the inputs), and, because of their nature, will make the designs more robust in the presence of hazards as well as able to scale to higher clock frequencies. The only downside is a more complex execution model (outputs from a controller apear at time t+d, are registered at (t+1) by a slave, and the slave's output appears at (t+1)+d and the controller can work with it at (t+2)). It's worth investigating using multiple clocks (either two clocks in oposition, or four clocks in quadrature) and linking the master to a clock, and all slaves to a opposite clock. The main problem here is working with deep hierarchies where a master, has several slaves, each slave containing a master and slaves configuration as well.
++ if we still have propagation errors and combinatorial loops even with more complex designs (that fully generate a circuit) I should investigate chaning the design to use module outputs linked to c_ signals instead of n_ signals. Such a module is basically a Moore machine (outputs depend only on the current state c_) whereas what we have now is a Mealy machine (outputs depend on the current state and on inputs, and in our specific case, they depend only on inputs, since n_ signals are combinatorial derivations of the inputs), and, because of their nature, will make the designs more robust in the presence of hazards as well as able to scale to higher clock frequencies. The only downside is a more complex execution model (outputs from a controller apear at time t+d, are registered at (t+1) by a slave, and the slave's output appears at (t+1)+d and the controller can work with it at (t+2)). It's worth investigating using multiple clocks (either two clocks in oposition, or four clocks in quadrature) and linking the master to a clock, and all slaves to a opposite clock. The main problem here is working with deep hierarchies where a master, has several slaves, each slave containing a master and slaves configuration as well.
+/ changed to a more synchronous design, and specified in the todo body.
 
 * change Seq,Alu,Swc and all "small name modules" to larger names: Sequencer, ArithmeticalLogicalUnit, StopWatchCounter etc.
 
-* make *Sim modules more uniform : a test of all instructions, a inst_en test, a error state test and custom tests. use PushBtnBankSim as a model. Eliminate #0 delays because they are not the same as no delay :|.
++ make *Sim modules more uniform : a test of all instructions, a inst_en test, a error state test and custom tests. use PushBtnBankSim as a model. Eliminate #0 delays because they are not the same as no delay :|.
+/ the change to a more synchronous design required a rewrite of all test cases.
 
 + change Btn to Button or Button to Btn everywhere in the button modules.
 
 * add a pertarget Def field where specific defines are set per-target.
 
-x change RDL and RDR Rotary instructions to RLS and RRS (Read Left Status etc.).
++ change RDL and RDR Rotary instructions to RLS and RRS (Read Left Status etc.).
+/ changed all explicit read instructions to RD* and all load instructions to LD*.
 
-* Standardize RD for reading something and LD for loading something. for PushBtn : RDBS and for Rotary RDLS and RDRS.
++ Standardize RD for reading something and LD for loading something. for PushBtn : RDBS and for Rotary RDLS and RDRS.
+/ changed all explicit read instructions to RD* and all load instructions to LD*.
 
-* add a more compact human readable representation of components internal state.
++ add a more compact human readable representation of components internal state.
+/ added in the form of d_Input and s_State debug strings.
 
-* change w_* variables to be like s_* variables in naming by using camel case.
++ change w_* variables to be like s_* variables in naming by using camel case.
 
 * upgrade build infrastructure to set Xilinx environment variables on an invocation basis, and not rely on them being in the user's .bashrc file. Also, check ilinxusb script and, in general, make it possible, just to have a copy of the xilinx tools places somewhere, and, with no other configuration, make the build process work.
 
-* make all modules respect format : clock & reset then instructions & other inputs then outputs.
++ make all modules respect format : clock & reset then instructions & other inputs then outputs.
 
-* all test comments end with a comma.
++ all test comments end with a comma.
 
-* resolve all labels in the *.mem files to addresses in the comments.
++ resolve all labels in the *.mem files to addresses in the comments.
+/ changed format to a table-like one and aligned all input,output and address codes to 4 bits.
 
 * in new build system, add rules for generating installable packages of the system (all Xilinx Tools + all simulation tools + ghc and all needed packgaes) which I can distrubute and which are standalone development environments (just execute an install script and the system is installed : in a single directory and doesn't mess your system in any way !!! (this is important for org. freaks like me :)). Also, a rule for backup packages (only actual code, no tools) and for atually doing a backup (mail it to an email address).
 

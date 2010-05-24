@@ -27,8 +27,8 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
    reg [23:0] 	      s_Counter;
    wire 	      i_Ready;
 
-   wire [3:0] 	      w_inst_code;
-   wire [7:0] 	      w_inst_imm;
+   wire [3:0] 	      w_InstCode;
+   wire [7:0] 	      w_InstImm;
 
    reg [256*8-1:0]    d_Input;
    reg [256*8-1:0]    d_State;
@@ -36,8 +36,8 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
    assign counter = s_Counter;
    assign ready = i_Ready;
 
-   assign w_inst_code = inst[11:8];
-   assign w_inst_imm = inst[7:0];
+   assign w_InstCode = inst[11:8];
+   assign w_InstImm = inst[7:0];
 
    assign i_Ready = s_Counter == 0;
 
@@ -57,7 +57,7 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 
 	   `Swc_State_Ready: begin
 	      if (inst_en) begin
-		 case (w_inst_code)
+		 case (w_InstCode)
 		   `Swc_NOP: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
@@ -67,19 +67,19 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 		   `Swc_LD0: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
-		      s_Counter  <= {s_Counter[23:8],w_inst_imm};
+		      s_Counter  <= {s_Counter[23:8],w_InstImm};
 		   end
 		   
 		   `Swc_LD1: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
-		      s_Counter  <= {s_Counter[23:16],w_inst_imm,s_Counter[7:0]};
+		      s_Counter  <= {s_Counter[23:16],w_InstImm,s_Counter[7:0]};
 		   end
 
 		   `Swc_LD2: begin
 		      s_State    <= `Swc_State_Ready;
 		      s_ContInst <= `Swc_NOP;
-		      s_Counter  <= {w_inst_imm,s_Counter[15:0]};
+		      s_Counter  <= {w_InstImm,s_Counter[15:0]};
 		   end
 
 		   `Swc_COU: begin
@@ -117,7 +117,7 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 		      s_ContInst <= 0;
 		      s_Counter  <= 0;
 		   end
-		 endcase // case (w_inst_code)
+		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
 		 case (s_ContInst)
@@ -179,21 +179,21 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 
    always @ * begin
       if (inst_en) begin
-	 case (w_inst_code)
+	 case (w_InstCode)
 	   `Swc_NOP: begin
 	      $sformat(d_Input,"EN NOP");
 	   end
 
 	   `Swc_LD0: begin
-	      $sformat(d_Input,"EN (LD0 %2X)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD0 %2X)",w_InstImm);
 	   end
 
 	   `Swc_LD1: begin
-	      $sformat(d_Input,"EN (LD1 %2X)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD1 %2X)",w_InstImm);
 	   end
 
 	   `Swc_LD2: begin
-	      $sformat(d_Input,"EN (LD2 %2X)",w_inst_imm);
+	      $sformat(d_Input,"EN (LD2 %2X)",w_InstImm);
 	   end
 
 	   `Swc_COU: begin
@@ -217,9 +217,9 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 	   end
 
 	   default: begin
-	      $sformat(d_Input,"EN (? %2X)",w_inst_imm);
+	      $sformat(d_Input,"EN (? %2X)",w_InstImm);
 	   end
-	 endcase // case (w_inst_code)
+	 endcase // case (w_InstCode)
       end // if (inst_en)
       else begin
 	 $sformat(d_Input,"NN");

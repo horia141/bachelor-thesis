@@ -36,7 +36,7 @@ module SeqSim;
    initial begin
       #0.1 inst_en = 0;
 
-      // Test each instruction
+      // Test each instruction.
       #8 inst = {`Seq_CI,1'bx,3'b010,4'h1,8'hAA};
       inst_en = 1;
 
@@ -70,7 +70,7 @@ module SeqSim;
       #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
       inst_en = 1;
 
-      // Test disabled instruction
+      // Test disabled instruction.
       #4 inst = {`Seq_CI,1'bx,3'b011,4'h4,8'hBE};
       inst_en = 0;
 
@@ -78,7 +78,7 @@ module SeqSim;
       inst_en = 1;
       ireg_2 = 8'h07;
 
-      // Test bad instruction
+      // Test bad instruction.
       #4 inst = {8'hF,16'hAEF0};
       inst_en = 1;
 

@@ -22,7 +22,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
    reg 		     s_IntButtonStatus;
    reg 		     s_OutButtonStatus;
 
-   wire [3:0] 	     w_inst_code;
+   wire [3:0] 	     w_InstCode;
 
    wire 	     pushbtnint_button_pressed;
 
@@ -31,7 +31,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
    assign button_status = s_OutButtonStatus;
 
-   assign w_inst_code = inst[11:8];
+   assign w_InstCode = inst[11:8];
 
    PushBtnInterface #(.Wait(DebounceWait),
 		      .Size(DebounceSize))
@@ -58,7 +58,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
 	   `PushBtn_State_Ready: begin
 	      if (inst_en) begin
-		 case (w_inst_code)
+		 case (w_InstCode)
 		   `PushBtn_NOP: begin
 		      s_State           <= `PushBtn_State_Ready;
 		      s_IntButtonStatus <= pushbtnint_button_pressed | s_IntButtonStatus;
@@ -76,7 +76,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 		      s_IntButtonStatus <= 0;
 		      s_OutButtonStatus <= 0;
 		   end
-		 endcase // case (w_inst_code)
+		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
 		 s_State           <= `PushBtn_State_Ready;
@@ -102,7 +102,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
    always @ * begin
       if (inst_en) begin
-	 case (w_inst_code)
+	 case (w_InstCode)
 	   `PushBtn_NOP: begin
 	      $sformat(d_Input,"EN NOP");
 	   end
@@ -114,7 +114,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 	   default: begin
 	      $sformat(d_Input,"EN (? %2X)",inst[7:0]);
 	   end
-	 endcase // case (w_inst_code)
+	 endcase // case (w_InstCode)
       end // if (inst_en)
       else begin
 	 $sformat(d_Input,"NN");

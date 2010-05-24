@@ -12,6 +12,7 @@ module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clockdv,
    output wire clock2x180;
 
    wire        bufg_O;
+   
    wire        dcmsp_CLK0;
 
    assign clock0 = dcmsp_CLK0;

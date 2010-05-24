@@ -25,16 +25,16 @@ module LedBank(clock,reset,inst,inst_en,leds);
    reg [1:0] 	     s_State;
    reg [7:0] 	     s_Leds;
 
-   wire [3:0] 	     w_inst_code;
-   wire [7:0] 	     w_inst_imm;
+   wire [3:0] 	     w_InstCode;
+   wire [7:0] 	     w_InstImm;
 
    reg [256*8-1:0]   d_Input;
    reg [256*8-1:0]   d_State;
 
    assign leds = s_Leds;
 
-   assign w_inst_code = inst[11:8];
-   assign w_inst_imm = inst[7:0];
+   assign w_InstCode = inst[11:8];
+   assign w_InstImm = inst[7:0];
 
    always @ (posedge clock) begin
       if (reset) begin
@@ -50,7 +50,7 @@ module LedBank(clock,reset,inst,inst_en,leds);
 
 	   `LedBank_State_Ready: begin
 	      if (inst_en) begin
-		 case (w_inst_code)
+		 case (w_InstCode)
 		   `LedBank_NOP: begin
 		      s_State <= `LedBank_State_Ready;
 		      s_Leds  <= s_Leds;
@@ -58,54 +58,54 @@ module LedBank(clock,reset,inst,inst_en,leds);
 
 		   `LedBank_LDI: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= w_inst_imm;
+		      s_Leds  <= w_InstImm;
 		   end
 
 		   `LedBank_LD0: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:1],w_inst_imm[0]};
+		      s_Leds  <= {s_Leds[7:1],w_InstImm[0]};
 		   end
 
 		   `LedBank_LD1: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:2],w_inst_imm[0],s_Leds[0:0]};
+		      s_Leds  <= {s_Leds[7:2],w_InstImm[0],s_Leds[0:0]};
 		   end
 
 		   `LedBank_LD2: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:3],w_inst_imm[0],s_Leds[1:0]};
+		      s_Leds  <= {s_Leds[7:3],w_InstImm[0],s_Leds[1:0]};
 		   end
 
 		   `LedBank_LD3: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:4],w_inst_imm[0],s_Leds[2:0]};
+		      s_Leds  <= {s_Leds[7:4],w_InstImm[0],s_Leds[2:0]};
 		   end
 
 		   `LedBank_LD4: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:5],w_inst_imm[0],s_Leds[3:0]};
+		      s_Leds  <= {s_Leds[7:5],w_InstImm[0],s_Leds[3:0]};
 		   end
 
 		   `LedBank_LD5: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:6],w_inst_imm[0],s_Leds[4:0]};
+		      s_Leds  <= {s_Leds[7:6],w_InstImm[0],s_Leds[4:0]};
 		   end
 
 		   `LedBank_LD6: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {s_Leds[7:7],w_inst_imm[0],s_Leds[5:0]};
+		      s_Leds  <= {s_Leds[7:7],w_InstImm[0],s_Leds[5:0]};
 		   end
 
 		   `LedBank_LD7: begin
 		      s_State <= `LedBank_State_Ready;
-		      s_Leds  <= {w_inst_imm[0],s_Leds[6:0]};
+		      s_Leds  <= {w_InstImm[0],s_Leds[6:0]};
 		   end
 
 		   default: begin
 		      s_State <= `LedBank_State_Error;
 		      s_Leds  <= 0;
 		   end
-		 endcase // case (w_inst_code)
+		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
 		 s_State <= `LedBank_State_Ready;
@@ -128,51 +128,51 @@ module LedBank(clock,reset,inst,inst_en,leds);
 
    always @ * begin
       if (inst_en) begin
-	 case (w_inst_code)
+	 case (w_InstCode)
 	   `LedBank_NOP: begin
 	      $sformat(d_Input,"EN NOP");
 	   end
 
 	   `LedBank_LDI: begin
-	      $sformat(d_Input,"EN (LDI %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (LDI %8B)",w_InstImm);
 	   end
 
 	   `LedBank_LD0: begin
-	      $sformat(d_Input,"EN (LD0 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD0 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD1: begin
-	      $sformat(d_Input,"EN (LD1 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD1 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD2: begin
-	      $sformat(d_Input,"EN (LD2 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD2 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD3: begin
-	      $sformat(d_Input,"EN (LD3 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD3 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD4: begin
-	      $sformat(d_Input,"EN (LD4 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD4 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD5: begin
-	      $sformat(d_Input,"EN (LD5 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD5 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD6: begin
-	      $sformat(d_Input,"EN (LD6 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD6 %1B)",w_InstImm[0]);
 	   end
 
 	   `LedBank_LD7: begin
-	      $sformat(d_Input,"EN (LD7 %1B)",w_inst_imm[0]);
+	      $sformat(d_Input,"EN (LD7 %1B)",w_InstImm[0]);
 	   end
 
 	   default: begin
-	      $sformat(d_Input,"EN (? %8B)",w_inst_imm);
+	      $sformat(d_Input,"EN (? %8B)",w_InstImm);
 	   end
-	 endcase // case (w_inst_code)
+	 endcase // case (w_InstCode)
       end // if (inst_en)
       else begin
 	 $sformat(d_Input,"NN");

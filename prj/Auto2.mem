@@ -3,14 +3,19 @@ AddrSize: 4
 WordSize: 20
 Format:   Bin
 
-# alu     is device 0 : 000
-# swc     is device 1 : 001
-# ledbank is device 2 : 010
-# vga     is device 3 : 011
-# alu:Result is input 0 : 00
-# swc:Ready is input 1  : 01
-# @start is 0 : 0000_0000
-# @loop  is 4 : 0000_0100
+# Name       Output  Code
+# alu        0       0000
+# swc        1       0001
+# ledbank    2       0010
+# vga        3       0011
+
+# Name       Input   Code
+# alu:Result 0       0000
+# swc:Ready  1       0001
+
+# Name       Address Code
+# @start     0       0000_0000
+# @loop      4       0000_0100
 
 0001_0001_0001_1111_1111 # @start ci swc:ld0 FFh
 0001_0001_0010_1111_1111 #        ci swc:ld1 FFh

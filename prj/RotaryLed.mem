@@ -3,20 +3,23 @@ AddrSize: 5
 WordSize: 20
 Format:   Bin
 
-# alu     is device 0 : 000
-# rotary  is device 1 : 001
-# ledbank is device 2 : 010
-# vga     is device 3 : 011
+# Name               Output  Code
+# alu                0       0000
+# rotary             1       0001
+# ledbank            2       0010
+# vga                3       0011
 
-# alu:Result         is input 0 : 00
-# rotary:LeftStatus  is input 1 : 01
-# rotary:RightStatus is input 2 : 10
+# Name               Input   Code
+# alu:Result         0       0000
+# rotary:LeftStatus  1       0001
+# rotary:RightStatus 2       0010
 
-# @mainloop   is 1  : 0000_0001
-# @doleft     is 8  : 0000_1000
-# @resetleft  is 11 : 0000_1011
-# @doright    is 13 : 0000_1101
-# @resetright is 16 : 0001_0000
+# Name               Address Code
+# @mainloop          1       0000_0001
+# @doleft            8       0000_1000
+# @resetleft         11      0000_1011
+# @doright           13      0000_1101
+# @resetright        16      0001_0000
 
 0001_0000_0001_0000_0001 #             ci alu:ldi 8'b00000001
 0001_0001_0001_0000_0000 # @mainloop   ci rotary:rdls
