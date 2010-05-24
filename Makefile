@@ -33,14 +33,14 @@ Prj.PressCount.FPGA.Out = PressCountFPGA
 Prj.PressCount.FPGA.Top = PressCountFPGA
 
 Prj.RotaryLed.All.Src = RotaryLed.v RotaryLed.mem
-Prj.RotaryLed.All.Ref = Seq.All Alu.All Rotary.All LedBank.All
+Prj.RotaryLed.All.Ref = Seq.All Alu.All Rotary.All LedBank.All VGA.All
 
 Prj.RotaryLed.Sim.Src = RotaryLedSim.v RotaryLedSim.sav
 Prj.RotaryLed.Sim.Ref = RotaryLed.All
 Prj.RotaryLed.Sim.Out = RotaryLedSim
 
 Prj.RotaryLed.FPGA.Src = RotaryLedFPGA.v RotaryLedFPGA.ucf
-Prj.RotaryLed.FPGA.Ref = RotaryLed.All
+Prj.RotaryLed.FPGA.Ref = RotaryLed.All ClockManager.All
 Prj.RotaryLed.FPGA.Out = RotaryLedFPGA
 Prj.RotaryLed.FPGA.Top = RotaryLedFPGA
 

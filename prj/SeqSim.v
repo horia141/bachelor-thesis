@@ -59,6 +59,14 @@ module SeqSim;
       inst_en = 1;
       ireg_0 = 8'h11;
 
+      #4 inst = {`Seq_JN,8'hB0,6'bxxxxxx,2'h1};
+      inst_en = 1;
+      ireg_1 = 8'h22;
+
+      #4 inst = {`Seq_JN,8'h8A,6'bxxxxxx,2'h2};
+      inst_en = 1;
+      ireg_2 = 8'h00;
+
       #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
       inst_en = 1;
 

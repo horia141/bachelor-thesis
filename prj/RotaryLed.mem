@@ -1,25 +1,38 @@
 Name:     RotaryLedRom
-AddrSize: 4
+AddrSize: 5
 WordSize: 20
 Format:   Bin
 
 # alu     is device 0 : 000
 # rotary  is device 1 : 001
 # ledbank is device 2 : 010
+# vga     is device 3 : 011
 
 # alu:Result         is input 0 : 00
 # rotary:LeftStatus  is input 1 : 01
 # rotary:RightStatus is input 2 : 10
 
-0001_0000_0001_0000_0001 #           ci alu:ldi 8'b00000001
-0010_0010_0001_0000_0000 #           cr ledbank:ldi alu:Result
-0001_0001_0001_0000_0000 # @tryleft  ci rotary:ldl
-0101_0000_0111_0000_0001 #           jz @tryright rotary:LeftStatus
-0001_0000_1000_0000_0001 #           ci alu:shl 1
-0010_0010_0001_0000_0000 #           cr ledbank:ldi alu:Result
-0011_0000_0001_0000_0000 #           ji @tryleft
-0001_0001_0010_0000_0000 # @tryright ci rotary:ldr
-0101_0000_0001_0000_0010 #           jz @tryleft rotary:RightStatus
-0001_0000_1001_0000_0001 #           ci alu:slr 1
-0010_0010_0001_0000_0000 #           cr ledbank:ldi alu:Result
-0011_0000_0001_0000_0000 #           ji @tryleft
+# @mainloop   is 1  : 0000_0001
+# @doleft     is 8  : 0000_1000
+# @resetleft  is 11 : 0000_1011
+# @doright    is 13 : 0000_1101
+# @resetright is 16 : 0001_0000
+
+0001_0000_0001_0000_0001 #             ci alu:ldi 8'b00000001
+0001_0001_0001_0000_0000 # @mainloop   ci rotary:rdls
+0001_0001_0010_0000_0000 #             ci rotary:rdrs
+0110_0000_1000_0000_0001 #             jn @doleft rotary:LeftStatus
+0110_0000_1101_0000_0010 #             jn @doright rotary:RightStatus
+0010_0010_0001_0000_0000 #             cr ledbank:ldi alu:Result
+0010_0011_0100_0000_0000 #             cr vga:ld3 alu:Result
+0011_0000_0001_0000_0000 #             ji @mainloop
+0001_0000_1000_0000_0000 # @doleft     ci alu:shl
+0101_0000_1011_0000_0000 #             jz @resetleft alu:Result
+0011_0000_0001_0000_0000 #             ji @mainloop
+0001_0000_0001_0000_0001 # @resetleft  ci alu:ldi 8'b00000001
+0011_0000_0001_0000_0000 #             ji @mainloop
+0001_0000_1001_0000_0000 # @doright    ci alu:shr
+0101_0001_0000_0000_0000 #             jz @resetright alu:Result
+0011_0000_0001_0000_0000 #             ji @mainloop
+0001_0000_0001_1000_0000 # @resetright ci alu:ldi 8'b10000000
+0011_0000_0001_0000_0000 #             ji @mainloop

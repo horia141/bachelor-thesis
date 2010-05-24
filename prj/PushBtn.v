@@ -14,7 +14,6 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 
    input wire [11:0] inst;
    input wire 	     inst_en;
-
    input wire 	     button;
 
    output wire 	     button_status;

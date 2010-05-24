@@ -8,8 +8,8 @@ module RotarySim;
    reg 	       inst_en;
    reg [1:0]   rotary;
 
-   wire        rotary_left;
-   wire        rotary_right;
+   wire        rotary_left_status;
+   wire        rotary_right_status;
 
    initial begin
       #0 $dumpfile(`VCDFILE);
@@ -30,194 +30,197 @@ module RotarySim;
    end
 
    initial begin
-      // Test for all instructions after reset
-      #8 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      #0.1 inst_en = 0;
+
+      // Test each instruction.
+      #8 inst = {`Rotary_RDLS,8'bxxxxxxxx};
       inst_en = 1;
       rotary = 2'b00;
 
-      #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      // A little delay from #4 to simulate the actual delay from a real
-      // wire when receining a new command from a controller.
-      #5 inst_en = 0;
-
-      #7 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      // Same type of delay as above.
-      #5 inst_en = 0;
-
-      // Same type of delay as above.
-      #4 inst_en = 1;
-
-      // An invalid instructions. This will send the Rotary into the erory state.
-      #3 inst = {4'hA,8'hBB};
-      inst_en = 1;
-
-      // This instruction won't execute, because the Rotary is in the error state.
       #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
       inst_en = 1;
-
-      // Only a reset will return the Rotary into a normal, ready, state.
-      #9 reset = 1;
-      #4 reset = 0;
-
-      // This instruction will execute properly.
-      #3 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      // Simulate a basic turn left of the rotary button.
-      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-      rotary = 2'b01;
-
-      #8 rotary = 2'b11;
-
-      #7 rotary = 2'b00;
-
-      #9 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      // Simulate a basic turn right of the rotary button.
-      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #3 rotary = 2'b10;
-
-      #8 rotary = 2'b11;
-
-      #5 rotary = 2'b00;
-
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      // Simulate a turn left beging done for a long time and reads being made simultaneously.
-      // Only one read/clear cycle chould return Triggered, the others should be Free.
-      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #3 rotary = 2'b01;
-
-      #5 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #2 rotary = 2'b11;
-
-      #6 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      rotary = 2'b00;
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #2 rotary = 2'b00;
-
-      // Simulate a turn right beging done for a long time and reads being made simultaneously.
-      // Only one read/clear cycle chould return Triggered, the others should be Free.
-      #6 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #3 rotary = 2'b10;
-
-      #5 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #2 rotary = 2'b11;
-
-      #6 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      rotary = 2'b00;
-      inst_en = 1;
-
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #2 rotary = 2'b00;
-
-      // Simulate many turn left actions with only one read.
-      #6 inst = {`Rotary_NOP,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #4 rotary = 2'b01;
-
-      #8 rotary = 2'b11;
-
-      #7 rotary = 2'b00;
 
       #5 rotary = 2'b01;
 
-      #8 rotary = 2'b11;
+      #30 rotary = 2'b11;
 
-      #4 rotary = 2'b00;
+      #30 rotary = 2'b00;
 
-      #12 rotary = 2'b01;
-
-      #12 rotary = 2'b11;
-
-      #7 rotary = 2'b00;
-
-      #1 inst = {`Rotary_RDL,8'bxxxxxxxx};
+      #7 inst = {`Rotary_RDLS,8'bxxxxxxxx};
       inst_en = 1;
 
-      #4 inst = {`Rotary_RDL,8'bxxxxxxxx};
-      inst_en = 1;
-
-      // Simulate many turn right actions with only one read.
       #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      #4 rotary = 2'b10;
+      #4 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
 
-      #8 rotary = 2'b11;
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
 
-      #7 rotary = 2'b00;
+      #4 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+      rotary = 2'b00;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
 
       #5 rotary = 2'b10;
 
-      #8 rotary = 2'b11;
+      #30 rotary = 2'b11;
 
-      #4 rotary = 2'b00;
+      #30 rotary = 2'b00;
 
-      #12 rotary = 2'b10;
-
-      #12 rotary = 2'b11;
-
-      #7 rotary = 2'b00;
-
-      #1 inst = {`Rotary_RDR,8'bxxxxxxxx};
+      #7 inst = {`Rotary_RDRS,8'bxxxxxxxx};
       inst_en = 1;
 
-      #4 inst = {`Rotary_RDR,8'bxxxxxxxx};
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test disabled instruction.
+      #4 rotary = 2'b01;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 0;
+
+      #4 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test bad instruction.
+      #4 inst = {8'hF,8'hAA};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 reset = 1;
+
+      #8 reset = 0;
+
+      #4 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test multiple left turns before one read.
+      #4 rotary = 2'b01;
+
+      #30 rotary = 2'b11;
+      
+      #30 rotary = 2'b00;
+
+      #8 rotary = 2'b01;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 rotary = 2'b01;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test multiple right turns before one read.
+      #4 rotary = 2'b10;
+
+      #30 rotary = 2'b11;
+      
+      #30 rotary = 2'b00;
+
+      #8 rotary = 2'b10;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 rotary = 2'b10;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test multiple left turns before one read. Some of the turns are caused by bounces.
+      #4 rotary = 2'b01;
+
+      #18 rotary = 2'b00;
+
+      #2 rotary = 2'b01;
+
+      #18 rotary = 2'b00;
+
+      #2 rotary = 2'b01;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDLS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test multiple right turns before one read. Some of the turns are caused by bounces.
+      #4 rotary = 2'b10;
+
+      #18 rotary = 2'b00;
+
+      #2 rotary = 2'b10;
+
+      #18 rotary = 2'b00;
+
+      #2 rotary = 2'b10;
+
+      #30 rotary = 2'b11;
+
+      #30 rotary = 2'b00;
+
+      #8 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_RDRS,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Rotary_NOP,8'bxxxxxxxx};
       inst_en = 1;
    end
 
@@ -227,9 +230,8 @@ module RotarySim;
 
 	   .inst(inst),
 	   .inst_en(inst_en),
-
 	   .rotary(rotary),
 
-	   .rotary_left(rotary_left),
-	   .rotary_right(rotary_right));
+	   .rotary_left_status(rotary_left_status),
+	   .rotary_right_status(rotary_right_status));
 endmodule // RotarySim

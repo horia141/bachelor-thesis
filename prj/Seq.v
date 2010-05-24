@@ -4,6 +4,7 @@
 `define Seq_JI 4'h3
 `define Seq_JR 4'h4
 `define Seq_JZ 4'h5
+`define Seq_JN 4'h6
 
 `define Seq_State_Reset 2'h0
 `define Seq_State_Ready 2'h1
@@ -17,6 +18,7 @@
 // ji label(l)             -> 0011_aaaa_aaaa_xxxx_xxxx
 // jr src(s)               -> 0100_xxxx_xxxx_xxxx_xxss
 // jz label(l) src(s)      -> 0101_aaaa_aaaa_xxxx_xxss
+// jn label(l) src(s)      -> 0110_aaaa_aaaa_xxxx_xxss
 
 module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
    input wire         clock;
@@ -135,6 +137,13 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 		      s_ORegWen <= 0;
 		   end
 
+		   `Seq_JN: begin
+		      s_State   <= `Seq_State_Ready;
+		      s_Address <= w_ireg_mux != 0 ? w_inst_imm0 : s_Address + 1;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
+		   end
+
 		   default: begin
 		      s_State   <= `Seq_State_Error;
 		      s_Address <= 0;
@@ -193,6 +202,10 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 
 	   `Seq_JZ: begin
 	      $sformat(d_Input,"EN (JZ %2X %1D) %2X %2X %2X %2X",w_inst_imm0,w_inst_src,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   `Seq_JN: begin
+	      $sformat(d_Input,"EN (JN %2X %1D) %2X %2X %2X %2X",w_inst_imm0,w_inst_src,ireg_0,ireg_1,ireg_2,ireg_3);
 	   end
 
 	   default: begin

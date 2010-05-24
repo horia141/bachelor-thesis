@@ -1,33 +1,33 @@
 [timestart] 0
-[size] 1210 989
+[size] 1678 1004
 [pos] -1 -1
-*-13.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.000000 20000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] RotaryLedSim.
 [treeopen] RotaryLedSim.rotaryled.
-[treeopen] RotaryLedSim.rotaryled.rotary.
 @28
-RotaryLedSim.clock
-RotaryLedSim.reset
-RotaryLedSim.rotaryled.rotary[1:0]
+RotaryLedSim.clock0
+RotaryLedSim.clock180
+@200
+-seq
 @820
-RotaryLedSim.rotaryled.seq.d_w_inst_code[511:0]
-@22
-RotaryLedSim.rotaryled.seq.c_Address[7:0]
+RotaryLedSim.rotaryled.seq.d_Input[2047:0]
+RotaryLedSim.rotaryled.seq.d_State[2047:0]
+@200
+-alu
+@820
+RotaryLedSim.rotaryled.alu.d_Input[2047:0]
+RotaryLedSim.rotaryled.alu.d_State[2047:0]
+@200
+-mrotary
+@820
+RotaryLedSim.rotaryled.mrotary.d_Input[2047:0]
+RotaryLedSim.rotaryled.mrotary.d_State[2047:0]
+@200
+-ledbank
+@820
+RotaryLedSim.rotaryled.ledbank.d_Input[2047:0]
+RotaryLedSim.rotaryled.ledbank.d_State[2047:0]
 @28
-RotaryLedSim.rotaryled.alu.inst_en
-@820
-RotaryLedSim.rotaryled.alu.d_w_inst_code[511:0]
-@22
-RotaryLedSim.rotaryled.alu.n_Accum[7:0]
-@28
-RotaryLedSim.rotaryled.rotary.inst_en
-@820
-RotaryLedSim.rotaryled.rotary.d_w_inst_code[511:0]
-@28
-RotaryLedSim.rotaryled.rotary.rotary_left
-RotaryLedSim.rotaryled.rotary.rotary_right
-RotaryLedSim.rotaryled.ledbank.inst_en
-@820
-RotaryLedSim.rotaryled.ledbank.d_w_inst_code[511:0]
+RotaryLedSim.rotary[1:0]
 @29
-RotaryLedSim.rotaryled.leds[7:0]
+RotaryLedSim.leds[7:0]
