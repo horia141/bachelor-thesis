@@ -9,3 +9,4 @@ Index   Build   Dev     Prj     Total   Commit
 7       396     224     2977    3597    More work on Rotary.
 8       396     224     3046    3666    Done work on Rotary.
 9       418     224     3893    4535    Commit before merge.
+10      418     224     5285    5927    Added RegBank modules with no tests.
