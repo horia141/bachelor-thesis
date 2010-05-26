@@ -89,6 +89,48 @@ Prj.Swc.Sim.Src = SwcSim.v SwcSim.sav
 Prj.Swc.Sim.Ref = Swc.All
 Prj.Swc.Sim.Out = SwcSim
 
+Prj.RegBankP2.All.Src = RegBankP2.v
+Prj.RegBankP2.All.Ref =
+
+Prj.RegBankP2.Sim.Src = RegBankP2Sim.v RegBankP2Sim.sav
+Prj.RegBankP2.Sim.Ref = RegBankP2.All
+Prj.RegBankP2.Sim.Out = RegBankP2Sim
+
+Prj.RegBankP4.All.Src = RegBankP4.v
+Prj.RegBankP4.All.Ref =
+
+Prj.RegBankP4.Sim.Src = RegBankP4Sim.v RegBankP4Sim.sav
+Prj.RegBankP4.Sim.Ref = RegBankP4.All
+Prj.RegBankP4.Sim.Out = RegBankP4Sim
+
+Prj.RegBankP8.All.Src = RegBankP8.v
+Prj.RegBankP8.All.Ref =
+
+Prj.RegBankP8.Sim.Src = RegBankP8Sim.v RegBankP8Sim.sav
+Prj.RegBankP8.Sim.Ref = RegBankP8.All
+Prj.RegBankP8.Sim.Out = RegBankP8Sim
+
+Prj.RegBankS2.All.Src = RegBankS2.v
+Prj.RegBankS2.All.Ref =
+
+Prj.RegBankS2.Sim.Src = RegBankS2Sim.v RegBankS2Sim.sav
+Prj.RegBankS2.Sim.Ref = RegBankS2.All
+Prj.RegBankS2.Sim.Out = RegBankS2Sim
+
+Prj.RegBankS4.All.Src = RegBankS4.v
+Prj.RegBankS4.All.Ref =
+
+Prj.RegBankS4.Sim.Src = RegBankS4Sim.v RegBankS4Sim.sav
+Prj.RegBankS4.Sim.Ref = RegBankS4.All
+Prj.RegBankS4.Sim.Out = RegBankS4Sim
+
+Prj.RegBankS8.All.Src = RegBankS8.v
+Prj.RegBankS8.All.Ref =
+
+Prj.RegBankS8.Sim.Src = RegBankS8Sim.v RegBankS8Sim.sav
+Prj.RegBankS8.Sim.Ref = RegBankS8.All
+Prj.RegBankS8.Sim.Out = RegBankS8Sim
+
 Prj.SlowClock.All.Src = SlowClock.v
 Prj.SlowClock.All.Ref =
 
