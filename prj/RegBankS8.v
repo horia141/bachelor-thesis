@@ -4,10 +4,10 @@
 `define RegBankS8_LD1 4'h3
 `define RegBankS8_LD2 4'h4
 `define RegBankS8_LD3 4'h5
-`define RegBankS8_LD4 4'h2
-`define RegBankS8_LD5 4'h3
-`define RegBankS8_LD6 4'h4
-`define RegBankS8_LD7 4'h5
+`define RegBankS8_LD4 4'h6
+`define RegBankS8_LD5 4'h7
+`define RegBankS8_LD6 4'h8
+`define RegBankS8_LD7 4'h9
 
 `define RegBankS8_State_Reset 2'h0
 `define RegBankS8_State_Ready 2'h1
@@ -32,7 +32,7 @@ module RegBankS8(clock,reset,inst,inst_en,out);
    reg [7:0] 	     s_Reg5;
    reg [7:0] 	     s_Reg6;
    reg [7:0] 	     s_Reg7;
-   reg [7:0] 	     i_Out;
+   wire [7:0] 	     i_Out;
 
    wire [3:0] 	     w_InstCode;
    wire [7:0] 	     w_InstImm;
@@ -45,7 +45,7 @@ module RegBankS8(clock,reset,inst,inst_en,out);
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
-   assign w_InstOutSelect = inst[0:0];
+   assign w_InstOutSelect = inst[2:0];
 
    assign i_Out = s_OutSelect == 0 ? s_Reg0 :
 		  s_OutSelect == 1 ? s_Reg1 :
@@ -204,7 +204,7 @@ module RegBankS8(clock,reset,inst,inst_en,out);
 		      s_Reg7      <= s_Reg7;
 		   end // case: `RegBankS8_LD3
 
-		   `RegBankS8_LD3: begin
+		   `RegBankS8_LD7: begin
 		      s_State     <= `RegBankS8_State_Ready;
 		      s_OutSelect <= s_OutSelect;
 		      s_Reg0      <= s_Reg0;

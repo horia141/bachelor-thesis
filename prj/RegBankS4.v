@@ -24,7 +24,7 @@ module RegBankS4(clock,reset,inst,inst_en,out);
    reg [7:0] 	     s_Reg1;
    reg [7:0] 	     s_Reg2;
    reg [7:0] 	     s_Reg3;
-   reg [7:0] 	     i_Out;
+   wire [7:0] 	     i_Out;
 
    wire [3:0] 	     w_InstCode;
    wire [7:0] 	     w_InstImm;
@@ -37,7 +37,7 @@ module RegBankS4(clock,reset,inst,inst_en,out);
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
-   assign w_InstOutSelect = inst[0:0];
+   assign w_InstOutSelect = inst[1:0];
 
    assign i_Out = s_OutSelect == 0 ? s_Reg0 :
 		  s_OutSelect == 1 ? s_Reg1 :

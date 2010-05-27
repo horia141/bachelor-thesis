@@ -1,0 +1,16 @@
+[timestart] 0
+[size] 1678 974
+[pos] -1 29
+*-13.000000 8020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] RegBankP4Sim.
+@28
+RegBankP4Sim.clock
+RegBankP4Sim.reset
+@821
+RegBankP4Sim.rbp4.d_Input[2047:0]
+RegBankP4Sim.rbp4.d_State[2047:0]
+@22
+RegBankP4Sim.rbp4.out_0[7:0]
+RegBankP4Sim.rbp4.out_1[7:0]
+RegBankP4Sim.rbp4.out_2[7:0]
+RegBankP4Sim.rbp4.out_3[7:0]

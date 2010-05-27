@@ -1,0 +1,13 @@
+[timestart] 0
+[size] 1678 974
+[pos] -1 -1
+*-13.000000 5530 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] RegBankS8Sim.
+@28
+RegBankS8Sim.clock
+RegBankS8Sim.reset
+@821
+RegBankS8Sim.rbs8.d_Input[2047:0]
+RegBankS8Sim.rbs8.d_State[2047:0]
+@22
+RegBankS8Sim.rbs8.out[7:0]

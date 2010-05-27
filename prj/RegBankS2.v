@@ -20,7 +20,7 @@ module RegBankS2(clock,reset,inst,inst_en,out);
    reg 		     s_OutSelect;
    reg [7:0] 	     s_Reg0;
    reg [7:0] 	     s_Reg1;
-   reg [7:0] 	     i_Out;
+   wire [7:0] 	     i_Out;
 
    wire [3:0] 	     w_InstCode;
    wire [7:0] 	     w_InstImm;

@@ -1,0 +1,14 @@
+[timestart] 15560
+[size] 1678 974
+[pos] -1 14
+*-13.000000 32100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] RegBankP2Sim.
+@28
+RegBankP2Sim.clock
+RegBankP2Sim.reset
+@820
+RegBankP2Sim.rbp2.d_Input[2047:0]
+RegBankP2Sim.rbp2.d_State[2047:0]
+@22
+RegBankP2Sim.rbp2.out_0[7:0]
+RegBankP2Sim.rbp2.out_1[7:0]
