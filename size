@@ -11,3 +11,4 @@ Index   Build   Dev     Prj     Total   Commit
 9       418     224     3893    4535    Commit before merge.
 10      418     224     5285    5927    Added RegBank modules with no tests.
 11      460     224     5857    6541    Added RegBank module tests.
+12      460     224     6580    7264    First version of a simple DDR SDRAM controller.

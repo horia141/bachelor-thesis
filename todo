@@ -79,4 +79,6 @@ x remove Seq prefix for SeqAsm type names.
 
 * in new build system, add rules for generating installable packages of the system (all Xilinx Tools + all simulation tools + ghc and all needed packgaes) which I can distrubute and which are standalone development environments (just execute an install script and the system is installed : in a single directory and doesn't mess your system in any way !!! (this is important for org. freaks like me :)). Also, a rule for backup packages (only actual code, no tools) and for atually doing a backup (mail it to an email address).
 
+* make all modules respect format : clock & reset, instruction & other inputs, outputs, outside world inputs, outside world outputs.
+
 : the gimp can output .c or .h files with the contents of an image.
