@@ -68,7 +68,7 @@ Prj.Rotary.Sim.Src = RotarySim.v RotarySim.sav
 Prj.Rotary.Sim.Ref = Rotary.All
 Prj.Rotary.Sim.Out = RotarySim
 
-Prj.ExtSimDdr.All.Src = Ddr.v
+Prj.ExtSimDdr.All.Src = ExtSim/Ddr.v
 Prj.ExtSimDdr.All.Ref =
 
 Prj.DdrCtl1.All.Src = DdrCtl1.v

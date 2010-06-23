@@ -10,8 +10,7 @@
 `define DdrCtl1_RDP 4'h9
 `define DdrCtl1_WRP 4'hA
 
-`define DdrCtl1_DdrCommand_PowerUp0         5'b00000
-`define DdrCtl1_DdrCommand_PowerUp1         5'b10000
+`define DdrCtl1_DdrCommand_PowerUp          5'b00000
 `define DdrCtl1_DdrCommand_Deselect         5'b11000
 `define DdrCtl1_DdrCommand_NoOperation      5'b10111
 `define DdrCtl1_DdrCommand_Activate         5'b10011
@@ -46,37 +45,36 @@
 `define DdrCtl1_State_Reset                          7'h00
 `define DdrCtl1_State_Initializing_PowerUp           7'h01
 `define DdrCtl1_State_Initializing_Wait200us         7'h02
-`define DdrCtl1_State_Initializing_BringCKEHigh      7'h03
-`define DdrCtl1_State_Initializing_DoNop             7'h04
-`define DdrCtl1_State_Initializing_PreChargeAll0     7'h05
-`define DdrCtl1_State_Initializing_EnableDLL         7'h06
-`define DdrCtl1_State_Initializing_ProgramMRResetDLL 7'h07
-`define DdrCtl1_State_Initializing_WaitMRD200DoNop   7'h08
-`define DdrCtl1_State_Initializing_PreChargeAll1     7'h09
-`define DdrCtl1_State_Initializing_AutoRefresh00     7'h0A
-`define DdrCtl1_State_Initializing_AutoRefresh01     7'h0B
-`define DdrCtl1_State_Initializing_AutoRefresh02     7'h0C
-`define DdrCtl1_State_Initializing_AutoRefresh03     7'h0D
-`define DdrCtl1_State_Initializing_AutoRefresh10     7'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh11     7'h0F
-`define DdrCtl1_State_Initializing_AutoRefresh12     7'h10
-`define DdrCtl1_State_Initializing_AutoRefresh13     7'h11
-`define DdrCtl1_State_Initializing_ClearDLL          7'h12
-`define DdrCtl1_State_Ready                          7'h13
-`define DdrCtl1_State_Reading_Activate               7'h14
-`define DdrCtl1_State_Reading_Wait0                  7'h15
-`define DdrCtl1_State_Reading_Read                   7'h17
-`define DdrCtl1_State_Reading_Wait1                  7'h17
-`define DdrCtl1_State_Reading_Wait2                  7'h18
-`define DdrCtl1_State_Reading_Wait3                  7'h19
-`define DdrCtl1_State_Reading_Wait4                  7'h1A
-`define DdrCtl1_State_Writing_Activate               7'h1B
-`define DdrCtl1_State_Writing_Wait0                  7'h1C
-`define DdrCtl1_State_Writing_Write                  7'h1D
-`define DdrCtl1_State_Writing_Wait1                  7'h1E
-`define DdrCtl1_State_Writing_Wait2                  7'h1F
-`define DdrCtl1_State_Writing_Wait3                  7'h20
-`define DdrCtl1_State_Error                          7'h21
+`define DdrCtl1_State_Initializing_BringCKEHighDoNop 7'h03
+`define DdrCtl1_State_Initializing_PreChargeAll0     7'h04
+`define DdrCtl1_State_Initializing_EnableDLL         7'h05
+`define DdrCtl1_State_Initializing_ProgramMRResetDLL 7'h06
+`define DdrCtl1_State_Initializing_WaitMRD200DoNop   7'h07
+`define DdrCtl1_State_Initializing_PreChargeAll1     7'h08
+`define DdrCtl1_State_Initializing_AutoRefresh00     7'h09
+`define DdrCtl1_State_Initializing_AutoRefresh01     7'h0A
+`define DdrCtl1_State_Initializing_AutoRefresh02     7'h0B
+`define DdrCtl1_State_Initializing_AutoRefresh03     7'h0C
+`define DdrCtl1_State_Initializing_AutoRefresh10     7'h0D
+`define DdrCtl1_State_Initializing_AutoRefresh11     7'h0E
+`define DdrCtl1_State_Initializing_AutoRefresh12     7'h0F
+`define DdrCtl1_State_Initializing_AutoRefresh13     7'h10
+`define DdrCtl1_State_Initializing_ClearDLL          7'h11
+`define DdrCtl1_State_Ready                          7'h12
+`define DdrCtl1_State_Reading_Activate               7'h13
+`define DdrCtl1_State_Reading_Wait0                  7'h14
+`define DdrCtl1_State_Reading_Read                   7'h15
+`define DdrCtl1_State_Reading_Wait1                  7'h16
+`define DdrCtl1_State_Reading_Wait2                  7'h17
+`define DdrCtl1_State_Reading_Wait3                  7'h18
+`define DdrCtl1_State_Reading_Wait4                  7'h19
+`define DdrCtl1_State_Writing_Activate               7'h1A
+`define DdrCtl1_State_Writing_Wait0                  7'h1B
+`define DdrCtl1_State_Writing_Write                  7'h1C
+`define DdrCtl1_State_Writing_Wait1                  7'h1D
+`define DdrCtl1_State_Writing_Wait2                  7'h1E
+`define DdrCtl1_State_Writing_Wait3                  7'h2F
+`define DdrCtl1_State_Error                          7'h20
 
 module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
@@ -129,9 +127,9 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
    assign ddr_wen = s_Command[0];
    assign ddr_ba = s_Bank;
    assign ddr_addr = s_Addr;
-   assign ddr_dm = 1;
+   assign ddr_dm = 2'b00;
    assign ddr_dq = (s_State == `DdrCtl1_State_Writing_Wait2) ? (clock0 == 1 ? s_Page[31:16] : s_Page[15:0]) : 16'bzzzzzzzzzzzzzzzz;
-   assign ddr_dqs = (s_State == `DdrCtl1_State_Writing_Wait2 && s_State == `DdrCtl1_State_Writing_Wait3) ? {clock90,clock90} : 2'bzz;
+   assign ddr_dqs = (s_State == `DdrCtl1_State_Writing_Wait2 || s_State == `DdrCtl1_State_Writing_Wait3) ? {clock90,clock90} : 2'bzz;
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
@@ -152,7 +150,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	 s_State         <= `DdrCtl1_State_Reset;
 	 s_Address       <= 0;
 	 s_Page          <= 0;
-	 s_Command       <= `DdrCtl1_DdrCommand_Deselect;
+	 s_Command       <= `DdrCtl1_DdrCommand_PowerUp;
 	 s_Bank          <= 0;
 	 s_Addr          <= 0;
 	 s_InitializeCnt <= 0;
@@ -163,7 +161,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	      s_State         <= `DdrCtl1_State_Initializing_PowerUp;
 	      s_Address       <= 0;
 	      s_Page          <= 0;
-	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Command       <= `DdrCtl1_DdrCommand_PowerUp;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
@@ -173,7 +171,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	      s_State         <= `DdrCtl1_State_Initializing_Wait200us;
 	      s_Address       <= 0;
 	      s_Page          <= 0;
-	      s_Command       <= `DdrCtl1_DdrCommand_PowerUp0;
+	      s_Command       <= `DdrCtl1_DdrCommand_PowerUp;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
@@ -181,10 +179,10 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 
 	   `DdrCtl1_State_Initializing_Wait200us: begin
 	      if (s_InitializeCnt == 10000) begin
-		 s_State         <= `DdrCtl1_State_Initializing_BringCKEHigh;
+		 s_State         <= `DdrCtl1_State_Initializing_BringCKEHighDoNop;
 		 s_Address       <= 0;
 		 s_Page          <= 0;
-		 s_Command       <= `DdrCtl1_DdrCommand_PowerUp0;
+		 s_Command       <= `DdrCtl1_DdrCommand_PowerUp;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
 		 s_InitializeCnt <= 0;
@@ -193,24 +191,14 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 		 s_State         <= `DdrCtl1_State_Initializing_Wait200us;
 		 s_Address       <= 0;
 		 s_Page          <= 0;
-		 s_Command       <= `DdrCtl1_DdrCommand_PowerUp0;
+		 s_Command       <= `DdrCtl1_DdrCommand_PowerUp;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
 		 s_InitializeCnt <= s_InitializeCnt + 1;
 	      end // else: !if(s_InitializeCnt == 10000)
 	   end // case: `DdrCtl1_State_Initializing_Wait200us
 
-	   `DdrCtl1_State_Initializing_BringCKEHigh: begin
-	      s_State         <= `DdrCtl1_State_Initializing_DoNop;
-	      s_Address       <= 0;
-	      s_Page          <= 0;
-	      s_Command       <= `DdrCtl1_DdrCommand_PowerUp1;
-	      s_Bank          <= 0;
-	      s_Addr          <= 0;
-	      s_InitializeCnt <= 0;
-	   end
-
-	   `DdrCtl1_State_Initializing_DoNop: begin
+	   `DdrCtl1_State_Initializing_BringCKEHighDoNop: begin
 	      s_State         <= `DdrCtl1_State_Initializing_PreChargeAll0;
 	      s_Address       <= 0;
 	      s_Page          <= 0;
@@ -226,7 +214,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
 	      s_Bank          <= 0;
-	      s_Addr          <= 0;
+	      s_Addr          <= 13'b0010000000000;
 	      s_InitializeCnt <= 0;
 	   end
 
@@ -283,7 +271,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
 	      s_Bank          <= 0;
-	      s_Addr          <= 0;
+	      s_Addr          <= 13'b0010000000000;
 	      s_InitializeCnt <= 0;
 	   end
 
@@ -568,7 +556,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	   `DdrCtl1_State_Reading_Wait3: begin
 	      s_State         <= `DdrCtl1_State_Reading_Wait4;
 	      s_Address       <= s_Address;
-	      s_Page          <= s_Page;
+	      s_Page          <= {s_HalfPage,ddr_dq};
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
@@ -578,7 +566,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	   `DdrCtl1_State_Reading_Wait4: begin
 	      s_State         <= `DdrCtl1_State_Ready;
 	      s_Address       <= s_Address;
-	      s_Page          <= {s_HalfPage,ddr_dq};
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
@@ -667,4 +655,201 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,dd
 	 endcase // case (s_State)
       end // else: !if(reset)
    end // always @ (posedge clock0)
+
+   always @ * begin
+      if (inst_en) begin
+	 case (w_InstCode)
+	   `DdrCtl1_NOP: begin
+	      $sformat(d_Input,"EN NOP");
+	   end
+
+	   `DdrCtl1_LA0: begin
+	      $sformat(d_Input,"EN (LA0 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LA1: begin
+	      $sformat(d_Input,"EN (LA1 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LA2: begin
+	      $sformat(d_Input,"EN (LA2 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LA3: begin
+	      $sformat(d_Input,"EN (LA3 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LD0: begin
+	      $sformat(d_Input,"EN (LD0 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LD1: begin
+	      $sformat(d_Input,"EN (LD1 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LD2: begin
+	      $sformat(d_Input,"EN (LD2 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_LD3: begin
+	      $sformat(d_Input,"EN (LD3 %2X)",w_InstImm);
+	   end
+
+	   `DdrCtl1_RDP: begin
+	      $sformat(d_Input,"EN RDP");
+	   end
+
+	   `DdrCtl1_WRP: begin
+	      $sformat(d_Input,"EN WRP");
+	   end
+
+	   default: begin
+	      $sformat(d_Input,"EN (? %2X)",w_InstImm);
+	   end
+	 endcase // case (w_InstCode)
+      end // if (inst_en)
+      else begin
+	 $sformat(d_Input,"NN");
+      end // else: !if(inst_en)
+   end // always @ *
+
+   always @ * begin
+      case (s_State)
+	`DdrCtl1_State_Reset: begin
+	   $sformat(d_State,"X");
+	end
+
+	`DdrCtl1_State_Initializing_PowerUp: begin
+	   $sformat(d_State,"I PowerUp (PowerUp %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_Wait200us: begin
+	   $sformat(d_State,"I Wait200us (PowerUp %5B) %D",s_Command,s_InitializeCnt);
+	end
+
+	`DdrCtl1_State_Initializing_BringCKEHighDoNop: begin
+	   $sformat(d_State,"I BringCKEHigh (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_PreChargeAll0: begin
+	   $sformat(d_State,"I PreChargeAll0 (PreCharge %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_EnableDLL: begin
+	   $sformat(d_State,"I EnableDLL (LoadModeRegister %5B %2B %13B)",s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Initializing_ProgramMRResetDLL: begin
+	   $sformat(d_State,"I ProgramMRResetDLL (LoadModeRegister %5B %2B %13B)",s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Initializing_WaitMRD200DoNop: begin
+	   $sformat(d_State,"I WaitMRD200DoNop (NoOperation %5B) %D",s_Command,s_InitializeCnt);
+	end
+
+	`DdrCtl1_State_Initializing_PreChargeAll1: begin
+	   $sformat(d_State,"I PreChargeAll1 (PreCharge %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh00: begin
+	   $sformat(d_State,"I AutoRefresh00 (AutoRefresh %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh01: begin
+	   $sformat(d_State,"I AutoRefresh01 (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh02: begin
+	   $sformat(d_State,"I AutoRefresh02 (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh03: begin
+	   $sformat(d_State,"I AutoRefresh03 (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh10: begin
+	   $sformat(d_State,"I AutoRefresh10 (AutoRefresh %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh11: begin
+	   $sformat(d_State,"I AutoRefresh11 (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh12: begin
+	   $sformat(d_State,"I AutoRefresh12 (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_AutoRefresh13: begin
+	   $sformat(d_State,"I AutoRefresh13 (NoOperation %5B)",s_Command);
+	end
+
+	`DdrCtl1_State_Initializing_ClearDLL: begin
+	   $sformat(d_State,"I ClearAll (LoadModeRegister %5B %2B %13B)",s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Ready: begin
+	   $sformat(d_State,"R %8X %8X",s_Address,s_Page);
+	end
+
+	`DdrCtl1_State_Reading_Activate: begin
+	   $sformat(d_State,"r Activate %8X %8X (Activate %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Reading_Wait0: begin
+	   $sformat(d_State,"r Wait0 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Reading_Read: begin
+	   $sformat(d_State,"r Read %8X %8X (Read %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Reading_Wait1: begin
+	   $sformat(d_State,"r Wait1 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Reading_Wait2: begin
+	   $sformat(d_State,"r Wait2 %4X %4X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Reading_Wait3: begin
+	   $sformat(d_State,"r Wait3 %4X %4X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Reading_Wait4: begin
+	   $sformat(d_State,"r Wait4 %4X %4X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Writing_Activate: begin
+	   $sformat(d_State,"W Activate %8X %8X (Activate %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Writing_Wait0: begin
+	   $sformat(d_State,"W Wait0 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Writing_Write: begin
+	   $sformat(d_State,"W Write %8X %8X (Write %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Writing_Wait1: begin
+	   $sformat(d_State,"W Wait1 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Writing_Wait2: begin
+	   $sformat(d_State,"W Wait2 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Writing_Wait3: begin
+	   $sformat(d_State,"W Wait3 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	end
+
+	`DdrCtl1_State_Error: begin
+	   $sformat(d_State,"E");
+	end
+
+	default: begin
+	   $sformat(d_State,"?");
+	end
+      endcase // case (s_State)
+   end // always @ *
 endmodule // DdrCtl1
