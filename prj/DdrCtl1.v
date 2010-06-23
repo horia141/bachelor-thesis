@@ -43,41 +43,42 @@
 `define DdrCtl1_SelectModeRegister_Normal            2'b00
 `define DdrCtl1_SelectModeRegister_Extended          2'b01
 
-`define DdrCtl1_State_Reset                          6'h00
-`define DdrCtl1_State_Initializing_PowerUp           6'h01
-`define DdrCtl1_State_Initializing_Wait200us         6'h02
-`define DdrCtl1_State_Initializing_BringCKEHigh      6'h03
-`define DdrCtl1_State_Initializing_DoNop             6'h04
-`define DdrCtl1_State_Initializing_PreChargeAll0     6'h05
-`define DdrCtl1_State_Initializing_EnableDLL         6'h08
-`define DdrCtl1_State_Initializing_ProgramMRResetDLL 6'h0A
-`define DdrCtl1_State_Initializing_WaitMRD200DoNop   6'h0B
-`define DdrCtl1_State_Initializing_PreChargeAll1     6'h0C
-`define DdrCtl1_State_Initializing_AutoRefresh00     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh01     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh02     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh03     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh10     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh11     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh12     6'h0E
-`define DdrCtl1_State_Initializing_AutoRefresh13     6'h0E
-`define DdrCtl1_State_Initializing_ClearDLL          6'h10
-`define DdrCtl1_State_Ready                          6'h12
-`define DdrCtl1_State_Reading_Activate               6'h13
-`define DdrCtl1_State_Reading_Wait0                  6'h14
-`define DdrCtl1_State_Reading_Read                   6'h15
-`define DdrCtl1_State_Reading_Wait1                  6'h16
-`define DdrCtl1_State_Reading_Wait2                  6'h16
-`define DdrCtl1_State_Reading_Wait3                  6'h16
-`define DdrCtl1_State_Reading_Wait4                  6'h16
-`define DdrCtl1_State_Writing_Activate               6'h18
-`define DdrCtl1_State_Writing_Wait0                  6'h19
-`define DdrCtl1_State_Writing_Write                  6'h1A
-`define DdrCtl1_State_Writing_Wait1                  6'h1A
-`define DdrCtl1_State_Writing_Wait2                  6'h1A
-`define DdrCtl1_State_Error                          6'h1F
+`define DdrCtl1_State_Reset                          7'h00
+`define DdrCtl1_State_Initializing_PowerUp           7'h01
+`define DdrCtl1_State_Initializing_Wait200us         7'h02
+`define DdrCtl1_State_Initializing_BringCKEHigh      7'h03
+`define DdrCtl1_State_Initializing_DoNop             7'h04
+`define DdrCtl1_State_Initializing_PreChargeAll0     7'h05
+`define DdrCtl1_State_Initializing_EnableDLL         7'h06
+`define DdrCtl1_State_Initializing_ProgramMRResetDLL 7'h07
+`define DdrCtl1_State_Initializing_WaitMRD200DoNop   7'h08
+`define DdrCtl1_State_Initializing_PreChargeAll1     7'h09
+`define DdrCtl1_State_Initializing_AutoRefresh00     7'h0A
+`define DdrCtl1_State_Initializing_AutoRefresh01     7'h0B
+`define DdrCtl1_State_Initializing_AutoRefresh02     7'h0C
+`define DdrCtl1_State_Initializing_AutoRefresh03     7'h0D
+`define DdrCtl1_State_Initializing_AutoRefresh10     7'h0E
+`define DdrCtl1_State_Initializing_AutoRefresh11     7'h0F
+`define DdrCtl1_State_Initializing_AutoRefresh12     7'h10
+`define DdrCtl1_State_Initializing_AutoRefresh13     7'h11
+`define DdrCtl1_State_Initializing_ClearDLL          7'h12
+`define DdrCtl1_State_Ready                          7'h13
+`define DdrCtl1_State_Reading_Activate               7'h14
+`define DdrCtl1_State_Reading_Wait0                  7'h15
+`define DdrCtl1_State_Reading_Read                   7'h17
+`define DdrCtl1_State_Reading_Wait1                  7'h17
+`define DdrCtl1_State_Reading_Wait2                  7'h18
+`define DdrCtl1_State_Reading_Wait3                  7'h19
+`define DdrCtl1_State_Reading_Wait4                  7'h1A
+`define DdrCtl1_State_Writing_Activate               7'h1B
+`define DdrCtl1_State_Writing_Wait0                  7'h1C
+`define DdrCtl1_State_Writing_Write                  7'h1D
+`define DdrCtl1_State_Writing_Wait1                  7'h1E
+`define DdrCtl1_State_Writing_Wait2                  7'h1F
+`define DdrCtl1_State_Writing_Wait3                  7'h20
+`define DdrCtl1_State_Error                          7'h21
 
-module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
    input wire 	      clock90;
    input wire 	      clock180;
@@ -87,7 +88,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
    input wire [11:0]  inst;
    input wire 	      inst_en;
    
-   output wire [8:0]  data;
+   output wire [31:0] page;
    output wire 	      ready;
 
    output wire        ddr_cke;
@@ -101,7 +102,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
    inout wire [15:0]  ddr_dq;
    inout wire [1:0]   ddr_dqs;
 
-   reg [5:0] 	      s_State;
+   reg [6:0] 	      s_State;
    reg [31:0] 	      s_Address;
    reg [31:0] 	      s_Page;
    reg [4:0] 	      s_Command;
@@ -118,7 +119,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
    reg [256*8-1:0]    d_Input;
    reg [256*8-1:0]    d_State;
 
-   assign data = s_ReadCapture0;
+   assign page = s_Page;
    assign ready = i_Ready;
 
    assign ddr_cke = s_Command[4];
@@ -129,20 +130,16 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
    assign ddr_ba = s_Bank;
    assign ddr_addr = s_Addr;
    assign ddr_dm = 1;
-   assign ddr_dq = s_State == DdrCtl1_State_Writing_Wait2 ?
-		   (clock0 == 1 ? s_Page[31:16] : s_Page[15:0]) : 16'bzzzzzzzzzzzzzzzz;
-   assign ddr_dqs = s_State == DdrCtl1_State_Writing_Wait2 &&
-		    s_State == DdrCtl1_State_Writing_Wait3 ? {clock90,clock90} : 2'bzz
+   assign ddr_dq = (s_State == `DdrCtl1_State_Writing_Wait2) ? (clock0 == 1 ? s_Page[31:16] : s_Page[15:0]) : 16'bzzzzzzzzzzzzzzzz;
+   assign ddr_dqs = (s_State == `DdrCtl1_State_Writing_Wait2 && s_State == `DdrCtl1_State_Writing_Wait3) ? {clock90,clock90} : 2'bzz;
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
 
-   assign i_Ready = s_State == DdrCtl1_State_Ready;
+   assign i_Ready = s_State == `DdrCtl1_State_Ready;
 
    always @ (negedge clock0) begin
-      if (s_State    == DdrCtl1_State_Reading_Wait3 && 
-	  ddr_dqs[0] == 1 && 
-	  ddr_dqs[1] == 1) begin
+      if (s_State == `DdrCtl1_State_Reading_Wait3 && ddr_dqs[0] == 1 && ddr_dqs[1] == 1) begin
 	 s_HalfPage <= ddr_dq;
       end
       else begin
@@ -234,7 +231,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
 	   end
 
 	   `DdrCtl1_State_Initializing_EnableDLL: begin
-	      s_State         <= `DdrCtl1_State_Initializing_ResetDLL;
+	      s_State         <= `DdrCtl1_State_Initializing_ProgramMRResetDLL;
 	      s_Address       <= 0;
 	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_LoadModeRegister;
@@ -251,7 +248,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
 	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_LoadModeRegister;
 	      s_Bank          <= `DdrCtl1_SelectModeRegister_Normal;
-	      s_Addr          <= {`DdrCtl1_DdrMode_OperatingMode_NormalResetDLL<
+	      s_Addr          <= {`DdrCtl1_DdrMode_OperatingMode_NormalResetDLL,
                                   `DdrCtl1_DdrMode_CASLatency_2,
                                   `DdrCtl1_DdrMode_BurstType_Sequential,
                                   `DdrCtl1_DdrMode_BurstLength_2};
@@ -486,7 +483,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
 		      s_InitializeCnt <= 0;
 		   end
 
-		   `DdrCtl1_LDD: begin
+		   `DdrCtl1_WRP: begin
 		      s_State         <= `DdrCtl1_State_Writing_Activate;
 		      s_Address       <= s_Address;
 		      s_Page          <= s_Page;
@@ -589,7 +586,7 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
 	   end
 
 	   `DdrCtl1_State_Writing_Activate: begin
-	      s_State         <= `DdrCtl1_State_Writing_Wait;
+	      s_State         <= `DdrCtl1_State_Writing_Wait0;
 	      s_Address       <= s_Address;
 	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_Activate;
@@ -629,6 +626,16 @@ module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,dd
 	   end
 
 	   `DdrCtl1_State_Writing_Wait2: begin
+	      s_State         <= `DdrCtl1_State_Writing_Wait3;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	   end
+
+	   `DdrCtl1_State_Writing_Wait3: begin
 	      s_State         <= `DdrCtl1_State_Ready;
 	      s_Address       <= s_Address;
 	      s_Page          <= s_Page;

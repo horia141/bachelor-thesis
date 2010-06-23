@@ -68,6 +68,16 @@ Prj.Rotary.Sim.Src = RotarySim.v RotarySim.sav
 Prj.Rotary.Sim.Ref = Rotary.All
 Prj.Rotary.Sim.Out = RotarySim
 
+Prj.ExtSimDdr.All.Src = Ddr.v
+Prj.ExtSimDdr.All.Ref =
+
+Prj.DdrCtl1.All.Src = DdrCtl1.v
+Prj.DdrCtl1.All.Ref =
+
+Prj.DdrCtl1.Sim.Src = DdrCtl1Sim.v DdrCtl1Sim.sav
+Prj.DdrCtl1.Sim.Ref = DdrCtl1.All ExtSimDdr.All
+Prj.DdrCtl1.Sim.Out = DdrCtl1Sim
+
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =
 
@@ -131,18 +141,6 @@ Prj.RegBankS8.Sim.Src = RegBankS8Sim.v RegBankS8Sim.sav
 Prj.RegBankS8.Sim.Ref = RegBankS8.All
 Prj.RegBankS8.Sim.Out = RegBankS8Sim
 
-Prj.SlowClock.All.Src = SlowClock.v
-Prj.SlowClock.All.Ref =
-
-Prj.SlowClock.Sim.Src = SlowClockSim.v SlowClockSim.sav
-Prj.SlowClock.Sim.Ref = SlowClock.All
-Prj.SlowClock.Sim.Out = SlowClockSim
-
-Prj.SlowClock.FPGA.Src = SlowClockFPGA.v SlowClockFPGA.ucf
-Prj.SlowClock.FPGA.Ref = SlowClock.All
-Prj.SlowClock.FPGA.Out = SlowClockFPGA
-Prj.SlowClock.FPGA.Top = SlowClockFPGA
-
 Prj.ClockManager.All.Src = ClockManager.v
 Prj.ClockManager.All.Ref =
 
@@ -167,6 +165,18 @@ Prj.RotaryInterface.All.Ref =
 Prj.RotaryInterface.Sim.Src = RotaryInterfaceSim.v RotaryInterfaceSim.sav
 Prj.RotaryInterface.Sim.Ref = RotaryInterface.All
 Prj.RotaryInterface.Sim.Out = RotaryInterfaceSim
+
+Prj.SlowClock.All.Src = SlowClock.v
+Prj.SlowClock.All.Ref =
+
+Prj.SlowClock.Sim.Src = SlowClockSim.v SlowClockSim.sav
+Prj.SlowClock.Sim.Ref = SlowClock.All
+Prj.SlowClock.Sim.Out = SlowClockSim
+
+Prj.SlowClock.FPGA.Src = SlowClockFPGA.v SlowClockFPGA.ucf
+Prj.SlowClock.FPGA.Ref = SlowClock.All
+Prj.SlowClock.FPGA.Out = SlowClockFPGA
+Prj.SlowClock.FPGA.Top = SlowClockFPGA
 
 Dev.MemGen.Src = MemGen/Main.hs
 Dev.MemGen.Ref =
