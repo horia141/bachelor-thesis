@@ -1,10 +1,14 @@
 `define DdrCtl1_NOP 4'h0
-`define DdrCtl1_SA0 4'h1
-`define DdrCtl1_SA1 4'h2
-`define DdrCtl1_SA2 4'h3
-`define DdrCtl1_SA3 4'h4
-`define DdrCtl1_RDD 4'h5
-`define DdrCtl1_LDD 4'h6
+`define DdrCtl1_LA0 4'h1
+`define DdrCtl1_LA1 4'h2
+`define DdrCtl1_LA2 4'h3
+`define DdrCtl1_LA3 4'h4
+`define DdrCtl1_LD0 4'h5
+`define DdrCtl1_LD1 4'h6
+`define DdrCtl1_LD2 4'h7
+`define DdrCtl1_LD3 4'h8
+`define DdrCtl1_RDP 4'h9
+`define DdrCtl1_WRP 4'hA
 
 `define DdrCtl1_DdrCommand_PowerUp0         5'b00000
 `define DdrCtl1_DdrCommand_PowerUp1         5'b10000
@@ -60,21 +64,24 @@
 `define DdrCtl1_State_Initializing_ClearDLL          6'h10
 `define DdrCtl1_State_Ready                          6'h12
 `define DdrCtl1_State_Reading_Activate               6'h13
-`define DdrCtl1_State_Reading_Wait                   6'h14
+`define DdrCtl1_State_Reading_Wait0                  6'h14
 `define DdrCtl1_State_Reading_Read                   6'h15
-`define DdrCtl1_State_Reading_BurstTerminate         6'h16
+`define DdrCtl1_State_Reading_Wait1                  6'h16
+`define DdrCtl1_State_Reading_Wait2                  6'h16
+`define DdrCtl1_State_Reading_Wait3                  6'h16
+`define DdrCtl1_State_Reading_Wait4                  6'h16
 `define DdrCtl1_State_Writing_Activate               6'h18
-`define DdrCtl1_State_Writing_Wait                   6'h19
+`define DdrCtl1_State_Writing_Wait0                  6'h19
 `define DdrCtl1_State_Writing_Write                  6'h1A
-`define DdrCtl1_State_Writing_BurstTerminate         6'h1B
-`define DdrCtl1_State_AutoRefreshing_AutoRefresh0    6'h1D
-`define DdrCtl1_State_AutoRefreshing_AutoRefresh1    6'h1D
-`define DdrCtl1_State_AutoRefreshing_AutoRefresh2    6'h1D
-`define DdrCtl1_State_AutoRefreshing_AutoRefresh3    6'h1D
+`define DdrCtl1_State_Writing_Wait1                  6'h1A
+`define DdrCtl1_State_Writing_Wait2                  6'h1A
 `define DdrCtl1_State_Error                          6'h1F
 
-module DdrCtl1(clock,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
-   input wire         clock;
+module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+   input wire         clock0;
+   input wire 	      clock90;
+   input wire 	      clock180;
+   input wire 	      clock270;
    input wire         reset;
 
    input wire [11:0]  inst;
@@ -96,16 +103,14 @@ module DdrCtl1(clock,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_
 
    reg [5:0] 	      s_State;
    reg [31:0] 	      s_Address;
+   reg [31:0] 	      s_Page;
    reg [4:0] 	      s_Command;
    reg [1:0] 	      s_Bank;
    reg [12:0] 	      s_Addr;
-   reg [15:0] 	      s_Data;
    reg [13:0] 	      s_InitializeCnt;
-   reg 		      s_AutoRefreshed;
    wire 	      i_Ready;
 
-   reg [8:0] 	      s_AutoRefreshCnt;
-   reg 		      s_ShouldAutoRefresh;
+   reg [15:0] 	      s_HalfPage;
 
    wire [3:0] 	      w_InstCode;
    wire [7:0] 	      w_InstImm;
@@ -124,172 +129,153 @@ module DdrCtl1(clock,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_
    assign ddr_ba = s_Bank;
    assign ddr_addr = s_Addr;
    assign ddr_dm = 1;
-   assign ddr_dq = s_State == DdrCtl1_State_Writing_Wait ? s_Data : 16'bzzzzzzzzzzzzzzzz;
-   assign ddr_dqs = s_State == DdrCtl1_State_Writing_Wait ? 2'b11 : 2'bzz; // Trebuie diagrama de timp si sa vezi cum vine strobe-ul fata de ceasul principal.
+   assign ddr_dq = s_State == DdrCtl1_State_Writing_Wait2 ?
+		   (clock0 == 1 ? s_Page[31:16] : s_Page[15:0]) : 16'bzzzzzzzzzzzzzzzz;
+   assign ddr_dqs = s_State == DdrCtl1_State_Writing_Wait2 &&
+		    s_State == DdrCtl1_State_Writing_Wait3 ? {clock90,clock90} : 2'bzz
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
 
-   assign i_Ready = (s_State == DdrCtl1_State_Ready) ||
-		    (s_State == DdrCtl1_State_Writing_BurstTerminate && !s_ShouldAutoRefresh) ||
-		    (s_State == DdrCtl1_State_Reading_BurstTerminate && !s_ShouldAutoRefresh);
+   assign i_Ready = s_State == DdrCtl1_State_Ready;
 
-   always @ (negedge clock) begin
-      if (ddr_dqs[0] == 1 && ddr_dqs[1] == 1) begin
-	 s_ReadCapture0 <= ddr_dq;
+   always @ (negedge clock0) begin
+      if (s_State    == DdrCtl1_State_Reading_Wait3 && 
+	  ddr_dqs[0] == 1 && 
+	  ddr_dqs[1] == 1) begin
+	 s_HalfPage <= ddr_dq;
       end
       else begin
-	 s_ReadCapture0 <= s_ReadCapture0;
+	 s_HalfPage <= s_HalfPage;
       end
    end
 
-   always @ (posedge clock) begin
-      if (ddr_dqs[0] == 1 && ddr_dqs[1] == 1) begin
-	 s_ReadCapture1 <= ddr_dq;
-      end
-      else begin
-	 s_ReadCapture1 <= s_ReadCapture1;
-      end
-   end
-
-   always @ (posedge clock) begin
+   always @ (posedge clock0) begin
       if (reset) begin
 	 s_State         <= `DdrCtl1_State_Reset;
 	 s_Address       <= 0;
+	 s_Page          <= 0;
 	 s_Command       <= `DdrCtl1_DdrCommand_Deselect;
 	 s_Bank          <= 0;
 	 s_Addr          <= 0;
-	 s_Data          <= 0;
 	 s_InitializeCnt <= 0;
-	 s_AutoRefreshed <= 0;
       end
       else begin
 	 case (s_State)
 	   `DdrCtl1_State_Reset: begin
 	      s_State         <= `DdrCtl1_State_Initializing_PowerUp;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_PowerUp: begin
 	      s_State         <= `DdrCtl1_State_Initializing_Wait200us;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_PowerUp0;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_Wait200us: begin
 	      if (s_InitializeCnt == 10000) begin
 		 s_State         <= `DdrCtl1_State_Initializing_BringCKEHigh;
 		 s_Address       <= 0;
+		 s_Page          <= 0;
 		 s_Command       <= `DdrCtl1_DdrCommand_PowerUp0;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
-		 s_Data          <= 0;
 		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
 	      end
 	      else begin
 		 s_State         <= `DdrCtl1_State_Initializing_Wait200us;
 		 s_Address       <= 0;
+		 s_Page          <= 0;
 		 s_Command       <= `DdrCtl1_DdrCommand_PowerUp0;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
-		 s_Data          <= 0;
 		 s_InitializeCnt <= s_InitializeCnt + 1;
-		 s_AutoRefreshed <= 0;
 	      end // else: !if(s_InitializeCnt == 10000)
 	   end // case: `DdrCtl1_State_Initializing_Wait200us
 
 	   `DdrCtl1_State_Initializing_BringCKEHigh: begin
 	      s_State         <= `DdrCtl1_State_Initializing_DoNop;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_PowerUp1;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_DoNop: begin
 	      s_State         <= `DdrCtl1_State_Initializing_PreChargeAll0;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_PreChargeAll0: begin
 	      s_State         <= `DdrCtl1_State_Initializing_EnableDLL;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_EnableDLL: begin
 	      s_State         <= `DdrCtl1_State_Initializing_ResetDLL;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_LoadModeRegister;
 	      s_Bank          <= `DdrCtl1_SelectModeRegister_Extended;
 	      s_Addr          <= {`DdrCtl1_DdrModeExtend_OperatingMode_Reserved,
                                   `DdrCtl1_DdrModeExtend_DriveStrength_Normal,
                                   `DdrCtl1_DdrModeExtend_DLL_Enable};
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end // case: `DdrCtl1_State_Initializing_EnableDLL
 
 	   `DdrCtl1_State_Initializing_ProgramMRResetDLL: begin
 	      s_State         <= `DdrCtl1_State_Initializing_WaitMRD200DoNop;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_LoadModeRegister;
 	      s_Bank          <= `DdrCtl1_SelectModeRegister_Normal;
 	      s_Addr          <= {`DdrCtl1_DdrMode_OperatingMode_NormalResetDLL<
                                   `DdrCtl1_DdrMode_CASLatency_2,
                                   `DdrCtl1_DdrMode_BurstType_Sequential,
                                   `DdrCtl1_DdrMode_BurstLength_2};
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end // case: `DdrCtl1_State_Initializing_ProgramMRResetDLL
 
 	   `DdrCtl1_State_Initializing_WaitMRD200DoNop: begin
 	      if (s_InitializeCnt == 200) begin
 		 s_State         <= `DdrCtl1_State_Initializing_PreChargeAll1;
 		 s_Address       <= 0;
+		 s_Page          <= 0;
 		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
-		 s_Data          <= 0;
 		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
 	      end
 	      else begin
 		 s_State         <= `DdrCtl1_State_Initializing_WaitMRD200DoNop;
 		 s_Address       <= 0;
+		 s_Page          <= 0;
 		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
-		 s_Data          <= 0;
 		 s_InitializeCnt <= s_InitializeCnt + 1;
-		 s_AutoRefreshed <= 0;
 	      end // else: !if(s_InitializeCnt == 200)
 	   end // case: `DdrCtl1_State_Initializing_WaitMRD200DoNop
 
@@ -297,114 +283,104 @@ module DdrCtl1(clock,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_
 	   `DdrCtl1_State_Initializing_PreChargeAll1: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh00;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh00: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh01;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_AutoRefresh;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh01: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh02;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh02: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh03;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh03: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh10;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh10: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh11;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_AutoRefresh;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh11: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh12;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh12: begin
 	      s_State         <= `DdrCtl1_State_Initializing_AutoRefresh13;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh13: begin
 	      s_State         <= `DdrCtl1_State_Initializing_ClearDLL;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_ClearDLL: begin
 	      s_State         <= `DdrCtl1_State_Ready;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_LoadModeRegister;
 	      s_Bank          <= `DdrCtl1_SelectModeRegister_Normal;
 	      s_Addr          <= {`DdrCtl1_DdrMode_OperatingMode_Normal,
                                   `DdrCtl1_DdrMode_CASLatency_2,
                                   `DdrCtl1_DdrMode_BurstType_Sequential,
                                   `DdrCtl1_DdrMode_BurstLength_2};
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end // case: `DdrCtl1_State_Initializing_ClearDLL
 
 	   `DdrCtl1_State_Ready: begin
@@ -413,78 +389,111 @@ module DdrCtl1(clock,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_
 		   `DdrCtl1_NOP: begin
 		      s_State         <= `DdrCtl1_State_Ready;
 		      s_Address       <= s_Address;
+		      s_Page          <= s_Page;
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 
-		   `DdrCtl1_SA0: begin
+		   `DdrCtl1_LA0: begin
 		      s_State         <= `DdrCtl1_State_Ready;
 		      s_Address       <= {s_Address[31:8],w_InstImm};
+		      s_Page          <= s_Page;
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 
-		   `DdrCtl1_SA1: begin
+		   `DdrCtl1_LA1: begin
 		      s_State         <= `DdrCtl1_State_Ready;
 		      s_Address       <= {s_Address[31:16],w_InstImm,s_Address[7:0]};
+		      s_Page          <= s_Page;
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 
-		   `DdrCtl1_SA2: begin
+		   `DdrCtl1_LA2: begin
 		      s_State         <= `DdrCtl1_State_Ready;
 		      s_Address       <= {s_Address[31:24],w_InstImm,s_Address[15:0]};
+		      s_Page          <= s_Page;
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 
-		   `DdrCtl1_SA2: begin
+		   `DdrCtl1_LA3: begin
 		      s_State         <= `DdrCtl1_State_Ready;
 		      s_Address       <= {w_InstImm,s_Address[23:0]};
+		      s_Page          <= s_Page;
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 
-		   `DdrCtl1_RDD: begin
-		      s_State         <= `DdrCtl1_State_Reading_Activate;
+		   `DdrCtl1_LD0: begin
+		      s_State         <= `DdrCtl1_State_Ready;
 		      s_Address       <= s_Address;
+		      s_Page          <= {s_Page[31:8],w_InstImm};
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
+		   end
+
+		   `DdrCtl1_LD1: begin
+		      s_State         <= `DdrCtl1_State_Ready;
+		      s_Address       <= s_Address;
+		      s_Page          <= {s_Page[31:16],w_InstImm,s_Page[7:0]};
+		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+		      s_Bank          <= 0;
+		      s_Addr          <= 0;
+		      s_InitializeCnt <= 0;
+		   end
+
+		   `DdrCtl1_LD2: begin
+		      s_State         <= `DdrCtl1_State_Ready;
+		      s_Address       <= s_Address;
+		      s_Page          <= {s_Page[31:24],w_InstImm,s_Page[15:0]};
+		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+		      s_Bank          <= 0;
+		      s_Addr          <= 0;
+		      s_InitializeCnt <= 0;
+		   end
+
+		   `DdrCtl1_LD3: begin
+		      s_State         <= `DdrCtl1_State_Ready;
+		      s_Address       <= s_Address;
+		      s_Page          <= {w_InstImm,s_Page[23:0]};
+		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+		      s_Bank          <= 0;
+		      s_Addr          <= 0;
+		      s_InitializeCnt <= 0;
+		   end
+
+		   `DdrCtl1_RDP: begin
+		      s_State         <= `DdrCtl1_State_Reading_Activate;
+		      s_Address       <= s_Address;
+		      s_Page          <= s_Page;
+		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+		      s_Bank          <= 0;
+		      s_Addr          <= 0;
+		      s_InitializeCnt <= 0;
 		   end
 
 		   `DdrCtl1_LDD: begin
 		      s_State         <= `DdrCtl1_State_Writing_Activate;
 		      s_Address       <= s_Address;
+		      s_Page          <= s_Page;
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= w_InstImm;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 
 		   default: begin
@@ -493,231 +502,162 @@ module DdrCtl1(clock,reset,inst,inst_en,data,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_
 		      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
-		      s_Data          <= 0;
+		      s_Page          <= 0;
 		      s_InitializeCnt <= 0;
-		      s_AutoRefreshed <= 0;
 		   end
 		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
 		 s_State         <= `DdrCtl1_State_Ready;
 		 s_Address       <= s_Address;
+		 s_Page          <= s_Page;
 		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
-		 s_Data          <= 0;
 		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
 	      end // else: !if(inst_en)
 	   end // case: `DdrCtl1_State_Ready
 
 	   `DdrCtl1_State_Reading_Activate: begin
-	      s_State         <= `DdrCtl1_State_Reading_Wait;
+	      s_State         <= `DdrCtl1_State_Reading_Wait0;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_Activate;
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= s_Address[22:10];
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
-	   `DdrCtl1_State_Reading_Wait: begin
-	      s_State         <= `DdrCtl1_State_Reading_BurstTerminate;
+	   `DdrCtl1_State_Reading_Wait0: begin
+	      s_State         <= `DdrCtl1_State_Reading_Read;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-	      s_Bamk          <= 0;
+	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Read: begin
-	      s_State         <= `DdrCtl1_State_Reading_BurstTerminate;
+	      s_State         <= `DdrCtl1_State_Reading_Wait1;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_Read;
-	      s_Bamk          <= s_Address[24:23];
+	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= {3'b000,s_Address[9:0]};
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
-	   `DdrCtl1_State_Reading_BurstTerminate: begin
-	      if (s_ShouldAutoRefresh) begin
-		 s_State         <= `DdrCtl1_State_AutoRefreshing_AutoRefresh0;
-		 s_Address       <= s_Address;
-		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-		 s_Bank          <= 0;
-		 s_Addr          <= 0;
-		 s_Data          <= 0;
-		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
-	      end
-	      else begin
-		 s_State         <= `DdrCtl1_State_Ready;
-		 s_Address       <= s_Address;
-		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-		 s_Bank          <= 0;
-		 s_Addr          <= 0;
-		 s_Data          <= 0;
-		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
-	      end
-	   end // case: `DdrCtl1_State_Reading_BurstTerminate
+	   `DdrCtl1_State_Reading_Wait1: begin
+	      s_State         <= `DdrCtl1_State_Reading_Wait2;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	   end
+
+	   `DdrCtl1_State_Reading_Wait2: begin
+	      s_State         <= `DdrCtl1_State_Reading_Wait3;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	   end
+
+	   `DdrCtl1_State_Reading_Wait3: begin
+	      s_State         <= `DdrCtl1_State_Reading_Wait4;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	   end
+
+	   `DdrCtl1_State_Reading_Wait4: begin
+	      s_State         <= `DdrCtl1_State_Ready;
+	      s_Address       <= s_Address;
+	      s_Page          <= {s_HalfPage,ddr_dq};
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	   end
 
 	   `DdrCtl1_State_Writing_Activate: begin
 	      s_State         <= `DdrCtl1_State_Writing_Wait;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_Activate;
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= s_Address[22:10];
-	      s_Data          <= s_Data;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
-	   `DdrCtl1_State_Writing_Wait: begin
+	   `DdrCtl1_State_Writing_Wait0: begin
 	      s_State         <= `DdrCtl1_State_Writing_Write;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= s_Data;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   `DdrCtl1_State_Writing_Write: begin
-	      s_State         <= `DdrCtl1_State_Writing_BurstTerminate;
+	      s_State         <= `DdrCtl1_State_Writing_Wait1;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_Write;
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= {3'b000,s_Address[9:0]};
-	      s_Data          <= s_Data;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
-	   `DdrCtl1_State_Writing_BurstTerminate: begin
-	      if (s_ShouldAutoRefresh) begin
-		 s_State         <= `DdrCtl1_State_AutoRefreshing_AutoRefresh0;
-		 s_Address       <= s_Address;
-		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-		 s_Bank          <= 0;
-		 s_Addr          <= 0;
-		 s_Data          <= 0;
-		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
-	      end
-	      else begin
-		 s_State         <= `DdrCtl1_State_Ready;
-		 s_Address       <= s_Address;
-		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-		 s_Bank          <= 0;
-		 s_Addr          <= 0;
-		 s_Data          <= 0;
-		 s_InitializeCnt <= 0;
-		 s_AutoRefreshed <= 0;
-	      end
-	   end // case: `DdrCtl1_State_Writing_BurstTerminate
-
-	   `DdrCtl1_State_AutoRefreshing_AutoRefresh0: begin
-	      s_State         <= `DdrCtl1_State_AutoRefreshing_AutoRefresh1;
+	   `DdrCtl1_State_Writing_Wait1: begin
+	      s_State         <= `DdrCtl1_State_Writing_Wait2;
 	      s_Address       <= s_Address;
-	      s_Command       <= `DdrCtl1_DdrCommand_AutoRefresh;
-	      s_Bank          <= 0;
-	      s_Addr          <= 0;
-	      s_Data          <= 0;
-	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
-	   end
-
-	   `DdrCtl1_State_AutoRefreshing_AutoRefresh1: begin
-	      s_State         <= `DdrCtl1_State_AutoRefreshing_AutoRefresh2;
-	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
-	   `DdrCtl1_State_AutoRefreshing_AutoRefresh2: begin
-	      s_State         <= `DdrCtl1_State_AutoRefreshing_AutoRefresh3;
+	   `DdrCtl1_State_Writing_Wait2: begin
+	      s_State         <= `DdrCtl1_State_Ready;
 	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
-	   end
-
-	   `DdrCtl1_State_AutoRefreshing_AutoRefresh3: begin
-	      s_State         <= `DdrCtl1_State_AutoRefreshing_Ready;
-	      s_Address       <= s_Address;
-	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-	      s_Bank          <= 0;
-	      s_Addr          <= 0;
-	      s_Data          <= 0;
-	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 1;
 	   end
 
 	   `DdrCtl1_State_Error: begin
 	      s_State         <= `DdrCtl1_State_Error;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 
 	   default: begin
 	      s_State         <= `DdrCtl1_State_Error;
 	      s_Address       <= 0;
+	      s_Page          <= 0;
 	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
-	      s_Data          <= 0;
 	      s_InitializeCnt <= 0;
-	      s_AutoRefreshed <= 0;
 	   end
 	 endcase // case (s_State)
       end // else: !if(reset)
-   end // always @ (posedge clock)
-
-   always @ (posedge clock) begin
-      if (reset) begin
-	 s_AutoRefreshCnt    <= 0;
-	 s_ShouldAutoRefresh <= 0;
-      end
-      else begin
-	 if (s_ShouldAutoRefresh == 1) begin
-	    if (s_AutoRefreshed == 1) begin
-	       s_AutoRefreshCnt    <= 0;
-	       s_ShouldAutoRefresh <= 0;
-	    end
-	    else begin
-	       s_AutoRefreshCnt    <= 0;
-	       s_ShouldAutoRefresh <= 1;
-	    end
-	 end
-	 else begin
-	    if (s_AutoRefreshCnt == 400) begin
-	       s_AutoRefreshCnt <= 0;
-	       s_ShouldAutoRefresh <= 1;
-	    end
-	    else begin
-	       s_AutoRefreshCnt    <= s_AutoRefreshCnt + 1;
-	       s_ShouldAutoRefresh <= 0;
-	    end
-	 end // else: !if(s_ShouldAutoRefresh == 1)
-      end // else: !if(reset)
-   end // always @ (posedge clock)
+   end // always @ (posedge clock0)
 endmodule // DdrCtl1
