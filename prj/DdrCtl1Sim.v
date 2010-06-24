@@ -201,8 +201,6 @@ module DdrCtl1Sim;
    DdrCtl1
    ddrctl (.clock0(clock0),
 	   .clock90(clock90),
-	   .clock180(clock180),
-	   .clock270(clock270),
 	   .reset(reset),
 
 	   .inst(inst),

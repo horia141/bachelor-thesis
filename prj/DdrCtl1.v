@@ -76,11 +76,9 @@
 `define DdrCtl1_State_Writing_Wait3                  7'h2F
 `define DdrCtl1_State_Error                          7'h20
 
-module DdrCtl1(clock0,clock90,clock180,clock270,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
    input wire 	      clock90;
-   input wire 	      clock180;
-   input wire 	      clock270;
    input wire         reset;
 
    input wire [11:0]  inst;

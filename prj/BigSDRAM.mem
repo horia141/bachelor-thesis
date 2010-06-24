@@ -1,0 +1,35 @@
+Name:     BigSDRAMRom
+AddrSize: 4
+WordSize: 20
+Format:   Bin
+
+# Name         Output  Code
+# ddrctl       0       0000
+# ledbank      1       0001
+
+# Name         Input   Code
+# ddrctl:Page0 0       0000
+# ddrctl:Ready 1       0001
+
+# Name         Address Code
+# @start       00      0000_0000
+# @test0       0A      0000_1010
+# @test1       0D      0000_1101
+# @stop        0F      0000_1111
+
+0101_0000_0000_0000_0001 # @start jz @start ddrctl:Ready
+0001_0000_0001_0010_0011 #        ci ddrctl:la0 23h
+0001_0000_0010_0100_0100 #        ci ddrctl:la1 44h
+0001_0000_0011_1000_0010 #        ci ddrctl:la2 82h
+0001_0000_0100_0000_0000 #        ci ddrctl:la3 00h
+0001_0000_0101_0111_0110 #        ci ddrctl:ld0 76h
+0001_0000_0110_0000_0000 #        ci ddrctl:ld1 00h
+0001_0000_0111_0000_0000 #        ci ddrctl:ld2 00h
+0001_0000_1000_0000_0000 #        ci ddrctl:ld3 00h
+0001_0000_1010_0000_0000 #        ci ddrctl:wrp
+0101_0000_1010_0000_0001 # @test0 jz @test0 ddrctl:Ready
+0001_0000_0101_0000_0000 #        ci ddrctl:ld0 00h
+0001_0000_1001_0000_0000 #        ci ddrctl:rdp
+0101_0000_1101_0000_0001 # @test1 jz @test1 ddrctl:Ready
+0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
+0011_0000_1111_0000_0000 # @stop  ji @stop
