@@ -1,7 +1,7 @@
-[timestart] 204381200
-[size] 1678 1004
+[timestart] 404900000
+[size] 1678 989
 [pos] -1 -1
-*-15.000000 204400000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-18.000000 204945000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] BigSDRAMSim.
 [treeopen] BigSDRAMSim.bigsdram.
 @28
@@ -23,5 +23,12 @@ BigSDRAMSim.bigsdram.ddrctl.d_State[2047:0]
 -ledbank
 @820
 BigSDRAMSim.bigsdram.ledbank.d_Input[2047:0]
-@821
 BigSDRAMSim.bigsdram.ledbank.d_State[2047:0]
+@200
+-pushbtn
+@820
+BigSDRAMSim.bigsdram.pushbtn.d_Input[2047:0]
+@821
+BigSDRAMSim.bigsdram.pushbtn.d_State[2047:0]
+@28
+BigSDRAMSim.count

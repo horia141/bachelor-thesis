@@ -1,21 +1,24 @@
 Name:     BigSDRAMRom
-AddrSize: 4
+AddrSize: 5
 WordSize: 20
 Format:   Bin
 
-# Name         Output  Code
-# ddrctl       0       0000
-# ledbank      1       0001
+# Name           Output  Code
+# ddrctl         0       0000
+# ledbank        1       0001
+# pushbtn        2       0010
 
-# Name         Input   Code
-# ddrctl:Page0 0       0000
-# ddrctl:Ready 1       0001
+# Name           Input   Code
+# ddrctl:Page0   0       0000
+# ddrctl:Ready   1       0001
+# pushbtn:Status 2       0010
 
-# Name         Address Code
-# @start       00      0000_0000
-# @test0       0A      0000_1010
-# @test1       0D      0000_1101
-# @stop        0F      0000_1111
+# Name           Address Code
+# @start         00      0000_0000
+# @test0         10      0000_1010
+# @test1         13      0000_1101
+# @test2         15      0000_1111
+# @test3         19      0001_0011
 
 0101_0000_0000_0000_0001 # @start jz @start ddrctl:Ready
 0001_0000_0001_0010_0011 #        ci ddrctl:la0 23h
@@ -32,4 +35,10 @@ Format:   Bin
 0001_0000_1001_0000_0000 #        ci ddrctl:rdp
 0101_0000_1101_0000_0001 # @test1 jz @test1 ddrctl:Ready
 0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
-0011_0000_1111_0000_0000 # @stop  ji @stop
+0001_0010_0001_0000_0000 # @test2 ci pushbtn:rbs
+0101_0000_1111_0000_0010 #        jz @test2 pushbtn:Status
+0001_0000_0101_0000_0000 #        ci ddrctl:ld0 00h
+0001_0000_1001_0000_0000 #        ci ddrctl:rdp
+0101_0001_0011_0000_0001 # @test3 jz @test3 ddrctl:Ready
+0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
+0011_0000_1111_0000_0000 #        ji @test2
