@@ -73,8 +73,13 @@
 `define DdrCtl1_State_Writing_Write                  7'h1C
 `define DdrCtl1_State_Writing_Wait1                  7'h1D
 `define DdrCtl1_State_Writing_Wait2                  7'h1E
-`define DdrCtl1_State_Writing_Wait3                  7'h2F
-`define DdrCtl1_State_Error                          7'h20
+`define DdrCtl1_State_Writing_Wait3                  7'h1F
+`define DdrCtl1_State_Refreshing_PreChargeAll        7'h20
+`define DdrCtl1_State_Refreshing_AutoRefresh         7'h21
+`define DdrCtl1_State_Refreshing_Wait0               7'h22
+`define DdrCtl1_State_Refreshing_Wait1               7'h23
+`define DdrCtl1_State_Refreshing_Wait2               7'h24
+`define DdrCtl1_State_Error                          7'h25
 
 module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
@@ -104,8 +109,16 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
    reg [4:0] 	      s_Command;
    reg [1:0] 	      s_Bank;
    reg [12:0] 	      s_Addr;
-   reg [13:0] 	      s_InitializeCnt;
+   reg 		      s_Count200us;
+   reg 		      s_Count200;
+   reg 		      s_Refreshed;
    wire 	      i_Ready;
+
+   reg [13:0] 	      s_InitializeCnt200us;
+   reg [7:0] 	      s_InitializeCnt200;
+
+   reg [8:0] 	      s_RefreshCnt;
+   reg 		      s_ShouldRefresh;
 
    reg [15:0] 	      s_HalfPage;
 
@@ -134,12 +147,36 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 
    assign i_Ready = s_State == `DdrCtl1_State_Ready;
 
+   // synthesis attribute fsm_encoding of s_State is speed1;
+
    always @ (negedge clock0) begin
       if (s_State == `DdrCtl1_State_Reading_Wait3 && ddr_dqs[0] == 1 && ddr_dqs[1] == 1) begin
 	 s_HalfPage <= ddr_dq;
       end
       else begin
 	 s_HalfPage <= s_HalfPage;
+      end
+   end
+
+   always @ (posedge clock0) begin
+      if (reset) begin
+	 s_InitializeCnt200us <= 0;
+      end
+      else begin
+	 if (s_Count200us == 1) begin
+	    s_InitializeCnt200us <= s_InitializeCnt200us + 1;
+	 end
+      end
+   end
+
+   always @ (posedge clock0) begin
+      if (reset) begin
+	 s_InitializeCnt200 <= 0;
+      end
+      else begin
+	 if (s_Count200 == 1) begin
+	    s_InitializeCnt200 <= s_InitializeCnt + 1;
+	 end
       end
    end
 
@@ -152,6 +189,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	 s_Bank          <= 0;
 	 s_Addr          <= 0;
 	 s_InitializeCnt <= 0;
+	 s_Refreshed     <= 0;
       end
       else begin
 	 case (s_State)
@@ -163,6 +201,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_PowerUp: begin
@@ -173,6 +212,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_Wait200us: begin
@@ -184,6 +224,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
 		 s_InitializeCnt <= 0;
+		 s_Refreshed     <= 0;
 	      end
 	      else begin
 		 s_State         <= `DdrCtl1_State_Initializing_Wait200us;
@@ -193,6 +234,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
 		 s_InitializeCnt <= s_InitializeCnt + 1;
+		 s_Refreshed     <= 0;
 	      end // else: !if(s_InitializeCnt == 10000)
 	   end // case: `DdrCtl1_State_Initializing_Wait200us
 
@@ -204,6 +246,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_PreChargeAll0: begin
@@ -214,6 +257,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 13'b0010000000000;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_EnableDLL: begin
@@ -226,6 +270,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
                                   `DdrCtl1_DdrModeExtend_DriveStrength_Normal,
                                   `DdrCtl1_DdrModeExtend_DLL_Enable};
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end // case: `DdrCtl1_State_Initializing_EnableDLL
 
 	   `DdrCtl1_State_Initializing_ProgramMRResetDLL: begin
@@ -239,6 +284,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
                                   `DdrCtl1_DdrMode_BurstType_Sequential,
                                   `DdrCtl1_DdrMode_BurstLength_2};
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end // case: `DdrCtl1_State_Initializing_ProgramMRResetDLL
 
 	   `DdrCtl1_State_Initializing_WaitMRD200DoNop: begin
@@ -250,6 +296,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
 		 s_InitializeCnt <= 0;
+		 s_Refreshed     <= 0;
 	      end
 	      else begin
 		 s_State         <= `DdrCtl1_State_Initializing_WaitMRD200DoNop;
@@ -259,6 +306,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		 s_Bank          <= 0;
 		 s_Addr          <= 0;
 		 s_InitializeCnt <= s_InitializeCnt + 1;
+		 s_Refreshed     <= 0;
 	      end // else: !if(s_InitializeCnt == 200)
 	   end // case: `DdrCtl1_State_Initializing_WaitMRD200DoNop
 
@@ -271,6 +319,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 13'b0010000000000;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh00: begin
@@ -281,6 +330,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh01: begin
@@ -291,6 +341,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh02: begin
@@ -301,6 +352,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh03: begin
@@ -311,6 +363,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh10: begin
@@ -321,6 +374,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh11: begin
@@ -331,6 +385,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh12: begin
@@ -341,6 +396,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_AutoRefresh13: begin
@@ -351,6 +407,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Initializing_ClearDLL: begin
@@ -364,6 +421,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
                                   `DdrCtl1_DdrMode_BurstType_Sequential,
                                   `DdrCtl1_DdrMode_BurstLength_2};
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end // case: `DdrCtl1_State_Initializing_ClearDLL
 
 	   `DdrCtl1_State_Ready: begin
@@ -377,6 +435,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LA0: begin
@@ -387,6 +446,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LA1: begin
@@ -397,6 +457,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LA2: begin
@@ -407,6 +468,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LA3: begin
@@ -417,6 +479,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LD0: begin
@@ -427,6 +490,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LD1: begin
@@ -437,6 +501,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LD2: begin
@@ -447,6 +512,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_LD3: begin
@@ -457,6 +523,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_RDP: begin
@@ -467,6 +534,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   `DdrCtl1_WRP: begin
@@ -477,6 +545,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Bank          <= 0;
 		      s_Addr          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 
 		   default: begin
@@ -487,17 +556,31 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 		      s_Addr          <= 0;
 		      s_Page          <= 0;
 		      s_InitializeCnt <= 0;
+		      s_Refreshed     <= 0;
 		   end
 		 endcase // case (w_InstCode)
 	      end // if (inst_en)
 	      else begin
-		 s_State         <= `DdrCtl1_State_Ready;
-		 s_Address       <= s_Address;
-		 s_Page          <= s_Page;
-		 s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-		 s_Bank          <= 0;
-		 s_Addr          <= 0;
-		 s_InitializeCnt <= 0;
+		 if (s_ShouldRefresh == 1) begin
+		    s_State         <= `DdrCtl1_State_Refreshing_PreChargeAll;
+		    s_Address       <= s_Address;
+		    s_Page          <= s_Page;
+		    s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+		    s_Bank          <= 0;
+		    s_Addr          <= 0;
+		    s_InitializeCnt <= 0;
+		    s_Refreshed     <= 0;
+		 end
+		 else begin
+		    s_State         <= `DdrCtl1_State_Ready;
+		    s_Address       <= s_Address;
+		    s_Page          <= s_Page;
+		    s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+		    s_Bank          <= 0;
+		    s_Addr          <= 0;
+		    s_InitializeCnt <= 0;
+		    s_Refreshed     <= 0;
+		 end
 	      end // else: !if(inst_en)
 	   end // case: `DdrCtl1_State_Ready
 
@@ -509,6 +592,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= s_Address[22:10];
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Wait0: begin
@@ -519,6 +603,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Read: begin
@@ -529,6 +614,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= {3'b000,s_Address[9:0]};
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Wait1: begin
@@ -539,6 +625,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Wait2: begin
@@ -549,6 +636,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Wait3: begin
@@ -559,16 +647,30 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Reading_Wait4: begin
-	      s_State         <= `DdrCtl1_State_Ready;
-	      s_Address       <= s_Address;
-	      s_Page          <= s_Page;
-	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
-	      s_Bank          <= 0;
-	      s_Addr          <= 0;
-	      s_InitializeCnt <= 0;
+	      if (s_ShouldRefresh == 1) begin
+		 s_State         <= `DdrCtl1_State_Refreshing_PreChargeAll;
+		 s_Address       <= s_Address;
+		 s_Page          <= s_Page;
+		 s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
+		 s_Bank          <= 0;
+		 s_Addr          <= 13'b0010000000000;
+		 s_InitializeCnt <= 0;
+		 s_Refreshed     <= 0;
+	      end
+	      else begin
+		 s_State         <= `DdrCtl1_State_Ready;
+		 s_Address       <= s_Address;
+		 s_Page          <= s_Page;
+		 s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
+		 s_Bank          <= 0;
+		 s_Addr          <= 13'b0010000000000;
+		 s_InitializeCnt <= 0;
+		 s_Refreshed     <= 0;
+	      end
 	   end
 
 	   `DdrCtl1_State_Writing_Activate: begin
@@ -579,6 +681,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= s_Address[22:10];
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Writing_Wait0: begin
@@ -589,6 +692,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Writing_Write: begin
@@ -599,6 +703,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= s_Address[24:23];
 	      s_Addr          <= {3'b000,s_Address[9:0]};
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Writing_Wait1: begin
@@ -609,6 +714,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Writing_Wait2: begin
@@ -619,9 +725,77 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   `DdrCtl1_State_Writing_Wait3: begin
+	      if (s_ShouldRefresh == 1) begin
+		 s_State         <= `DdrCtl1_State_Refreshing_PreChargeAll;
+		 s_Address       <= s_Address;
+		 s_Page          <= s_Page;
+		 s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
+		 s_Bank          <= 0;
+		 s_Addr          <= 13'b0010000000000;
+		 s_InitializeCnt <= 0;
+		 s_Refreshed     <= 0;
+	      end
+	      else begin
+		 s_State         <= `DdrCtl1_State_Ready;
+		 s_Address       <= s_Address;
+		 s_Page          <= s_Page;
+		 s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
+		 s_Bank          <= 0;
+		 s_Addr          <= 13'b0010000000000;
+		 s_InitializeCnt <= 0;
+		 s_Refreshed     <= 0;
+	      end
+	   end
+
+	   `DdrCtl1_State_Refreshing_PreChargeAll: begin
+	      s_State         <= `DdrCtl1_State_Refreshing_AutoRefresh;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_PreCharge;
+	      s_Bank          <= 0;
+	      s_Addr          <= 13'b0010000000000;
+	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 1;
+	   end
+
+	   `DdrCtl1_State_Refreshing_AutoRefresh: begin
+	      s_State         <= `DdrCtl1_State_Refreshing_Wait0;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_AutoRefresh;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 1;
+	   end
+
+	   `DdrCtl1_State_Refreshing_Wait0: begin
+	      s_State         <= `DdrCtl1_State_Refreshing_Wait1;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 1;
+	   end
+
+	   `DdrCtl1_State_Refreshing_Wait1: begin
+	      s_State         <= `DdrCtl1_State_Refreshing_Wait2;
+	      s_Address       <= s_Address;
+	      s_Page          <= s_Page;
+	      s_Command       <= `DdrCtl1_DdrCommand_NoOperation;
+	      s_Bank          <= 0;
+	      s_Addr          <= 0;
+	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 1;
+	   end
+
+	   `DdrCtl1_State_Refreshing_Wait2: begin
 	      s_State         <= `DdrCtl1_State_Ready;
 	      s_Address       <= s_Address;
 	      s_Page          <= s_Page;
@@ -629,6 +803,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 1;
 	   end
 
 	   `DdrCtl1_State_Error: begin
@@ -639,6 +814,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 
 	   default: begin
@@ -649,6 +825,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	      s_Bank          <= 0;
 	      s_Addr          <= 0;
 	      s_InitializeCnt <= 0;
+	      s_Refreshed     <= 0;
 	   end
 	 endcase // case (s_State)
       end // else: !if(reset)
@@ -710,6 +887,35 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	 $sformat(d_Input,"NN");
       end // else: !if(inst_en)
    end // always @ *
+
+   always @ (posedge clock0) begin
+      if (reset) begin
+	 s_RefreshCnt    <= 0;
+	 s_ShouldRefresh <= 0;
+      end
+      else begin
+	 if (s_ShouldRefresh == 1) begin
+	    if (s_Refreshed == 1) begin
+	       s_RefreshCnt    <= 0;
+	       s_ShouldRefresh <= 0;
+	    end
+	    else begin
+	       s_RefreshCnt    <= 0;
+	       s_ShouldRefresh <= 1;
+	    end
+	 end
+	 else begin
+	    if (s_RefreshCnt == 200) begin
+	       s_RefreshCnt    <= 0;
+	       s_ShouldRefresh <= 1;
+	    end
+	    else begin
+	       s_RefreshCnt    <= s_RefreshCnt + 1;
+	       s_ShouldRefresh <= 0;
+	    end
+	 end // else: !if(s_ShouldRefresh == 1)
+      end // else: !if(reset)
+   end // always @ (posedge clock0)
 
    always @ * begin
       case (s_State)
@@ -786,59 +992,79 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_cke,ddr_csn,ddr_
 	end
 
 	`DdrCtl1_State_Ready: begin
-	   $sformat(d_State,"R %8X %8X",s_Address,s_Page);
+	   $sformat(d_State,"R %8X %8X %3D %1B",s_Address,s_Page,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Activate: begin
-	   $sformat(d_State,"r Activate %8X %8X (Activate %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Activate %8X %8X (Activate %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Wait0: begin
-	   $sformat(d_State,"r Wait0 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Wait0 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Read: begin
-	   $sformat(d_State,"r Read %8X %8X (Read %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Read %8X %8X (Read %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Wait1: begin
-	   $sformat(d_State,"r Wait1 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Wait1 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Wait2: begin
-	   $sformat(d_State,"r Wait2 %4X %4X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Wait2 %4X %4X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Wait3: begin
-	   $sformat(d_State,"r Wait3 %4X %4X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Wait3 %4X %4X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Reading_Wait4: begin
-	   $sformat(d_State,"r Wait4 %4X %4X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"r Wait4 %4X %4X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Writing_Activate: begin
-	   $sformat(d_State,"W Activate %8X %8X (Activate %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"W Activate %8X %8X (Activate %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Writing_Wait0: begin
-	   $sformat(d_State,"W Wait0 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"W Wait0 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Writing_Write: begin
-	   $sformat(d_State,"W Write %8X %8X (Write %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"W Write %8X %8X (Write %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Writing_Wait1: begin
-	   $sformat(d_State,"W Wait1 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"W Wait1 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Writing_Wait2: begin
-	   $sformat(d_State,"W Wait2 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"W Wait2 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Writing_Wait3: begin
-	   $sformat(d_State,"W Wait3 %8X %8X (NoOperation %5B %2B %13B)",s_Address,s_Page,s_Command,s_Bank,s_Addr);
+	   $sformat(d_State,"W Wait3 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
+	end
+
+	`DdrCtl1_State_Refreshing_PreChargeAll: begin
+	   $sformat(d_State,"A PreChargeAll %8X %8X (PreCharge %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
+	end
+
+	`DdrCtl1_State_Refreshing_AutoRefresh: begin
+	   $sformat(d_State,"A AutoRefresh %8X %8X (AutoRefresh %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
+	end
+
+	`DdrCtl1_State_Refreshing_Wait0: begin
+	   $sformat(d_State,"A AutoRefresh1 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
+	end
+
+	`DdrCtl1_State_Refreshing_Wait1: begin
+	   $sformat(d_State,"A AutoRefresh2 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
+	end
+
+	`DdrCtl1_State_Refreshing_Wait2: begin
+	   $sformat(d_State,"A AutoRefresh3 %8X %8X (NoOperation %5B %2B %13B) %3D %1B",s_Address,s_Page,s_Command,s_Bank,s_Addr,s_RefreshCnt,s_ShouldRefresh);
 	end
 
 	`DdrCtl1_State_Error: begin

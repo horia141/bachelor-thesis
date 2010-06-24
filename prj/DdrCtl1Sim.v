@@ -181,6 +181,8 @@ module DdrCtl1Sim;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
       inst_en = 1;
+
+      #20 inst_en = 0;
    end // initial begin
 
    Ddr
