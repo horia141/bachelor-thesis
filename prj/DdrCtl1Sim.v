@@ -117,17 +117,66 @@ module DdrCtl1Sim;
       inst_en = 1;
 
       // Test bad instruction.
-      #20 inst = {8'hF,8'h10};
+//       #20 inst = {8'hF,8'h10};
+//       inst_en = 1;
+
+//       #20 inst = {`DdrCtl1_LD2,8'hA0};
+//       inst_en = 1;
+
+//       #40 reset = 1;
+
+//       #80 reset = 0;
+
+//       #20 inst = {`DdrCtl1_LD2,8'hAB};
+//       inst_en = 1;
+
+//       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
+//       inst_en = 1;
+
+      // Test writing to another bank.
+      #20 inst = {`DdrCtl1_LA0,8'h12};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_LD2,8'hA0};
+      #20 inst = {`DdrCtl1_LA1,8'h3F};
       inst_en = 1;
 
-      #40 reset = 1;
+      #20 inst = {`DdrCtl1_LA2,8'h2B};
+      inst_en = 1;
 
-      #80 reset = 0;
+      #20 inst = {`DdrCtl1_LA3,8'h01};
+      inst_en = 1;
 
-      #20 inst = {`DdrCtl1_LD2,8'hAB};
+      #20 inst = {`DdrCtl1_LD0,8'hEE};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD1,8'hFF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD2,8'h11};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD3,8'h22};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_WRP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #120 inst = {`DdrCtl1_LD0,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD1,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD2,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD3,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
