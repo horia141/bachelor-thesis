@@ -1,7 +1,7 @@
-[timestart] 408731800
-[size] 1678 989
+[timestart] 204024000
+[size] 1678 974
 [pos] -1 -1
-*-15.000000 408800000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-18.000000 204855000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] DdrCtl1Sim.
 [treeopen] DdrCtl1Sim.ddr.
 @28
@@ -9,7 +9,6 @@ DdrCtl1Sim.clock0
 DdrCtl1Sim.clock90
 DdrCtl1Sim.clock180
 DdrCtl1Sim.clock270
-@29
 DdrCtl1Sim.reset
 @820
 DdrCtl1Sim.ddrctl.d_Input[2047:0]
@@ -18,6 +17,8 @@ DdrCtl1Sim.ddrctl.d_State[2047:0]
 DdrCtl1Sim.ddrctl.page[31:0]
 @28
 DdrCtl1Sim.ddrctl.ready
+DdrCtl1Sim.ddrctl.s_ShouldLock
+DdrCtl1Sim.ddrctl.s_Locked
 DdrCtl1Sim.ddrctl.ddr_cke
 DdrCtl1Sim.ddrctl.ddr_csn
 DdrCtl1Sim.ddrctl.ddr_rasn

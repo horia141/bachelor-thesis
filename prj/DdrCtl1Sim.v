@@ -12,6 +12,7 @@ module DdrCtl1Sim;
 
    wire [31:0] page;
    wire        ready;
+   wire        locked;
 
    wire        ddrctl_ddr_cke;
    wire        ddrctl_ddr_csn;
@@ -61,7 +62,10 @@ module DdrCtl1Sim;
       #0.1 inst_en = 0;
 
       // Test each instruction.
-      #204455 inst = {`DdrCtl1_LA0,8'h12};
+      #204475 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
+      inst_en = 1;
+
+      # 20 inst = {`DdrCtl1_LA0,8'h12};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LA1,8'h3F};
@@ -85,13 +89,19 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_LD3,8'hDD};
       inst_en = 1;
 
+      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
+      inst_en = 1;
+
       #20 inst = {`DdrCtl1_WRP,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      #120 inst = {`DdrCtl1_LD0,8'hEF};
+      #220 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD0,8'hEF};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LD1,8'hEF};
@@ -101,6 +111,9 @@ module DdrCtl1Sim;
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LD3,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
@@ -134,6 +147,9 @@ module DdrCtl1Sim;
 //       inst_en = 1;
 
       // Test writing to another bank.
+      #20 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
+      inst_en = 1;
+
       #20 inst = {`DdrCtl1_LA0,8'h12};
       inst_en = 1;
 
@@ -158,13 +174,19 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_LD3,8'h22};
       inst_en = 1;
 
+      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
+      inst_en = 1;
+
       #20 inst = {`DdrCtl1_WRP,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      #120 inst = {`DdrCtl1_LD0,8'hEF};
+      #120 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD0,8'hEF};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LD1,8'hEF};
@@ -174,6 +196,9 @@ module DdrCtl1Sim;
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LD3,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
@@ -210,6 +235,7 @@ module DdrCtl1Sim;
 
 	   .page(page),
 	   .ready(ready),
+	   .locked(locked),
 
 	   .ddr_cke(ddrctl_ddr_cke),
 	   .ddr_csn(ddrctl_ddr_csn),
