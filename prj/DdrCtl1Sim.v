@@ -12,7 +12,6 @@ module DdrCtl1Sim;
 
    wire [31:0] page;
    wire        ready;
-   wire        locked;
 
    wire        ddrctl_ddr_cke;
    wire        ddrctl_ddr_csn;
@@ -62,10 +61,7 @@ module DdrCtl1Sim;
       #0.1 inst_en = 0;
 
       // Test each instruction.
-      #204475 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
-      inst_en = 1;
-
-      # 20 inst = {`DdrCtl1_LA0,8'h12};
+      # 204475 inst = {`DdrCtl1_LA0,8'h12};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LA1,8'h3F};
@@ -89,19 +85,13 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_LD3,8'hDD};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
-      inst_en = 1;
-
       #20 inst = {`DdrCtl1_WRP,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      #220 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #20 inst = {`DdrCtl1_LD0,8'hEF};
+      #180 inst = {`DdrCtl1_LD0,8'hEF};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LD1,8'hEF};
@@ -113,7 +103,22 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_LD3,8'hEF};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
+      #20 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      #5500 inst = {`DdrCtl1_LD0,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD1,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD2,8'hEF};
+      inst_en = 1;
+
+      #20 inst = {`DdrCtl1_LD3,8'hEF};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
@@ -123,34 +128,31 @@ module DdrCtl1Sim;
       inst_en = 1;
 
       // Test disabled instruction.
-      #140 inst = {`DdrCtl1_LD1,8'h0A};
+      #240 inst = {`DdrCtl1_LD1,8'h0A};
       inst_en = 0;
 
       #20 inst = {`DdrCtl1_LD1,8'h01};
       inst_en = 1;
 
-      // Test bad instruction.
-//       #20 inst = {8'hF,8'h10};
-//       inst_en = 1;
+//       // Test bad instruction.
+// //       #20 inst = {8'hF,8'h10};
+// //       inst_en = 1;
 
-//       #20 inst = {`DdrCtl1_LD2,8'hA0};
-//       inst_en = 1;
+// //       #20 inst = {`DdrCtl1_LD2,8'hA0};
+// //       inst_en = 1;
 
-//       #40 reset = 1;
+// //       #40 reset = 1;
 
-//       #80 reset = 0;
+// //       #80 reset = 0;
 
-//       #20 inst = {`DdrCtl1_LD2,8'hAB};
-//       inst_en = 1;
+// //       #20 inst = {`DdrCtl1_LD2,8'hAB};
+// //       inst_en = 1;
 
-//       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
-//       inst_en = 1;
+// //       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
+// //       inst_en = 1;
 
       // Test writing to another bank.
-      #20 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #20 inst = {`DdrCtl1_LA0,8'h12};
+      #200 inst = {`DdrCtl1_LA0,8'h12};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LA1,8'h3F};
@@ -174,19 +176,13 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_LD3,8'h22};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
-      inst_en = 1;
-
       #20 inst = {`DdrCtl1_WRP,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      #120 inst = {`DdrCtl1_LCK,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #20 inst = {`DdrCtl1_LD0,8'hEF};
+      #200 inst = {`DdrCtl1_LD0,8'hEF};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LD1,8'hEF};
@@ -198,10 +194,7 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_LD3,8'hEF};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_ULK,8'bxxxxxxxx};
-      inst_en = 1;
-
-      #20 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
+      #180 inst = {`DdrCtl1_RDP,8'bxxxxxxxx};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
@@ -235,7 +228,6 @@ module DdrCtl1Sim;
 
 	   .page(page),
 	   .ready(ready),
-	   .locked(locked),
 
 	   .ddr_cke(ddrctl_ddr_cke),
 	   .ddr_csn(ddrctl_ddr_csn),

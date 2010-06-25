@@ -12,21 +12,14 @@ Format:   Bin
 # ddrctl:Page0   0       0000
 # ddrctl:Ready   1       0001
 # pushbtn:Status 2       0010
-# ddrctl:Locked  3       0011
 
 # Name           Address Code
 # @start         00      0000_0000
-# @lock0         02      0000_0010
-# @test0         13      0000_1101
-# @lock1         15      0000_1111
-# @test1         19      0001_0011
-# @test2         22      0001_0110
-# @lock2         24      0001_1000
-# @test3         28      0001_1100
+# @test0         10      0000_1010
+# @test1         13      0000_1101
+# @test2         15      0000_1111
 
 0101_0000_0000_0000_0001 # @start jz @start ddrctl:Ready
-0001_0000_1011_0000_0000 #        ci ddrctl:lck
-0101_0000_0010_0000_0011 # @lock0 jz @lock0 ddrctl:Locked
 0001_0000_0001_0010_0011 #        ci ddrctl:la0 23h
 0001_0000_0010_0100_0100 #        ci ddrctl:la1 44h
 0001_0000_0011_1000_0010 #        ci ddrctl:la2 82h
@@ -35,23 +28,42 @@ Format:   Bin
 0001_0000_0110_0000_0000 #        ci ddrctl:ld1 00h
 0001_0000_0111_0000_0000 #        ci ddrctl:ld2 00h
 0001_0000_1000_0000_0000 #        ci ddrctl:ld3 00h
-0001_0000_1100_0000_0000 #        ci ddrctl:ulk
 0001_0000_1010_0000_0000 #        ci ddrctl:wrp
-0101_0000_1101_0000_0001 # @test0 jz @test0 ddrctl:Ready
-0001_0000_1011_0000_0000 #        ci ddrctl:lck
-0101_0000_1111_0000_0011 # @lock1 ci @lock1 ddrctl:Locked
+0101_0000_1010_0000_0001 # @test0 jz @test0 ddrctl:Ready
 0001_0000_0101_0000_0000 #        ci ddrctl:ld0 00h
-0001_0000_1100_0000_000  #        ci ddrctl:ulk
 0001_0000_1001_0000_0000 #        ci ddrctl:rdp
-0101_0001_0011_0000_0001 # @test1 jz @test1 ddrctl:Ready
+0101_0000_1101_0000_0001 # @test1 jz @test1 ddrctl:Ready
 0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
-0001_0010_0001_0000_0000 #        ci pushbtn:rbs
-0101_0001_0110_0000_0010 # @test2 jz @test2 pushbtn:Status
-0001_0000_1011_0000_0000 #        ci ddrctl:lck
-0101_0001_1000_0000_0011 # @lock2 jz @lock2 ddrctl:Locked
-0001_0000_0101_0000_0000 #        ci ddrctl:ld0 00h
-0001_0000_1100_0000_0000 #        ci ddrctl:ulk
-0001_0000_1001_0000_0000 #        ci ddrctl:rdp
-0101_0001_1100_0000_0001 # @test3 jz @test3 ddrctl:Ready
-0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
-0011_0001_0110_0000_0000 #        ji @test2
+0011_0000_1111_0000_0000 # @test2 ji @test1
+
+# 0101_0000_0000_0000_0001 # @start jz @start ddrctl:Ready
+# 0001_0000_1011_0000_0000 #        ci ddrctl:lck
+# 0101_0000_0010_0000_0011 # @lock0 jz @lock0 ddrctl:Locked
+# 0001_0000_0001_0010_0011 #        ci ddrctl:la0 23h
+# 0001_0000_0010_0100_0100 #        ci ddrctl:la1 44h
+# 0001_0000_0011_1000_0010 #        ci ddrctl:la2 82h
+# 0001_0000_0100_0000_0000 #        ci ddrctl:la3 00h
+# 0001_0000_0101_0111_0110 #        ci ddrctl:ld0 76h
+# 0001_0000_0110_0000_0000 #        ci ddrctl:ld1 00h
+# 0001_0000_0111_0000_0000 #        ci ddrctl:ld2 00h
+# 0001_0000_1000_0000_0000 #        ci ddrctl:ld3 00h
+# 0001_0000_1100_0000_0000 #        ci ddrctl:ulk
+# 0001_0000_1010_0000_0000 #        ci ddrctl:wrp
+# 0101_0000_1101_0000_0001 # @test0 jz @test0 ddrctl:Ready
+# 0001_0000_1011_0000_0000 #        ci ddrctl:lck
+# 0101_0000_1111_0000_0011 # @lock1 ci @lock1 ddrctl:Locked
+# 0001_0000_0101_0000_0000 #        ci ddrctl:ld0 00h
+# 0001_0000_1100_0000_000  #        ci ddrctl:ulk
+# 0001_0000_1001_0000_0000 #        ci ddrctl:rdp
+# 0101_0001_0011_0000_0001 # @test1 jz @test1 ddrctl:Ready
+# 0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
+# 0001_0010_0001_0000_0000 #        ci pushbtn:rbs
+# 0101_0001_0110_0000_0010 # @test2 jz @test2 pushbtn:Status
+# 0001_0000_1011_0000_0000 #        ci ddrctl:lck
+# 0101_0001_1000_0000_0011 # @lock2 jz @lock2 ddrctl:Locked
+# 0001_0000_0101_0000_0000 #        ci ddrctl:ld0 00h
+# 0001_0000_1100_0000_0000 #        ci ddrctl:ulk
+# 0001_0000_1001_0000_0000 #        ci ddrctl:rdp
+# 0101_0001_1100_0000_0001 # @test3 jz @test3 ddrctl:Ready
+# 0010_0001_0001_0000_0000 #        cr ledbank:ldi ddrctl:Page0
+# 0011_0001_0110_0000_0000 #        ji @test2

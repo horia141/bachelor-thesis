@@ -71,7 +71,6 @@ module BigSDRAM(clock0,clock90,clock180,clock270,reset,count,leds,ddr_cke,ddr_cs
 	   .ddr_dq(ddr_dq),
 	   .ddr_dqs(ddr_dqs));
 
-   
    LedBank
    ledbank (.clock(clock90),
 	    .reset(reset),

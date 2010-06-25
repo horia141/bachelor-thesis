@@ -45,14 +45,15 @@
 `define DdrCtl1_SelectModeRegister_Extended          2'b01
 
 `define DdrCtl1_IntfState_Reset
-`define DdrCtl1_IntfState_WaitIniti
+`define DdrCtl1_IntfState_WaitInit
 `define DdrCtl1_IntfState_Ready
-`define DdrCtl1_IntfState_WaitCommand
+`define DdrCtl1_IntfState_WaitRead
+`define DdrCtl1_IntfState_WaitWrite
 `define DdrCtl1_IntfState_Error
 
 `define DdrCtl1_CoreState_Reset
 `define DdrCtl1_CoreState_WaitInit
-`define DdrCtl1_CoreStaet_Ready
+`define DdrCtl1_CoreState_Ready
 `define DdrCtl1_CoreState_Reading_Activate
 `define DdrCtl1_CoreState_Reading_Wait0
 `define DdrCtl1_CoreState_Reading_Read
@@ -90,6 +91,7 @@
 `define DdrCtl1_InitState_Refresh1_Wait2
 `define DdrCtl1_InitState_ClearDLL
 `define DdrCtl1_InitState_Initialized
+`define DdrCtl1_InitStaet_Error
 
 `define DdrCtl1_State_Reset                          7'h00
 `define DdrCtl1_State_Initializing_PowerUp           7'h01
