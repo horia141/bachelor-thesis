@@ -83,6 +83,8 @@ x remove Seq prefix for SeqAsm type names.
 
 * add per-project defines in makefile which are "-D"-ed into source files.
 
-* make DdrCtl1 error should let the module continue refreshing etc. and after reset and error recovery the memory shouldn't be reinitialized.
+* DdrCtl1 error should let the module continue refreshing etc. and after reset and error recovery the memory shouldn't be reinitialized.
+
+* add an annotations Instruction ROM for simulations. This should hold the assembler source of an instruction.
 
 : the gimp can output .c or .h files with the contents of an image.

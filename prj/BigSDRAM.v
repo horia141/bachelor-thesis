@@ -1,11 +1,8 @@
-module BigSDRAM(clock0,clock90,clock180,clock270,reset,count,leds,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
-   input wire 	      clock90;
    input wire 	      clock180;
    input wire 	      clock270;
    input wire 	      reset;
-
-   input wire 	      count;
 
    output wire [7:0]  leds;
    output wire 	      ddr_cke;
@@ -28,7 +25,7 @@ module BigSDRAM(clock0,clock90,clock180,clock270,reset,count,leds,ddr_cke,ddr_cs
    wire [31:0] 	      ddrctl_page;
    wire 	      ddrctl_ready;
 
-   wire 	      pushbtn_button_status;
+   wire 	      swc_ready;
 
    Seq
    seq (.clock(clock0),
@@ -38,7 +35,7 @@ module BigSDRAM(clock0,clock90,clock180,clock270,reset,count,leds,ddr_cke,ddr_cs
 	.inst_en(1),
 	.ireg_0(ddrctl_page[7:0]),
 	.ireg_1({7'h00,ddrctl_ready}),
-	.ireg_2({7'h00,pushbtn_button_status}),
+	.ireg_2({7'h00,swc_ready}),
 	.ireg_3(8'h00),
 
 	.next(seq_next),
@@ -46,12 +43,13 @@ module BigSDRAM(clock0,clock90,clock180,clock270,reset,count,leds,ddr_cke,ddr_cs
 	.oreg_wen(seq_oreg_wen));
 
    BigSDRAMRom
-   rom (.addr(seq_next[4:0]),
+   rom (.addr(seq_next[5:0]),
 	.data_o(rom_data_o));
 
    DdrCtl1
-   ddrctl (.clock0(clock90),
-	   .clock90(clock180),
+   ddrctl (.clock0(clock180),
+	   .clock90(clock270),
+	   .clock180(clock0),
 	   .reset(reset),
 
 	   .inst(seq_oreg),
@@ -72,22 +70,20 @@ module BigSDRAM(clock0,clock90,clock180,clock270,reset,count,leds,ddr_cke,ddr_cs
 	   .ddr_dqs(ddr_dqs));
 
    LedBank
-   ledbank (.clock(clock90),
+   ledbank (.clock(clock180),
 	    .reset(reset),
 
 	    .inst(seq_oreg),
 	    .inst_en(seq_oreg_wen[1]),
-
+   
 	    .leds(leds));
 
-   PushBtn #(.DebounceWait(10000),
-	     .DebounceSize(14))
-   pushbtn (.clock(clock90),
-	    .reset(reset),
+   Swc
+   swc (.clock(clock180),
+	.reset(reset),
 
-	    .inst(seq_oreg),
-	    .inst_en(seq_oreg_wen[2]),
-	    .button(count),
+	.inst(seq_oreg),
+	.inst_en(seq_oreg_wen[2]),
 
-	    .button_status(pushbtn_button_status));
+	.ready(swc_ready));
 endmodule // BigSDRAM

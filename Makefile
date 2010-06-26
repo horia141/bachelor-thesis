@@ -45,7 +45,7 @@ Prj.RotaryLed.FPGA.Out = RotaryLedFPGA
 Prj.RotaryLed.FPGA.Top = RotaryLedFPGA
 
 Prj.BigSDRAM.All.Src = BigSDRAM.v BigSDRAM.mem
-Prj.BigSDRAM.All.Ref = Seq.All PushBtn.All LedBank.All DdrCtl1.All
+Prj.BigSDRAM.All.Ref = Seq.All Swc.All LedBank.All DdrCtl1.All
 
 Prj.BigSDRAM.Sim.Src = BigSDRAMSim.v BigSDRAMSim.sav
 Prj.BigSDRAM.Sim.Ref = BigSDRAM.All ExtSimDdr.All
@@ -83,7 +83,7 @@ Prj.Rotary.Sim.Out = RotarySim
 Prj.ExtSimDdr.All.Src = ExtSim/Ddr.v
 Prj.ExtSimDdr.All.Ref =
 
-Prj.DdrCtl1.All.Src = DdrCtl1.new.v
+Prj.DdrCtl1.All.Src = DdrCtl1.v
 Prj.DdrCtl1.All.Ref =
 
 Prj.DdrCtl1.Sim.Src = DdrCtl1Sim.v DdrCtl1Sim.sav

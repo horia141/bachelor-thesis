@@ -1,6 +1,10 @@
-module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clockdv,clock2x,clock2x180);
+module ClockManager(clock,reset,clock_fb,locked,clock0,clock90,clock180,clock270,clockdv,clock2x,clock2x180);
+   parameter ExtFeedBack = 0;
+   
    input wire  clock;
    input wire  reset;
+
+   input wire  clock_fb;
 
    output wire locked;
    output wire clock0;
@@ -32,7 +36,7 @@ module ClockManager(clock,reset,locked,clock0,clock90,clock180,clock270,clockdv,
    dcmsp (.CLKIN(clock),
 	  .RST(reset),
 	  
-	  .CLKFB(bufg_O),
+	  .CLKFB(ExtFeedBack ? clock_fb : bufg_O),
 	  .DSSEN(0),
 	  .PSINCDEC(0),
 	  .PSEN(0),

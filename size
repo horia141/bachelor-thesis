@@ -14,3 +14,4 @@ Index   Build   Dev     Prj     Total   Commit
 12      460     224     6580    7264    First version of a simple DDR SDRAM controller.
 13      459     224     6887    7570    First version of the DDR SDRAM controller is done.
 14      471     224     7227    7922    Added BigSDRAM FPGA target.
+15      471     224     8091    8786    Working version of DdrCtl1.

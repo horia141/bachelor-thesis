@@ -1,12 +1,11 @@
-[timestart] 0
-[size] 1678 974
-[pos] -1 -1
-*-18.000000 204945000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 378400
+[size] 1678 1004
+[pos] -1 -488
+*-15.000000 38900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] BigSDRAMSim.
 [treeopen] BigSDRAMSim.bigsdram.
 @28
 BigSDRAMSim.clock0
-BigSDRAMSim.clock90
 BigSDRAMSim.clock180
 BigSDRAMSim.clock270
 @200
@@ -26,15 +25,23 @@ BigSDRAMSim.bigsdram.ddrctl.d_InitCnt200Counter[2047:0]
 BigSDRAMSim.bigsdram.ddrctl.d_AutoRefreshCounter[2047:0]
 @28
 BigSDRAMSim.bigsdram.ddrctl.ready
+BigSDRAMSim.bigsdram.ddrctl.ddr_cke
+BigSDRAMSim.bigsdram.ddrctl.ddr_csn
+BigSDRAMSim.bigsdram.ddrctl.ddr_rasn
+BigSDRAMSim.bigsdram.ddrctl.ddr_casn
+BigSDRAMSim.bigsdram.ddrctl.ddr_wen
+BigSDRAMSim.bigsdram.ddrctl.ddr_dm[1:0]
+@22
+BigSDRAMSim.bigsdram.ddrctl.ddr_dq[15:0]
+@28
+BigSDRAMSim.bigsdram.ddrctl.ddr_dqs[1:0]
 @200
 -ledbank
 @820
 BigSDRAMSim.bigsdram.ledbank.d_Input[2047:0]
 BigSDRAMSim.bigsdram.ledbank.d_State[2047:0]
 @200
--pushbtn
-@820
-BigSDRAMSim.bigsdram.pushbtn.d_Input[2047:0]
-BigSDRAMSim.bigsdram.pushbtn.d_State[2047:0]
-@28
-BigSDRAMSim.count
+-swc
+@821
+BigSDRAMSim.bigsdram.swc.d_Input[2047:0]
+BigSDRAMSim.bigsdram.swc.d_State[2047:0]

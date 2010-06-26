@@ -2,12 +2,9 @@
 
 module BigSDRAMSim;
    reg         clock0;
-   reg 	       clock90;
    reg 	       clock180;
    reg 	       clock270;
    reg 	       reset;
-
-   reg 	       count;
 
    wire [7:0]  leds;
    wire        ddr_cke;
@@ -25,17 +22,12 @@ module BigSDRAMSim;
       #0 $dumpfile(`VCDFILE);
       #0 $dumpvars;
 
-      #500000 $finish;
+      #800000 $finish;
    end
 
    initial begin
       #0 clock0 = 1;
       forever #10 clock0 = ~clock0;
-   end
-
-   initial begin
-      #5 clock90 = 1;
-      forever #10 clock90 = ~clock90;
    end
 
    initial begin
@@ -54,15 +46,9 @@ module BigSDRAMSim;
       #40 reset = 0;
    end
 
-   initial begin
-      #0 count = 0;
-      #205180 count = 1;
-      #202000 count = 0;
-   end
-
    Ddr
-   ddr (.Clk(clock180),
-	.Clk_n(clock0),
+   ddr (.Clk(clock0),
+	.Clk_n(clock180),
 	
 	.Cke(ddr_cke),
 	.Cs_n(ddr_csn),
@@ -77,12 +63,9 @@ module BigSDRAMSim;
 
    BigSDRAM
    bigsdram (.clock0(clock0),
-	     .clock90(clock90),
 	     .clock180(clock180),
 	     .clock270(clock270),
 	     .reset(reset),
-
-	     .count(count),
 
 	     .leds(leds),
 	     .ddr_cke(ddr_cke),

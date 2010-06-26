@@ -204,8 +204,8 @@ module DdrCtl1Sim;
    end // initial begin
 
    Ddr
-   ddr (.Clk(clock90),
-	.Clk_n(clock270),
+   ddr (.Clk(clock180),
+	.Clk_n(clock0),
 	
 	.Cke(ddrctl_ddr_cke),
 	.Cs_n(ddrctl_ddr_csn),
@@ -221,6 +221,7 @@ module DdrCtl1Sim;
    DdrCtl1
    ddrctl (.clock0(clock0),
 	   .clock90(clock90),
+	   .clock180(clock180),
 	   .reset(reset),
 
 	   .inst(inst),
