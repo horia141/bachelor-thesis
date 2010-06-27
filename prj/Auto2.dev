@@ -1,0 +1,10 @@
+Auto2:
+    Sequencer:
+        Type: Seq
+        Outputs: alu swc ledbank vga
+        Inputs: alu.Result swc.Ready
+    Components:
+        alu: Alu
+        swc: Swc
+        ledbank: LedBank
+        vga: VGA
