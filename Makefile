@@ -198,6 +198,10 @@ Dev.LineBR.Src = LineBR/Main.hs
 Dev.LineBR.Ref =
 Dev.LineBR.Out = linebr
 
+Dev.SeqAsm.Src = SeqAsm/Main.hs
+Dev.SeqAsm.Ref =
+Dev.SeqAsm.Out = seqasm
+
 Cfg.OutPath                                = out
 Cfg.RulePath                               = $(Cfg.OutPath)/rule
 Cfg.Prj.SrcPath                            = prj
