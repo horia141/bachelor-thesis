@@ -1,10 +1,9 @@
 Sequencer:
-    RomName: Auto2Rom
+    RomName: BlockFallRom
     Type: Seq
-    Outputs: alu swc ledbank vga
+    Outputs: alu swc vga
     Inputs: alu.Result swc.Ready
 Components:
     alu: Alu
     swc: Swc
-    ledbank: LedBank
     vga: VGA

@@ -1,0 +1,10 @@
+Sequencer:
+    RomName: RotaryLedRom
+    Type: Seq
+    Outputs: alu mrotary ledbank vga
+    Inputs: alu.Result mrotary.LeftStatus mrotary.RightStatus
+Components:
+    alu: Alu
+    mrotary: Rotary
+    ledbank: LedBank
+    vga: VGA
