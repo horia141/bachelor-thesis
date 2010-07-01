@@ -1,65 +1,78 @@
 module Core
-    (DevicesCfg(..),
-     Sequencer(..),
-     Component(..),
-     Inst(..),
-     ArgType(..),
-     FormatAtom(..),
-     Device(..)) where
-
-data DevicesCfg
-    = DevicesCfg {
-        devicesCfgSequencers :: [(String,Sequencer)],
-        devicesCfgComponents :: [(String,Component)]}
+    (CDevice(..),
+     CSequencer(..),
+     CComponent(..),
+     CInst(..),
+     CArgType(..),
+     CFormatAtom(..),
+     SInst(..),
+     SArgType(..)) where
+        
+data CDevice
+    = CDevice {
+        cDeviceRomName :: String,
+        cDeviceSequencer :: CSequencer,
+        cDeviceComponents :: [(String,CComponent)],
+        cDeviceSeqOutputs :: [String],
+        cDeviceSeqInputs :: [(String,String)]}
     deriving (Show)
 
-data Device
-    = Device {
-        deviceRomName :: String,
-        deviceSequencer :: Sequencer,
-        deviceComponents :: [(String,Component)],
-        deviceSeqOutputs :: [String],
-        deviceSeqInputs :: [(String,String)]}
+data CSequencer
+    = CSequencer {
+        cSequencerWordSize :: Int,
+        cSequencerAddressSize :: Int,
+        cSequencerInputs :: Int,
+        cSequencerOutputs :: Int,
+        cSequencerInstructionSize :: Int,
+        cSequencerCommandSize :: Int,
+        cSequencerDeviceCommandSize :: Int,
+        cSequencerInstructions :: [(String,CInst)]}
     deriving (Show)
 
-data Sequencer
-    = Sequencer {
-        sequencerWordSize :: Int,
-        sequencerAddressSize :: Int,
-        sequencerInputs :: Int,
-        sequencerOutputs :: Int,
-        sequencerInstructionSize :: Int,
-        sequencerCommandSize :: Int,
-        sequencerDeviceCommandSize :: Int,
-        sequencerInstructions :: [(String,Inst)]}
+data CComponent
+    = CComponent {
+        cComponentCommandSize :: Int,
+        cComponentArgumentSize :: Int,
+        cComponentOutputs :: [String],
+        cComponentInstructions :: [(String,CInst)]}
     deriving (Show)
 
-data Component
-    = Component {
-        componentCommandSize :: Int,
-        componentArgumentSize :: Int,
-        componentOutputs :: [String],
-        componentInstructions :: [(String,Inst)]}
+data CInst
+    = CInst {
+        cInstArguments :: [(String,CArgType)],
+        cInstOpCode :: Int,
+        cInstFormat :: [CFormatAtom]}
     deriving (Show)
 
-data Inst
-    = Inst {
-        instArguments :: [(String,ArgType)],
-        instOpCode :: Int,
-        instFormat :: [FormatAtom]}
+data CArgType
+    = CImmediate {
+        cImeddiateSize :: Int}
+    | CAddress
+    | CDeviceCommand
+    | CDeviceInput
     deriving (Show)
 
-data ArgType
-    = Immediate {
-        immediateSize :: Int}
-    | Address
-    | DeviceCommand
-    | DeviceInput
+data CFormatAtom
+    = CLiteral {
+        cLiteralValue :: String}
+    | CReference {
+        cReferenceValue :: String}
     deriving (Show)
 
-data FormatAtom
-    = Literal {
-        literalValue :: String}
-    | Reference {
-        referenceValue :: String}
+data SInst
+    = SInst {
+        sInstLabel :: String,
+        sInstAddress :: Int,
+        sInstOpCode :: String,
+        sInstOperands :: [SArgType]}
+    deriving (Show)
+
+data SArgType
+    = SArgImmediate {
+        sArgImmediateValue :: String}
+    | SArgLabel {
+        sArgLabelValue :: String}
+    | SArgDeviceItemPair {
+        sArgDeviceCommandDevice :: String,
+        sArgDeviceCommandItem :: String}
     deriving (Show)

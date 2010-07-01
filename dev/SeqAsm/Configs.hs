@@ -17,10 +17,19 @@ import Text.Regex.Posix ((=~))
 
 import Control.Failure (Failure(..))
 
-import Core (DevicesCfg(..),Sequencer(..),Component(..),Inst(..),ArgType(..),FormatAtom(..),Device(..))
-import Utils (toLefts,maybeToEither,gatherEithers)
+import Core (CDevice(..),CSequencer(..),CComponent(..),CInst(..),CArgType(..),CFormatAtom(..))
+import Utils (toLefts,maybeToEither,gatherEithers,digitToBase2)
 
-parseSequencersCfg :: C8.ByteString -> Either String [(String,Sequencer)]
+parseDeviceCfg :: [(String,CSequencer)] -> [(String,CComponent)] -> C8.ByteString -> Either String CDevice
+parseDeviceCfg sequencers components text =
+    toLefts ("Failed parsing device configuration file!\n"++) $
+    case decode text :: Maybe YamlObject of
+      Nothing -> fail "The file is not a valid YAML format!"
+      Just (Scalar _) -> fail "The file contains an YAML scalar instead of a mapping!"
+      Just (Sequence _) -> fail "The file contains an YAML scalar instead of a mapping!"
+      Just (Mapping deviceMap) -> interpretDevice sequencers components deviceMap
+
+parseSequencersCfg :: C8.ByteString -> Either String [(String,CSequencer)]
 parseSequencersCfg text =
     toLefts ("Failed parsing of sequencers configuration file!\n"++) $
     case decode text :: Maybe YamlObject of
@@ -29,7 +38,7 @@ parseSequencersCfg text =
       Just (Sequence _) -> fail "The file contains an YAML sequence instead of a mapping!"
       Just (Mapping sequencers) -> gatherEithers $ map interpretSequencer sequencers
 
-parseComponentsCfg :: C8.ByteString -> Either String [(String,Component)]
+parseComponentsCfg :: C8.ByteString -> Either String [(String,CComponent)]
 parseComponentsCfg text =
     toLefts ("Failed parsing of components configuration file!\n"++) $
     case decode text :: Maybe YamlObject of
@@ -38,20 +47,38 @@ parseComponentsCfg text =
       Just (Sequence _) -> fail "The file contains an YAML scalar instead of a mapping!"
       Just (Mapping components) -> gatherEithers $ map interpretComponent components
 
-parseDeviceCfg :: DevicesCfg -> C8.ByteString -> Either String Device
-parseDeviceCfg devicesCfg text =
-    toLefts ("Failed parsing device configuration file!\n"++) $
-    case decode text :: Maybe YamlObject of
-      Nothing -> fail "The file is not a valid YAML format!"
-      Just (Scalar _) -> fail "The file contains an YAML scalar instead of a mapping!"
-      Just (Sequence _) -> fail "The file contains an YAML scalar instead of a mapping!"
-      Just (Mapping deviceMap) -> interpretDevice devicesCfg deviceMap
-
 instance Failure ObjectExtractError (Either String) where
     -- failure :: ObjectExtractError -> Either String a
     failure _ = fail ""
 
-interpretSequencer :: (YamlScalar,YamlObject) -> Either String (String,Sequencer)
+interpretDevice :: [(String,CSequencer)] -> [(String,CComponent)] -> [(YamlScalar,YamlObject)] -> Either String CDevice
+interpretDevice sequencers components deviceMap = do
+    sequencerMap <- yamlGetMapFromMap "Sequencer" deviceMap
+
+    romName <- yamlGetScalarFromMap "RomName" sequencerMap
+    stype <- yamlGetScalarFromMap "Type" sequencerMap
+    outputs <- yamlGetScalarFromMap "Outputs" sequencerMap
+    inputs <- yamlGetScalarFromMap "Inputs" sequencerMap
+
+    romNameSymbol <- readSymbol $ C8.unpack $ value romName
+    stypeSymbol <- readSymbol $ C8.unpack $ value stype
+    sequencer <- maybeToEither ("Cannot find sequencer " ++ show stypeSymbol ++ "!") $ lookup stypeSymbol sequencers
+
+    outputsFinal <- return $ words $ C8.unpack $ value outputs
+    inputsFinal <- gatherEithers $ map extractComponentOutput $ words $ C8.unpack $ value inputs
+
+    componentsMap <- yamlGetMapFromMap "Components" deviceMap
+
+    components <- gatherEithers $ map (findDeviceComponents components) componentsMap
+
+    return $ CDevice {
+              cDeviceRomName = romNameSymbol,
+              cDeviceSequencer = sequencer,
+              cDeviceComponents = components,
+              cDeviceSeqOutputs = outputsFinal,
+              cDeviceSeqInputs = inputsFinal}
+
+interpretSequencer :: (YamlScalar,YamlObject) -> Either String (String,CSequencer)
 interpretSequencer (YamlScalar sequencerName _ _,Mapping sequencerMap) =
     toLefts (("Cannot process " ++ show sequencerName ++ "!\n")++) $ do
         configurationMap <- yamlGetMapFromMap "Configuration" sequencerMap
@@ -77,21 +104,21 @@ interpretSequencer (YamlScalar sequencerName _ _,Mapping sequencerMap) =
         instructions <- interpretInstructions wordSizeInt instructionsMap
 
         return $ (C8.unpack sequencerName,
-                  Sequencer {
-                   sequencerWordSize = wordSizeInt,
-                   sequencerAddressSize = addressSizeInt,
-                   sequencerInputs = inputsInt,
-                   sequencerOutputs = outputsInt,
-                   sequencerInstructionSize = instructionSizeInt,
-                   sequencerCommandSize = commandSizeInt,
-                   sequencerDeviceCommandSize = deviceCommandSizeInt,
-                   sequencerInstructions = instructions})
+                  CSequencer {
+                   cSequencerWordSize = wordSizeInt,
+                   cSequencerAddressSize = addressSizeInt,
+                   cSequencerInputs = inputsInt,
+                   cSequencerOutputs = outputsInt,
+                   cSequencerInstructionSize = instructionSizeInt,
+                   cSequencerCommandSize = commandSizeInt,
+                   cSequencerDeviceCommandSize = deviceCommandSizeInt,
+                   cSequencerInstructions = instructions})
 interpretSequencer (seqName,Sequence _) =
     fail $ "Sequencer's " ++ (show $ value seqName) ++ " body is a sequence, instead of a mapping!"
 interpretSequencer (seqName,Scalar _) =
     fail $ "Sequencer's " ++ (show $ value seqName) ++ " body is a scalar value, instead of a mapping!"
 
-interpretComponent :: (YamlScalar,YamlObject) -> Either String (String,Component)
+interpretComponent :: (YamlScalar,YamlObject) -> Either String (String,CComponent)
 interpretComponent (YamlScalar componentName _ _,Mapping componentMap) =
     toLefts (("Cannot process " ++ show componentName ++ "!\n")++) $ do
         configurationMap <- yamlGetMapFromMap "Configuration" componentMap
@@ -109,48 +136,21 @@ interpretComponent (YamlScalar componentName _ _,Mapping componentMap) =
         instructions <- interpretInstructions argumentSizeInt instructionsMap
 
         return $ (C8.unpack componentName,
-                  Component {
-                   componentCommandSize = commandSizeInt,
-                   componentArgumentSize = argumentSizeInt,
-                   componentOutputs = outputsFinal,
-                   componentInstructions = instructions})
+                  CComponent {
+                   cComponentCommandSize = commandSizeInt,
+                   cComponentArgumentSize = argumentSizeInt,
+                   cComponentOutputs = outputsFinal,
+                   cComponentInstructions = instructions})
 interpretComponent (seqName,Sequence _) =
     fail $ "Component's " ++ (show $ value seqName) ++ " body is a sequence, instead of a mapping!"
 interpretComponent (seqName,Scalar _) =
     fail $ "Component's " ++ (show $ value seqName) ++ " body is a scalar value, instead of a mapping!"
 
-interpretDevice :: DevicesCfg -> [(YamlScalar,YamlObject)] -> Either String Device
-interpretDevice devicesCfg@(DevicesCfg sequencers _) deviceMap = do
-    sequencerMap <- yamlGetMapFromMap "Sequencer" deviceMap
-
-    romName <- yamlGetScalarFromMap "RomName" sequencerMap
-    stype <- yamlGetScalarFromMap "Type" sequencerMap
-    outputs <- yamlGetScalarFromMap "Outputs" sequencerMap
-    inputs <- yamlGetScalarFromMap "Inputs" sequencerMap
-
-    romNameSymbol <- readSymbol $ C8.unpack $ value romName
-    stypeSymbol <- readSymbol $ C8.unpack $ value stype
-    sequencer <- maybeToEither ("Cannot find sequencer " ++ show stypeSymbol ++ "!") $ lookup stypeSymbol sequencers
-
-    outputsFinal <- return $ words $ C8.unpack $ value outputs
-    inputsFinal <- gatherEithers $ map extractComponentOutput $ words $ C8.unpack $ value inputs
-
-    componentsMap <- yamlGetMapFromMap "Components" deviceMap
-
-    components <- gatherEithers $ map (findDeviceComponents devicesCfg) componentsMap
-
-    return $ Device {
-               deviceRomName = romNameSymbol,
-               deviceSequencer = sequencer,
-               deviceComponents = components,
-               deviceSeqOutputs = outputsFinal,
-               deviceSeqInputs = inputsFinal}
-
-interpretInstructions :: Int -> [(YamlScalar,YamlObject)] -> Either String [(String,Inst)]
+interpretInstructions :: Int -> [(YamlScalar,YamlObject)] -> Either String [(String,CInst)]
 interpretInstructions wordSize instructionsMap =
     gatherEithers $ map (interpretInstruction wordSize) instructionsMap
     
-interpretInstruction :: Int -> (YamlScalar,YamlObject) -> Either String (String,Inst)
+interpretInstruction :: Int -> (YamlScalar,YamlObject) -> Either String (String,CInst)
 interpretInstruction wordSize (YamlScalar instructionName _ _,Mapping instructionMap) = do
     (name,arguments) <- extractNameAndArgs wordSize (C8.unpack instructionName)
 
@@ -160,12 +160,12 @@ interpretInstruction wordSize (YamlScalar instructionName _ _,Mapping instructio
 
     parsedFormat <- extractFormat $ C8.unpack $ value format
 
-    return $ (name,Inst {
-                   instArguments = arguments,
-                   instOpCode = opCodeInt,
-                   instFormat = parsedFormat})
+    return $ (name,CInst {
+                   cInstArguments = arguments,
+                   cInstOpCode = opCodeInt,
+                   cInstFormat = parsedFormat})
 
-extractNameAndArgs :: Int -> String -> Either String (String,[(String,ArgType)])
+extractNameAndArgs :: Int -> String -> Either String (String,[(String,CArgType)])
 extractNameAndArgs wordSize fullName = do
     (afterName,name) <- case fullName =~ "^([[:alpha:]_][[:alnum:]_]*)[[:space:]]*" :: (String,String,String,[String]) of
                           ("",captureName,afterName,[name]) -> return (afterName,name)
@@ -174,7 +174,7 @@ extractNameAndArgs wordSize fullName = do
 
     return (name,args)
 
-extractArg :: Int -> String -> Maybe (Either String (String,ArgType),String)
+extractArg :: Int -> String -> Maybe (Either String (String,CArgType),String)
 extractArg _ "" =
     Nothing
 extractArg wordSize whatsLeft = 
@@ -186,23 +186,23 @@ extractArg wordSize whatsLeft =
       _ -> do
         Just (Left $ "Could not make sense of instruction arguments starting at " ++ show whatsLeft ++ "!","")
 
-extractArgType :: Int -> String -> Either String ArgType
-extractArgType wordSize "Immediate" = return (Immediate wordSize)
-extractArgType wordSize "Address" = return Address
-extractArgType wordSize "DeviceCommand" = return DeviceCommand
-extractArgType wordSize "DeviceInput" = return DeviceInput
+extractArgType :: Int -> String -> Either String CArgType
+extractArgType wordSize "Immediate" = return (CImmediate wordSize)
+extractArgType wordSize "Address" = return CAddress
+extractArgType wordSize "DeviceCommand" = return CDeviceCommand
+extractArgType wordSize "DeviceInput" = return CDeviceInput
 extractArgType wordSize argType =
     case argType =~ "Immediate[[:space:]]*\\[size=([[:digit:]]+)\\]" :: (String,String,String,[String]) of
       ("",matched,"",[size]) ->
-          return $ Immediate (read size)
+          return $ CImmediate (read size)
       _ ->
           fail $ "Error in argument type " ++ show argType ++ "!"
 
-extractFormat :: String -> Either String [FormatAtom]
+extractFormat :: String -> Either String [CFormatAtom]
 extractFormat format =
     gatherEithers $ unfoldr extractAtom format
 
-extractAtom :: String -> Maybe (Either String FormatAtom,String)
+extractAtom :: String -> Maybe (Either String CFormatAtom,String)
 extractAtom "" =
     Nothing
 extractAtom whatsLeft =
@@ -210,8 +210,8 @@ extractAtom whatsLeft =
       ("",matched,after,[supposedAtom]) ->
           case (readLiteral supposedAtom,readSymbol supposedAtom) of
             (Right _ ,Right  _) -> Just (Left $ "Could not make sense of format at " ++ show whatsLeft ++ "!","It is both a literal and a reference!")
-            (Right literal ,Left _) -> Just (Right $ Core.Literal literal,after)
-            (Left _, Right reference) -> Just (Right $ Core.Reference reference,after)
+            (Right literal ,Left _) -> Just (Right $ CLiteral literal,after)
+            (Left _, Right reference) -> Just (Right $ CReference reference,after)
             (Left errorMessage0, Left errorMessage1) ->
                 Just (Left $ "Could not make sense of format at " ++ show whatsLeft ++ "!" ++ "\n" ++ 
                              "It is neither a literal, nor a reference!" ++ "\n" ++
@@ -226,8 +226,8 @@ extractComponentOutput componentOutput =
       ("",matched,"",[component,output]) -> return (component,output)
       _ -> fail $ "Could not understand device inputs " ++ show componentOutput ++ "!"
 
-findDeviceComponents :: DevicesCfg -> (YamlScalar,YamlObject) -> Either String (String,Component)
-findDeviceComponents (DevicesCfg _ components) (YamlScalar componentName _ _, componentTypeObject) = do
+findDeviceComponents :: [(String,CComponent)] -> (YamlScalar,YamlObject) -> Either String (String,CComponent)
+findDeviceComponents components (YamlScalar componentName _ _, componentTypeObject) = do
     (YamlScalar componentType _ _) <- yamlGetScalarFromObject (C8.unpack componentName) componentTypeObject
     component <- maybeToEither ("Cannot find component " ++ show componentType ++ "!") $ lookup (C8.unpack componentType) components
 
@@ -264,42 +264,6 @@ readLiteral supposedLiteral =
             ([],results) -> return $ concat results
             (errorMessages,_) -> fail $ intercalate "\n" errorMessages
       _ -> fail $ "Invalid literal value " ++ show supposedLiteral ++ "!"
-    where digitToBase2 :: String -> Char -> Either String String
-          digitToBase2 "b" '0' = Right "0"
-          digitToBase2 "b" '1' = Right "1"
-          digitToBase2 "b" digit = Left $ "Invalid binary digit " ++ show digit ++ " in literal " ++ show supposedLiteral ++ "!"
-          digitToBase2 "o" '0' = Right "000"
-          digitToBase2 "o" '1' = Right "001"
-          digitToBase2 "o" '2' = Right "010"
-          digitToBase2 "o" '3' = Right "011"
-          digitToBase2 "o" '4' = Right "100"
-          digitToBase2 "o" '5' = Right "101"
-          digitToBase2 "o" '6' = Right "110"
-          digitToBase2 "o" '7' = Right "111"
-          digitToBase2 "o" digit = Left $ "Invalid octal digit " ++ show digit ++ " in literal " ++ show supposedLiteral ++ "!"
-          digitToBase2 "h" '0' = Right "0000"
-          digitToBase2 "h" '1' = Right "0001"
-          digitToBase2 "h" '2' = Right "0010"
-          digitToBase2 "h" '3' = Right "0011"
-          digitToBase2 "h" '4' = Right "0100"
-          digitToBase2 "h" '5' = Right "0101"
-          digitToBase2 "h" '6' = Right "0110"
-          digitToBase2 "h" '7' = Right "0111"
-          digitToBase2 "h" '8' = Right "1000"
-          digitToBase2 "h" '9' = Right "1001"
-          digitToBase2 "h" 'A' = Right "1010"
-          digitToBase2 "h" 'B' = Right "1011"
-          digitToBase2 "h" 'C' = Right "1100"
-          digitToBase2 "h" 'D' = Right "1101"
-          digitToBase2 "h" 'E' = Right "1110"
-          digitToBase2 "h" 'F' = Right "1111"
-          digitToBase2 "h" 'a' = Right "1010"
-          digitToBase2 "h" 'b' = Right "1011"
-          digitToBase2 "h" 'c' = Right "1100"
-          digitToBase2 "h" 'd' = Right "1101"
-          digitToBase2 "h" 'e' = Right "1110"
-          digitToBase2 "h" 'f' = Right "1111"
-          digitToBase2 "h" digit = Left $ "Invalid hex digit " ++ show digit ++ " in literal " ++ show supposedLiteral ++ "!"
 
 readSymbol :: String -> Either String String
 readSymbol supposedReference =

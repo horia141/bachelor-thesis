@@ -4,11 +4,6 @@ import Control.Monad (forM)
 
 import Data.List (intercalate)
 
-import Text.ParserCombinators.Parsec
-import Text.ParserCombinators.Parsec.Token
-import Text.ParserCombinators.Parsec.Language
-import Text.ParserCombinators.Parsec.Perm
-
 import System.Console.GetOpt
 import System.Environment
 

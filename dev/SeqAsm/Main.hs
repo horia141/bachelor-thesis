@@ -1,7 +1,8 @@
 import Data.ByteString.Char8 as C8 (ByteString(..),readFile)
 
-import Core (DevicesCfg(..),Sequencer(..),Component(..),Inst(..),ArgType(..),FormatAtom(..),Device(..))
+import Core (CDevice(..),CSequencer(..),CComponent(..),CInst(..),CArgType(..),CFormatAtom(..),SInst(..),SArgType(..))
 import Configs (parseSequencersCfg,parseComponentsCfg,parseDeviceCfg)
+import Compiler (compile)
 
 main :: IO ()
 main = do
@@ -17,7 +18,7 @@ main = do
            (Right components) -> do 
                putStrLn $ show components
                
-               case (parseDeviceCfg (DevicesCfg sequencers components) deviceText) of
+               case (parseDeviceCfg sequencers components deviceText) of
                  (Right device) -> putStrLn $ show device
                  (Left error) -> putStrLn error
            (Left error) -> putStrLn error
