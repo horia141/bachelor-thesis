@@ -2,6 +2,11 @@ module Main where
 
 import Control.Monad (forM)
 
+import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec.Token
+import Text.ParserCombinators.Parsec.Language
+import Text.ParserCombinators.Parsec.Perm
+
 import Data.List (intercalate)
 
 import System.Console.GetOpt
