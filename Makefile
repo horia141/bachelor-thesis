@@ -198,7 +198,7 @@ Dev.LineBR.Src = LineBR/Main.hs
 Dev.LineBR.Ref =
 Dev.LineBR.Out = linebr
 
-Dev.SeqAsm.Src = SeqAsm/Main.hs SeqAsm/Core.hs SeqAsm/Utils.hs SeqAsm/Configs.hs
+Dev.SeqAsm.Src = SeqAsm/Main.hs SeqAsm/Core.hs SeqAsm/Utils.hs SeqAsm/Configs.hs SeqAsm/Compiler.hs
 Dev.SeqAsm.Ref =
 Dev.SeqAsm.Out = seqasm
 

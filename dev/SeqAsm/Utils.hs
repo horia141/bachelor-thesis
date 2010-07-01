@@ -1,15 +1,24 @@
 module Utils
     (toLefts,
+     toRights,
      maybeToEither,
      gatherEithers,
-     digitToBase2) where
+     digitToBase2,
+     intToBinaryString) where
 
 import Data.Either (partitionEithers)
 import Data.List (intercalate)
+import Data.Char (intToDigit)
     
+import Numeric (showIntAtBase)
+
 toLefts :: (a -> c) -> Either a b -> Either c b
 toLefts f (Left x) = Left $ f x
 toLefts f (Right x) = Right x
+
+toRights :: (b -> c) -> Either a b -> Either a c
+toRights f (Left x) = Left x
+toRights f (Right x) = Right $ f x
 
 maybeToEither :: a -> Maybe b -> Either a b
 maybeToEither _ (Just x) = Right x
@@ -57,3 +66,10 @@ digitToBase2 "h" 'd' = Right "1101"
 digitToBase2 "h" 'e' = Right "1110"
 digitToBase2 "h" 'f' = Right "1111"
 digitToBase2 "h" digit = Left $ "Invalid hex digit " ++ show digit ++ " in literal!"
+
+intToBinaryString :: Int -> Int -> String
+intToBinaryString size a =
+    let binString = showIntAtBase 2 intToDigit a ""
+    in if length binString > size
+       then error $ "FATAL: intToBinaryString " ++ show size ++ " " ++ show a ++ " can't produce proper string!"
+       else (replicate (size - (length binString)) '0') ++ binString

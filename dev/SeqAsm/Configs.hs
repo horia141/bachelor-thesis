@@ -86,15 +86,19 @@ interpretSequencer (YamlScalar sequencerName _ _,Mapping sequencerMap) =
         wordSize <- yamlGetScalarFromMap "WordSize" configurationMap
         addressSize <- yamlGetScalarFromMap "AddressSize" configurationMap
         inputs <- yamlGetScalarFromMap "Inputs" configurationMap
+        inputsSize <- yamlGetScalarFromMap "InputsSize" configurationMap
         outputs <- yamlGetScalarFromMap "Outputs" configurationMap
+        outputsSize <- yamlGetScalarFromMap "OutputsSize" configurationMap
         instructionSize <- yamlGetScalarFromMap "InstructionSize" configurationMap
         commandSize <- yamlGetScalarFromMap "CommandSize" configurationMap
-        deviceCommandSize <- yamlGetScalarFromMap "DeviceCommandSize" configurationMap
+        deviceCommandSize <- yamlGetScalarFromMap "ComponentCommandSize" configurationMap
 
         wordSizeInt <- readInt $ C8.unpack $ value wordSize
         addressSizeInt <- readInt $ C8.unpack $ value addressSize
         inputsInt <- readInt $ C8.unpack $ value inputs
+        inputsSizeInt <- readInt $ C8.unpack $ value inputsSize
         outputsInt <- readInt $ C8.unpack $ value outputs
+        outputsSizeInt <- readInt $ C8.unpack $ value outputsSize
         instructionSizeInt <- readInt $ C8.unpack $ value instructionSize
         commandSizeInt <- readInt $ C8.unpack $ value commandSize
         deviceCommandSizeInt <- readInt $ C8.unpack $ value deviceCommandSize
@@ -105,13 +109,16 @@ interpretSequencer (YamlScalar sequencerName _ _,Mapping sequencerMap) =
 
         return $ (C8.unpack sequencerName,
                   CSequencer {
+                   cSequencerName = C8.unpack sequencerName,
                    cSequencerWordSize = wordSizeInt,
                    cSequencerAddressSize = addressSizeInt,
                    cSequencerInputs = inputsInt,
+                   cSequencerInputsSize = inputsSizeInt,
                    cSequencerOutputs = outputsInt,
+                   cSequencerOutputsSize = outputsSizeInt,
                    cSequencerInstructionSize = instructionSizeInt,
                    cSequencerCommandSize = commandSizeInt,
-                   cSequencerDeviceCommandSize = deviceCommandSizeInt,
+                   cSequencerComponentCommandSize = deviceCommandSizeInt,
                    cSequencerInstructions = instructions})
 interpretSequencer (seqName,Sequence _) =
     fail $ "Sequencer's " ++ (show $ value seqName) ++ " body is a sequence, instead of a mapping!"
@@ -137,6 +144,7 @@ interpretComponent (YamlScalar componentName _ _,Mapping componentMap) =
 
         return $ (C8.unpack componentName,
                   CComponent {
+                   cComponentName = C8.unpack componentName,
                    cComponentCommandSize = commandSizeInt,
                    cComponentArgumentSize = argumentSizeInt,
                    cComponentOutputs = outputsFinal,
@@ -161,8 +169,8 @@ interpretInstruction wordSize (YamlScalar instructionName _ _,Mapping instructio
     parsedFormat <- extractFormat $ C8.unpack $ value format
 
     return $ (name,CInst {
-                   cInstArguments = arguments,
                    cInstOpCode = opCodeInt,
+                   cInstArguments = arguments,
                    cInstFormat = parsedFormat})
 
 extractNameAndArgs :: Int -> String -> Either String (String,[(String,CArgType)])
@@ -188,9 +196,9 @@ extractArg wordSize whatsLeft =
 
 extractArgType :: Int -> String -> Either String CArgType
 extractArgType wordSize "Immediate" = return (CImmediate wordSize)
-extractArgType wordSize "Address" = return CAddress
-extractArgType wordSize "DeviceCommand" = return CDeviceCommand
-extractArgType wordSize "DeviceInput" = return CDeviceInput
+extractArgType wordSize "Label" = return CLabel
+extractArgType wordSize "ComponentCommand" = return CComponentCommand
+extractArgType wordSize "ComponentInput" = return CComponentInput
 extractArgType wordSize argType =
     case argType =~ "Immediate[[:space:]]*\\[size=([[:digit:]]+)\\]" :: (String,String,String,[String]) of
       ("",matched,"",[size]) ->

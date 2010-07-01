@@ -19,18 +19,22 @@ data CDevice
 
 data CSequencer
     = CSequencer {
+        cSequencerName :: String,
         cSequencerWordSize :: Int,
         cSequencerAddressSize :: Int,
         cSequencerInputs :: Int,
+        cSequencerInputsSize :: Int,
         cSequencerOutputs :: Int,
+        cSequencerOutputsSize :: Int,
         cSequencerInstructionSize :: Int,
         cSequencerCommandSize :: Int,
-        cSequencerDeviceCommandSize :: Int,
+        cSequencerComponentCommandSize :: Int,
         cSequencerInstructions :: [(String,CInst)]}
     deriving (Show)
 
 data CComponent
     = CComponent {
+        cComponentName :: String,
         cComponentCommandSize :: Int,
         cComponentArgumentSize :: Int,
         cComponentOutputs :: [String],
@@ -39,17 +43,17 @@ data CComponent
 
 data CInst
     = CInst {
-        cInstArguments :: [(String,CArgType)],
         cInstOpCode :: Int,
+        cInstArguments :: [(String,CArgType)],
         cInstFormat :: [CFormatAtom]}
     deriving (Show)
 
 data CArgType
     = CImmediate {
         cImeddiateSize :: Int}
-    | CAddress
-    | CDeviceCommand
-    | CDeviceInput
+    | CLabel
+    | CComponentCommand
+    | CComponentInput
     deriving (Show)
 
 data CFormatAtom
@@ -63,16 +67,18 @@ data SInst
     = SInst {
         sInstLabel :: String,
         sInstAddress :: Int,
-        sInstOpCode :: String,
-        sInstOperands :: [SArgType]}
+        sInstInstName :: String,
+        sInstOperands :: [SArgType],
+        sInstLine :: String,
+        sInstLineNumber :: Int}
     deriving (Show)
 
 data SArgType
-    = SArgImmediate {
+    = SImmediate {
         sArgImmediateValue :: String}
-    | SArgLabel {
+    | SLabel {
         sArgLabelValue :: String}
-    | SArgDeviceItemPair {
-        sArgDeviceCommandDevice :: String,
-        sArgDeviceCommandItem :: String}
+    | SComponentItemPair {
+        sArgComponentCommandComponent :: String,
+        sArgComponentCommandItem :: String}
     deriving (Show)

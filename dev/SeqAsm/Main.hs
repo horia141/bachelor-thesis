@@ -1,28 +1,53 @@
-import Data.ByteString.Char8 as C8 (ByteString(..),readFile)
+module Main where
+
+import Data.ByteString.Char8 as C8 (ByteString(..),readFile,unpack)
+import Data.List (intercalate)
+
+import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),getOpt,usageInfo)
+import System.Environment (getArgs)
 
 import Core (CDevice(..),CSequencer(..),CComponent(..),CInst(..),CArgType(..),CFormatAtom(..),SInst(..),SArgType(..))
 import Configs (parseSequencersCfg,parseComponentsCfg,parseDeviceCfg)
 import Compiler (compile)
 
+data ClOptions
+    = ClOptions {
+        clOptionsOutFile :: String,
+        clOptionsSequencersFile :: String,
+        clOptionsComponentsFile :: String,
+        clOptionsDeviceFile :: String}
+    deriving (Show)
+
+clHeader = "seqasm [OPTION..] SOURCEFILE"
+
+clOptions :: [OptDescr (ClOptions -> ClOptions)]
+clOptions = [Option ['o'] ["outfile"]    (ReqArg (\x -> (\ opts -> opts {clOptionsOutFile = x})) "File") "Output File",
+             Option ['s'] ["sequencers"] (ReqArg (\x -> (\ opts -> opts {clOptionsSequencersFile = x})) "File") "Sequencers File",
+             Option ['c'] ["components"] (ReqArg (\x -> (\ opts -> opts {clOptionsComponentsFile = x})) "File") "Components File",
+             Option ['d'] ["components"] (ReqArg (\x -> (\ opts -> opts {clOptionsDeviceFile = x})) "File") "Device File"]
+
 main :: IO ()
 main = do
-  sequencersCfg <- C8.readFile "/home/horia/work/batchelor/v6/prj/Sequencers.cfg"
-  componentsCfg <- C8.readFile "/home/horia/work/batchelor/v6/prj/Components.cfg"
-  deviceText    <- C8.readFile "/home/horia/work/batchelor/v6/prj/Auto2.dev"
+  args <- getArgs
 
-  case (parseSequencersCfg sequencersCfg) of
-    (Right sequencers) -> do 
-         putStrLn $ show sequencers
+  case getOpt Permute clOptions args of
+    (optArgs,[sourceFile],[]) -> do
+         let options = foldr (\ x i -> x i) (ClOptions "" "" "" "") optArgs
 
-         case (parseComponentsCfg componentsCfg) of
-           (Right components) -> do 
-               putStrLn $ show components
-               
-               case (parseDeviceCfg sequencers components deviceText) of
-                 (Right device) -> putStrLn $ show device
-                 (Left error) -> putStrLn error
-           (Left error) -> putStrLn error
-    (Left error) -> putStrLn error
+         sequencersText <- C8.readFile $ clOptionsSequencersFile options
+         componentsText <- C8.readFile $ clOptionsComponentsFile options
+         deviceText <- C8.readFile $ clOptionsDeviceFile options
+         sourceText <- C8.readFile $ sourceFile
 
+         let parseResult = do sequencers <- parseSequencersCfg sequencersText
+                              components <- parseComponentsCfg componentsText
+                              device <- parseDeviceCfg sequencers components deviceText
+                              result <- compile device $ C8.unpack sourceText
 
+                              return result
 
+         case parseResult of
+           Right result -> writeFile (clOptionsOutFile options) result
+           Left errorMessages -> putStrLn errorMessages
+    (_,_,errorMessages) ->
+        putStrLn $ intercalate "\n" errorMessages ++ usageInfo clHeader clOptions
