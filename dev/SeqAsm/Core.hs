@@ -49,8 +49,7 @@ data CInst
     deriving (Show)
 
 data CArgType
-    = CImmediate {
-        cImeddiateSize :: Int}
+    = CImmediate
     | CLabel
     | CComponentCommand
     | CComponentInput

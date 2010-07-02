@@ -195,16 +195,16 @@ extractArg wordSize whatsLeft =
         Just (Left $ "Could not make sense of instruction arguments starting at " ++ show whatsLeft ++ "!","")
 
 extractArgType :: Int -> String -> Either String CArgType
-extractArgType wordSize "Immediate" = return (CImmediate wordSize)
-extractArgType wordSize "Label" = return CLabel
-extractArgType wordSize "ComponentCommand" = return CComponentCommand
-extractArgType wordSize "ComponentInput" = return CComponentInput
+extractArgType wordSize "Immediate" =
+    return CImmediate
+extractArgType wordSize "Label" =
+    return CLabel
+extractArgType wordSize "ComponentCommand" =
+    return CComponentCommand
+extractArgType wordSize "ComponentInput" =
+    return CComponentInput
 extractArgType wordSize argType =
-    case argType =~ "Immediate[[:space:]]*\\[size=([[:digit:]]+)\\]" :: (String,String,String,[String]) of
-      ("",matched,"",[size]) ->
-          return $ CImmediate (read size)
-      _ ->
-          fail $ "Error in argument type " ++ show argType ++ "!"
+    fail $ "Error in argument type " ++ show argType ++ "!"
 
 extractFormat :: String -> Either String [CFormatAtom]
 extractFormat format =

@@ -54,9 +54,9 @@ resolveArguments device labels arguments operands
         gatherEithers $ zipWith (resolveArgument device labels) arguments operands
 
 resolveArgument :: CDevice -> [(String,Int)] -> (String,CArgType) -> SArgType -> Either String (String,String)
-resolveArgument (CDevice romName sequencer components seqOutputs seqInputs) labels (argumentName,CImmediate size) (SImmediate value)
-    | length value /= size =
-        fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ show size ++ " bits, but it received one of " ++ (show $ length value) ++ " bits!"
+resolveArgument (CDevice romName sequencer components seqOutputs seqInputs) labels (argumentName,CImmediate) (SImmediate value)
+    | length value /= (cSequencerWordSize sequencer) =
+        fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ (show $ cSequencerWordSize sequencer) ++ " bits, but it received one of " ++ (show $ length value) ++ " bits!"
     | otherwise =
         return (argumentName,replicate (cSequencerWordSize sequencer - length value) '0' ++ value)
 resolveArgument (CDevice romName sequencer components seqOutputs seqInputs) labels (argumentName,CLabel) (SLabel value) = do
@@ -83,10 +83,10 @@ resolveArgument (CDevice romName sequencer components seqOutputs seqInputs) labe
                            elemIndex (componentName,item) seqInputs
 
     return (argumentName,intToBinaryString (cSequencerInputsSize sequencer) componentInputIndex)
-resolveArgument device labels (argumentName,CImmediate size) (SLabel value) =
-    fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ show size ++ " bits, but it received label \"@" ++ value ++ "\"!"
-resolveArgument device labels (argumentName,CImmediate size) (SComponentItemPair component item) =
-    fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ show size ++ " bits, bit it received the pair \"" ++ component ++ "." ++ item ++ "\"!"
+resolveArgument device labels (argumentName,CImmediate) (SLabel value) =
+    fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ (show $ cSequencerWordSize $ cDeviceSequencer device) ++ " bits, but it received label \"@" ++ value ++ "\"!"
+resolveArgument device labels (argumentName,CImmediate) (SComponentItemPair component item) =
+    fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ (show $ cSequencerWordSize $ cDeviceSequencer device) ++ " bits, bit it received the pair \"" ++ component ++ "." ++ item ++ "\"!"
 resolveArgument device labels (argumentName,CLabel) (SImmediate _) =
     fail $ "Instruction expects as argument " ++ show argumentName ++ " a label, but it received an immediate!"
 resolveArgument device labels (argumentName,CLabel) (SComponentItemPair component item) =
@@ -95,7 +95,7 @@ resolveArgument device labels (argumentName,CComponentCommand) (SImmediate _) =
     fail $ "Instruction expects as argument " ++ show argumentName ++ " a device command, but it received an immediate!"
 resolveArgument device labels (argumentName,CComponentCommand) (SLabel value) =
     fail $ "Instruction expects as argument " ++ show argumentName ++ " a device command, but it received label \"@" ++ value ++ "\"!"
-resolveArgument device labels (argumentName,CComponentInput) (SImmediate value) =
+resolveArgument device labels (argumentName,CComponentInput) (SImmediate _) =
     fail $ "Instruction expects as argument " ++ show argumentName ++ " a device input, but it received an immediate!"
 resolveArgument device labels (argumentName,CComponentInput) (SLabel value) =
     fail $ "Instruction expects as argument " ++ show argumentName ++ " a device input, but it received label \"@" ++ value ++ "\"!"
