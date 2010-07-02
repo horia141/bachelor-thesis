@@ -237,7 +237,7 @@ module DdrCtl1(clock0,clock90,clock180,reset,inst,inst_en,page,ready,ddr_cke,ddr
 
 		   `DdrCtl1_LA2: begin
 		      s_IntfState   <= `DdrCtl1_IntfState_Ready;
-		      s_IntfAddress <= {s_IntfAddress[31:25],w_InstImm,s_IntfAddress[15:0]};
+		      s_IntfAddress <= {s_IntfAddress[31:24],w_InstImm,s_IntfAddress[15:0]};
 		      s_IntfPage    <= s_IntfPage;
 		   end
 

@@ -1,5 +1,5 @@
 Sequencer:
-    RomName: PressCount
+    RomName: PressCountRom
     Type: Seq
     Outputs: alu pushbtnu pushbtnd ledbank vga
     Inputs: alu.Result pushbtnu.ButtonStatus pushbtnd.ButtonStatus

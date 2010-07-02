@@ -1,0 +1,9 @@
+@start ci swc.ld0 FF:h
+       ci swc.ld1 FF:h
+       ci swc.ld2 FF:h
+       cc swc.ccd
+@loop  jz @loop swc.Ready
+       ci alu.add 01:h
+       cr ledbank.ldi alu.Result
+       cr vga.ld3 alu.Result
+       ji @start

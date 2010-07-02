@@ -95,6 +95,11 @@ x remove Seq prefix for SeqAsm type names.
     * the fact that all opcodes fit into the allowed bits (for both sequencers and components)
     * the fact that all sequencers have enough bits to command each device (ComponentCommandSize >= component.CommandSize).
     * check that, in the device file, every component appears at the outputs.
+    * check that the program fits in memory.
+
+* make compiler produce SeqAsm.mem annotations.
+
+* remove size attribute from immediate.
 
 : for the seqasm tool, core concepts are the fact that there is a stream of instructions which must be translated to a stream of bits, taking note of the system being targeted, the fact that there are certain elements useful in assembly only (labels, numbers, symbols etc.) and which have no meaning to the translated binary. Concepts which we take for granted ar the fact that there are instructions which must be translated into their binary equivalents, which take a number of arguments, which can be numbers (literals in different forms), labels, device instructions and device outputs. All translations from numbers to binary streams, from labels to binary streams, from device instructions to binary streams and from device ouputs to binary streams, are controlled by a Device.cfg file and a *.dev file (which together describe all sequencers and components and our particular system).
 

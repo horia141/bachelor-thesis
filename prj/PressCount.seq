@@ -1,0 +1,9 @@
+@startu  cc pushbtnu.rdbs
+@startd  cc pushbtnd.rdbs
+@testu   jz @testd pushbtnu.ButtonStatus
+         ci alu.add 01:h
+@testd   jz @display pushbtnd.ButtonStatus
+         ci alu.sub 01:h
+@display cr ledbank.ldi alu.Result
+         cr vga.ld3 alu.Result
+	    ji @startu	

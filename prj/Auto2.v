@@ -36,7 +36,7 @@ module Auto2(clock0,clock180,reset,leds,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 	.oreg_wen(seq_oreg_wen));
 
    Auto2Rom
-   rom (.addr(seq_next[3:0]),
+   rom (.addr(seq_next),
 	.data_o(rom_data_o));
 
    Alu

@@ -19,7 +19,7 @@ compile device text = do
     insts <- parseSeqText text
     binaryLines <- gatherEithers $ map (compileInst device (getLabelAddresses insts)) insts
 
-    return $ genBody device ++ intercalate "\n" binaryLines
+    return $ genBody device ++ intercalate "\n" binaryLines ++ "\n"
 
 genBody :: CDevice -> String
 genBody (CDevice romName sequencer components seqOutputs seqInputs) =
@@ -54,11 +54,11 @@ resolveArguments device labels arguments operands
         gatherEithers $ zipWith (resolveArgument device labels) arguments operands
 
 resolveArgument :: CDevice -> [(String,Int)] -> (String,CArgType) -> SArgType -> Either String (String,String)
-resolveArgument device labels (argumentName,CImmediate size) (SImmediate value)
+resolveArgument (CDevice romName sequencer components seqOutputs seqInputs) labels (argumentName,CImmediate size) (SImmediate value)
     | length value /= size =
         fail $ "Instruction expects as argument " ++ show argumentName ++ " an immediate of " ++ show size ++ " bits, but it received one of " ++ (show $ length value) ++ " bits!"
     | otherwise =
-        return (argumentName,value)
+        return (argumentName,replicate (cSequencerWordSize sequencer - length value) '0' ++ value)
 resolveArgument (CDevice romName sequencer components seqOutputs seqInputs) labels (argumentName,CLabel) (SLabel value) = do
     labelInst <- maybeToEither ("Label " ++ show value ++ " does not exist!") $
                  lookup value labels

@@ -1,0 +1,18 @@
+            ci alu.ldi 00000001:b
+@mainloop   cc mrotary.rdls
+            cc mrotary.rdrs
+            jn @doleft mrotary.LeftStatus
+            jn @doright mrotary.RightStatus
+            cr ledbank.ldi alu.Result
+            cr vga.ld3 alu.Result
+            ji @mainloop
+@doleft     cc alu.shl
+            jz @resetleft alu.Result
+            ji @mainloop
+@resetleft  ci alu.ldi 00000001:b
+            ji @mainloop
+@doright    cc alu.shr
+            jz @resetright alu.Result
+            ji @mainloop
+@resetright ci alu.ldi 10000000:b
+            ji @mainloop

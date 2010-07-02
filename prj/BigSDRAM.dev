@@ -2,7 +2,7 @@ Sequencer:
     RomName: BigSDRAMRom
     Type: Seq
     Outputs: ddrctl ledbank swc
-    Inputs: ddrctl.Page ddrctl.Ready swc.ready
+    Inputs: ddrctl.Page ddrctl.Ready swc.Ready
 Components:
     ddrctl: DdrCtl1
     ledbank: LedBank

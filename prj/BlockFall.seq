@@ -1,0 +1,88 @@
+@start  ci vga.ld0 00000000:b
+        ci vga.ld1 00000000:b
+        ci vga.ld2 00000000:b
+        ci vga.ld3 00000000:b
+        ci vga.ld4 00000000:b
+        ci vga.ld5 00000000:b
+        ci vga.ld6 00000000:b
+        ci vga.ld7 00000000:b
+@round7 ci alu.ldi 10000000:b
+@test7  cc alu.not
+        jz @round6 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait7  jz @wait7 swc.Ready
+        cr vga.ld7 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test7
+@round6 ci alu.ldi 10000000:b
+@test6  cc alu.not
+        jz @round5 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait6  jz @wait6 swc.Ready
+        cr vga.ld6 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test6
+@round5 ci alu.ldi 10000000:b
+@test5  cc alu.not
+        jz @round4 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait5  jz @wait5 swc.Ready
+        cr vga.ld5 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test5
+@round4 ci alu.ldi 10000000:b
+@test4  cc alu.not
+        jz @round3 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait4  jz @wait4 swc.Ready
+        cr vga.ld4 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test4
+@round3 ci alu.ldi 10000000:b
+@test3  cc alu.not
+        jz @round2 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait3  jz @wait3 swc.Ready
+        cr vga.ld3 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test3
+@round2 ci alu.ldi 10000000:b
+@test2  cc alu.not
+        jz @round1 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait2  jz @wait2 swc.Ready
+        cr vga.ld2 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test2
+@round1 ci alu.ldi 10000000:b
+@test1  cc alu.not
+        jz @round0 alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait1  jz @wait1 swc.Ready
+        cr vga.ld1 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test1
+@round0 ci alu.ldi 10000000:b
+@test0  cc alu.not
+        jz @start alu.Result
+        cc alu.not
+        cc swc.ccu
+@wait0  jz @wait0 swc.Ready
+        cr vga.ld0 alu.Result
+        cc alu.shr
+        ci alu.add 10000000:b
+        ji @test0

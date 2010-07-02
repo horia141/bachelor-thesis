@@ -1,6 +1,6 @@
 # Configuration Variables
 
-Prj.Auto2.All.Src = Auto2.v Auto2.mem
+Prj.Auto2.All.Src = Auto2.v Auto2.seq Auto2.dev
 Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All LedBank.All VGA.All
 
 Prj.Auto2.Sim.Src = Auto2Sim.v Auto2Sim.sav
@@ -12,7 +12,7 @@ Prj.Auto2.FPGA.Ref = Auto2.All ClockManager.All
 Prj.Auto2.FPGA.Out = Auto2FPGA
 Prj.Auto2.FPGA.Top = Auto2FPGA
 
-Prj.BlockFall.All.Src = BlockFall.v BlockFall.mem
+Prj.BlockFall.All.Src = BlockFall.v BlockFall.seq BlockFall.dev
 Prj.BlockFall.All.Ref = Alu.All Seq.All Swc.All VGA.All
 
 Prj.BlockFall.FPGA.Src = BlockFallFPGA.v BlockFallFPGA.ucf
@@ -20,7 +20,7 @@ Prj.BlockFall.FPGA.Ref = BlockFall.All ClockManager.All
 Prj.BlockFall.FPGA.Out = BlockFallFPGA
 Prj.BlockFall.FPGA.Top = BlockFallFPGA
 
-Prj.PressCount.All.Src = PressCount.v PressCount.mem
+Prj.PressCount.All.Src = PressCount.v PressCount.seq PressCount.dev
 Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All VGA.All
 
 Prj.PressCount.Sim.Src = PressCountSim.v PressCountSim.sav
@@ -32,7 +32,7 @@ Prj.PressCount.FPGA.Ref = PressCount.All ClockManager.All
 Prj.PressCount.FPGA.Out = PressCountFPGA
 Prj.PressCount.FPGA.Top = PressCountFPGA
 
-Prj.RotaryLed.All.Src = RotaryLed.v RotaryLed.mem
+Prj.RotaryLed.All.Src = RotaryLed.v RotaryLed.seq RotaryLed.dev
 Prj.RotaryLed.All.Ref = Seq.All Alu.All Rotary.All LedBank.All VGA.All
 
 Prj.RotaryLed.Sim.Src = RotaryLedSim.v RotaryLedSim.sav
@@ -44,7 +44,7 @@ Prj.RotaryLed.FPGA.Ref = RotaryLed.All ClockManager.All
 Prj.RotaryLed.FPGA.Out = RotaryLedFPGA
 Prj.RotaryLed.FPGA.Top = RotaryLedFPGA
 
-Prj.BigSDRAM.All.Src = BigSDRAM.v BigSDRAM.mem
+Prj.BigSDRAM.All.Src = BigSDRAM.v BigSDRAM2.seq BigSDRAM.dev
 Prj.BigSDRAM.All.Ref = Seq.All Swc.All LedBank.All DdrCtl1.All
 
 Prj.BigSDRAM.Sim.Src = BigSDRAMSim.v BigSDRAMSim.sav
@@ -202,26 +202,32 @@ Dev.SeqAsm.Src = SeqAsm/Main.hs SeqAsm/Core.hs SeqAsm/Utils.hs SeqAsm/Configs.hs
 Dev.SeqAsm.Ref =
 Dev.SeqAsm.Out = seqasm
 
-Cfg.OutPath                                = out
-Cfg.RulePath                               = $(Cfg.OutPath)/rule
-Cfg.Prj.SrcPath                            = prj
-Cfg.Prj.OutPath                            = $(Cfg.OutPath)/prj
-Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke    = $(Dev.MemGen.Gen.OutFile)
-Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke  = iverilog
-Cfg.Prj.Targets.Sim.Tools.Vvp.Invoke       = vvp
-Cfg.Prj.Targets.Sim.Tools.Sav.Invoke       = cp
-Cfg.Prj.Targets.FPGA.Part                  = xc3s500e-5fg320
-Cfg.Prj.Targets.FPGA.Tools.MemGen.Invoke   = $(Dev.MemGen.Gen.OutFile)
-Cfg.Prj.Targets.FPGA.Tools.Xst.Invoke      = xst
-Cfg.Prj.Targets.FPGA.Tools.Xst.OptMode     = SPEED
-Cfg.Prj.Targets.FPGA.Tools.Xst.OptLevel    = 1
-Cfg.Prj.Targets.FPGA.Tools.NgdBuild.Invoke = ngdbuild
-Cfg.Prj.Targets.FPGA.Tools.Map.Invoke      = map
-Cfg.Prj.Targets.FPGA.Tools.Par.Invoke      = par
-Cfg.Prj.Targets.FPGA.Tools.BitGen.Invoke   = bitgen
-Cfg.Dev.SrcPath                            = dev
-Cfg.Dev.OutPath                            = $(Cfg.OutPath)/dev
-Cfg.Dev.Tools.Ghc.Invoke                   = ghc
+Cfg.OutPath                                      = out
+Cfg.RulePath                                     = $(Cfg.OutPath)/rule
+Cfg.Prj.SrcPath                                  = prj
+Cfg.Prj.OutPath                                  = $(Cfg.OutPath)/prj
+Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke          = $(Dev.SeqAsm.Gen.OutFile)
+Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile  = $(Cfg.Prj.SrcPath)/Sequencers.cfg
+Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile  = $(Cfg.Prj.SrcPath)/Components.cfg
+Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke          = $(Dev.MemGen.Gen.OutFile)
+Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke        = iverilog
+Cfg.Prj.Targets.Sim.Tools.Vvp.Invoke             = vvp
+Cfg.Prj.Targets.Sim.Tools.Sav.Invoke             = cp
+Cfg.Prj.Targets.FPGA.Part                        = xc3s500e-5fg320
+Cfg.Prj.Targets.FPGA.Tools.SeqAsm.Invoke         = $(Dev.SeqAsm.Gen.OutFile)
+Cfg.Prj.Targets.FPGA.Tools.SeqAsm.SequencersFile = $(Cfg.Prj.SrcPath)/Sequencers.cfg
+Cfg.Prj.Targets.FPGA.Tools.SeqAsm.ComponentsFile = $(Cfg.Prj.SrcPath)/Components.cfg
+Cfg.Prj.Targets.FPGA.Tools.MemGen.Invoke         = $(Dev.MemGen.Gen.OutFile)
+Cfg.Prj.Targets.FPGA.Tools.Xst.Invoke            = xst
+Cfg.Prj.Targets.FPGA.Tools.Xst.OptMode           = SPEED
+Cfg.Prj.Targets.FPGA.Tools.Xst.OptLevel          = 1
+Cfg.Prj.Targets.FPGA.Tools.NgdBuild.Invoke       = ngdbuild
+Cfg.Prj.Targets.FPGA.Tools.Map.Invoke            = map
+Cfg.Prj.Targets.FPGA.Tools.Par.Invoke            = par
+Cfg.Prj.Targets.FPGA.Tools.BitGen.Invoke         = bitgen
+Cfg.Dev.SrcPath                                  = dev
+Cfg.Dev.OutPath                                  = $(Cfg.OutPath)/dev
+Cfg.Dev.Tools.Ghc.Invoke                         = ghc
 
 # Configuration Dependent Rules
 
@@ -240,7 +246,11 @@ Prj.$(1).Gen.RuleFile                  = $(call PrjSimProjectToRule,$(1))
 Prj.$(1).Gen.Src                       = $(call PrjGetAllSrc,$(1))
 Prj.$(1).Gen.BasePath                  = $(Cfg.Prj.OutPath)/$(1)
 Prj.$(1).Gen.OutFile                   = $$(Prj.$(1).Gen.BasePath)/$(Prj.$(1).Out).vcd
-Prj.$(1).Gen.Tools.MemGen.MemSrc       = $$(filter %.mem,$$(Prj.$(1).Gen.Src))
+Prj.$(1).Gen.Tools.SeqAsm.SeqSrc       = $$(filter %.seq,$$(Prj.$(1).Gen.Src))
+Prj.$(1).Gen.Tools.SeqAsm.DevSrc       = $$(filter %.dev,$$(Prj.$(1).Gen.Src))
+Prj.$(1).Gen.Tools.SeqAsm.OutPath      = $$(Prj.$(1).Gen.BasePath)/SeqAsm
+Prj.$(1).Gen.Tools.SeqAsm.OutFile      = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.mem
+Prj.$(1).Gen.Tools.MemGen.MemSrc       = $$(filter %.mem,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile)
 Prj.$(1).Gen.Tools.MemGen.OutPath      = $$(Prj.$(1).Gen.BasePath)/MemGen
 Prj.$(1).Gen.Tools.MemGen.OutFile      = $$(Prj.$(1).Gen.Tools.MemGen.OutPath)/MemGen.v
 Prj.$(1).Gen.Tools.IVerilog.VerilogSrc = $$(filter %.v,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.MemGen.OutFile)
@@ -254,6 +264,9 @@ Prj.$(1).Gen.Tools.Sav.OutPath         = $$(Prj.$(1).Gen.BasePath)
 $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 	@$$(call LineH1,Building Prj $(1))
 	mkdir -p $$(Prj.$(1).Gen.BasePath)
+	@$$(call LineH2,Building Prj $(1) : SeqAsm)
+	mkdir -p $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)
+	$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) -o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) -s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) -c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) -d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc)
 	@$$(call LineH2,Building Prj $(1) : MemGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.MemGen.OutPath)
 	$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) -o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)
@@ -280,7 +293,11 @@ Prj.$(1).Gen.RuleFile                     = $(call PrjFPGAProjectToRule,$(1))
 Prj.$(1).Gen.Src                          = $(call PrjGetAllSrc,$(1))
 Prj.$(1).Gen.BasePath                     = $$(Cfg.Prj.OutPath)/$(1)
 Prj.$(1).Gen.OutFile                      = $$(Prj.$(1).Gen.BasePath)/$$(Prj.$(1).Out)
-Prj.$(1).Gen.Tools.MemGen.MemSrc          = $$(filter %.mem,$$(Prj.$(1).Gen.Src))
+Prj.$(1).Gen.Tools.SeqAsm.SeqSrc          = $$(filter %.seq,$$(Prj.$(1).Gen.Src))
+Prj.$(1).Gen.Tools.SeqAsm.DevSrc          = $$(filter %.dev,$$(Prj.$(1).Gen.Src))
+Prj.$(1).Gen.Tools.SeqAsm.OutPath         = $$(Prj.$(1).Gen.BasePath)/SeqAsm
+Prj.$(1).Gen.Tools.SeqAsm.OutFile         = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.mem
+Prj.$(1).Gen.Tools.MemGen.MemSrc          = $$(filter %.mem,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile)
 Prj.$(1).Gen.Tools.MemGen.OutPath         = $$(Prj.$(1).Gen.BasePath)/MemGen
 Prj.$(1).Gen.Tools.MemGen.OutFile         = $$(Prj.$(1).Gen.Tools.MemGen.OutPath)/MemGen.v
 Prj.$(1).Gen.Tools.Xst.VerilogSrc         = $$(filter %.v,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.MemGen.OutFile)
@@ -341,6 +358,9 @@ Prj.$(1).Gen.Tools.BitGen.DrcFileMV       = $$(Prj.$(1).Gen.OutFile).drc
 $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	@$$(call LineH1,Building Prj $(1))
 	mkdir -p $$(Prj.$(1).Gen.BasePath)
+	@$$(call LineH2,Building Prj $(1) : SeqAsm)
+	mkdir -p $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)
+	$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) -o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) -s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) -c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) -d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc)
 	@$$(call LineH2,Building Prj $(1) : MemGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.MemGen.OutPath)
 	$$(Cfg.Prj.Targets.FPGA.Tools.MemGen.Invoke) -o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)
