@@ -89,7 +89,7 @@ x remove Seq prefix for SeqAsm type names.
 
 * add commands to DdrCtl1 to select which byte of the 4 byte page is selected for output.
 
-* remove extra wait state in AutoRefresh action for the core state machine in DdrCtl1, if testing reveals that it isn't necessary (and it shouldn't be at our speed).
++ remove extra wait state in AutoRefresh action for the core state machine in DdrCtl1, if testing reveals that it isn't necessary (and it shouldn't be at our speed).
 
 * for the seqasm tool, add a stage for testing the validity of the input data. Test ideeas:
     * the fact that all opcodes fit into the allowed bits (for both sequencers and components)

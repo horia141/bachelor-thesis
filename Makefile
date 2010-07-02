@@ -44,7 +44,7 @@ Prj.RotaryLed.FPGA.Ref = RotaryLed.All ClockManager.All
 Prj.RotaryLed.FPGA.Out = RotaryLedFPGA
 Prj.RotaryLed.FPGA.Top = RotaryLedFPGA
 
-Prj.BigSDRAM.All.Src = BigSDRAM.v BigSDRAM2.seq BigSDRAM.dev
+Prj.BigSDRAM.All.Src = BigSDRAM.v BigSDRAM.seq BigSDRAM.dev
 Prj.BigSDRAM.All.Ref = Seq.All Swc.All LedBank.All DdrCtl1.All
 
 Prj.BigSDRAM.Sim.Src = BigSDRAMSim.v BigSDRAMSim.sav

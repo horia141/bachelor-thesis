@@ -56,20 +56,19 @@
 `define DdrCtl1_CoreState_Refreshing_Wait0       5'h04
 `define DdrCtl1_CoreState_Refreshing_Wait1       5'h05
 `define DdrCtl1_CoreState_Refreshing_Wait2       5'h06
-`define DdrCtl1_CoreState_Refreshing_Wait3       5'h07
-`define DdrCtl1_CoreState_Reading_Activate       5'h08
-`define DdrCtl1_CoreState_Reading_Wait0          5'h09
-`define DdrCtl1_CoreState_Reading_Read           5'h0A
-`define DdrCtl1_CoreState_Reading_Wait1          5'h0B
-`define DdrCtl1_CoreState_Reading_Wait2          5'h0C
-`define DdrCtl1_CoreState_Reading_Wait3          5'h0D
-`define DdrCtl1_CoreState_Reading_PreChargeAll   5'h0E
-`define DdrCtl1_CoreState_Writing_Activate       5'h0F
-`define DdrCtl1_CoreState_Writing_Wait0          5'h10
-`define DdrCtl1_CoreState_Writing_Write          5'h11
-`define DdrCtl1_CoreState_Writing_Wait1          5'h12
-`define DdrCtl1_CoreState_Writing_Wait2          5'h13
-`define DdrCtl1_CoreState_Writing_PreChargeAll   5'h14
+`define DdrCtl1_CoreState_Reading_Activate       5'h07
+`define DdrCtl1_CoreState_Reading_Wait0          5'h08
+`define DdrCtl1_CoreState_Reading_Read           5'h09
+`define DdrCtl1_CoreState_Reading_Wait1          5'h0A
+`define DdrCtl1_CoreState_Reading_Wait2          5'h0B
+`define DdrCtl1_CoreState_Reading_Wait3          5'h0C
+`define DdrCtl1_CoreState_Reading_PreChargeAll   5'h0D
+`define DdrCtl1_CoreState_Writing_Activate       5'h0E
+`define DdrCtl1_CoreState_Writing_Wait0          5'h0F
+`define DdrCtl1_CoreState_Writing_Write          5'h10
+`define DdrCtl1_CoreState_Writing_Wait1          5'h11
+`define DdrCtl1_CoreState_Writing_Wait2          5'h12
+`define DdrCtl1_CoreState_Writing_PreChargeAll   5'h13
 
 `define DdrCtl1_InitState_Reset                5'h00
 `define DdrCtl1_InitState_PowerUp              5'h01
@@ -451,10 +450,6 @@ module DdrCtl1(clock0,clock90,clock180,reset,inst,inst_en,page,ready,ddr_cke,ddr
 	   end
 
 	   `DdrCtl1_CoreState_Refreshing_Wait2: begin
-	      s_CoreState <= `DdrCtl1_CoreState_Refreshing_Wait3;
-	   end
-
-	   `DdrCtl1_CoreState_Refreshing_Wait3: begin
 	      s_CoreState <= `DdrCtl1_CoreState_Ready;
 	   end
 
@@ -583,15 +578,6 @@ module DdrCtl1(clock0,clock90,clock180,reset,inst,inst_en,page,ready,ddr_cke,ddr
 	   end
 
 	   `DdrCtl1_CoreState_Refreshing_Wait2: begin
-	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-	      i_CoreBank        = 0;
-	      i_CoreAddr        = 0;
-	      i_CoreRefreshDone = 0;
-	      i_CoreReadDone    = 0;
-	      i_CoreWriteDone   = 0;
-	   end
-
-	   `DdrCtl1_CoreState_Refreshing_Wait3: begin
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
@@ -1326,19 +1312,6 @@ module DdrCtl1(clock0,clock90,clock180,reset,inst,inst_en,page,ready,ddr_cke,ddr
 		    i_IntfDoWrite ? "DoWrite" : "NoWrite");
 	end // case: `DdrCtl1_CoreState_Refreshing_Wait2
 
-	`DdrCtl1_CoreState_Refreshing_Wait3: begin
-	   $sformat(d_CoreState,"A Wait3 %5B %2B %4X (%S %S %S) (%S %S %S)",
-		    i_CoreCommand,
-		    i_CoreBank,
-		    i_CoreAddr,
-		    i_CoreRefreshDone ? "RefreshDone" : "RefreshNotDone",
-		    i_CoreReadDone ? "ReadDone" : "ReadNotDone",
-		    i_CoreWriteDone ? "WriteDone" : "WriteNotDone",
-		    i_AutoRefreshDoRefresh ? "DoRefresh" : "NoRefresh",
-		    i_IntfDoRead ? "DoRead" : "NoRead",
-		    i_IntfDoWrite ? "DoWrite" : "NoWrite");
-	end // case: `DdrCtl1_CoreState_Refreshing_Wait3
-	
 	`DdrCtl1_CoreState_Reading_Activate: begin
 	   $sformat(d_CoreState,"r Activate %5B %2B %4X (%S %S %S) (%S %S %S)",
 		    i_CoreCommand,
