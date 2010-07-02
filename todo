@@ -68,11 +68,11 @@ x remove Seq prefix for SeqAsm type names.
 
 + change w_* variables to be like s_* variables in naming by using camel case.
 
-* upgrade build infrastructure to set Xilinx environment variables on an invocation basis, and not rely on them being in the user's .bashrc file. Also, check ilinxusb script and, in general, make it possible, just to have a copy of the xilinx tools places somewhere, and, with no other configuration, make the build process work.
+* upgrade build infrastructure to set Xilinx environment variables on an invocation basis, and not rely on them being in the user's .bashrc file. Also, check xilinxusb script and, in general, make it possible, just to have a copy of the xilinx tools places somewhere, and, with no other configuration, make the build process work.
 
 + make all modules respect format : clock & reset then instructions & other inputs then outputs.
 
-+ all test comments end with a comma.
++ all test comments end with a period.
 
 + resolve all labels in the *.mem files to addresses in the comments.
 / changed format to a table-like one and aligned all input,output and address codes to 4 bits.

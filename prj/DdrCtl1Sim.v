@@ -5,6 +5,8 @@ module DdrCtl1Sim;
    reg 	       clock90;
    reg 	       clock180;
    reg 	       clock270;
+   reg 	       clock2x0;
+   reg 	       clock2x180;
    reg 	       reset;
 
    reg [11:0]  inst;
@@ -49,6 +51,16 @@ module DdrCtl1Sim;
    initial begin
       #15 clock270 = 1;
       forever #10 clock270 = ~clock270;
+   end
+
+   initial begin
+      #0 clock2x0 = 0;
+      forever #5 clock2x0 = ~clock2x0;
+   end
+
+   initial begin
+      #5 clock2x180 = 0;
+      forever #5 clock2x180 = ~clock2x180;
    end
 
    initial begin
@@ -204,8 +216,8 @@ module DdrCtl1Sim;
    end // initial begin
 
    Ddr
-   ddr (.Clk(clock180),
-	.Clk_n(clock0),
+   ddr (.Clk(clock2x180),
+	.Clk_n(clock2x0),
 	
 	.Cke(ddrctl_ddr_cke),
 	.Cs_n(ddrctl_ddr_csn),

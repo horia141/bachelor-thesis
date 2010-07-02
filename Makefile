@@ -250,10 +250,10 @@ Prj.$(1).Gen.Tools.SeqAsm.SeqSrc       = $$(filter %.seq,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.SeqAsm.DevSrc       = $$(filter %.dev,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.SeqAsm.OutPath      = $$(Prj.$(1).Gen.BasePath)/SeqAsm
 Prj.$(1).Gen.Tools.SeqAsm.OutFile      = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.mem
-Prj.$(1).Gen.Tools.MemGen.MemSrc       = $$(filter %.mem,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile)
+Prj.$(1).Gen.Tools.MemGen.MemSrc       = $$(filter %.mem,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.MemGen.OutPath      = $$(Prj.$(1).Gen.BasePath)/MemGen
 Prj.$(1).Gen.Tools.MemGen.OutFile      = $$(Prj.$(1).Gen.Tools.MemGen.OutPath)/MemGen.v
-Prj.$(1).Gen.Tools.IVerilog.VerilogSrc = $$(filter %.v,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.MemGen.OutFile)
+Prj.$(1).Gen.Tools.IVerilog.VerilogSrc = $$(filter %.v,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.IVerilog.OutPath    = $$(Prj.$(1).Gen.BasePath)/IVerilog
 Prj.$(1).Gen.Tools.IVerilog.OutFile    = $$(Prj.$(1).Gen.Tools.IVerilog.OutPath)/$(1).vvp
 Prj.$(1).Gen.Tools.Vvp.VvpSrc          = $$(Prj.$(1).Gen.Tools.IVerilog.OutFile)
@@ -262,23 +262,63 @@ Prj.$(1).Gen.Tools.Sav.SavSrc          = $$(filter %.sav,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.Sav.OutPath         = $$(Prj.$(1).Gen.BasePath)
 
 $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
+#	Start building the project.
 	@$$(call LineH1,Building Prj $(1))
 	mkdir -p $$(Prj.$(1).Gen.BasePath)
+
+#	Compile any .seq files, and produce .mem files for MemGen.
 	@$$(call LineH2,Building Prj $(1) : SeqAsm)
 	mkdir -p $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)
-	$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) -o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) -s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) -c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) -d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc)
+	$$(if $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) \
+			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
+			-s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) \
+			-c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) \
+			-d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) \
+			$$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc))
+
+#	Compile any .mem files, and produce a MemGen.v file for IVerilog.
 	@$$(call LineH2,Building Prj $(1) : MemGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.MemGen.OutPath)
-	$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) -o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)
+	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+		$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
+			-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
+			$$(Prj.$(1).Gen.Tools.MemGen.MemSrc) \
+			$$(Prj.$(1).Gen.Tools.SeqAsm.OutFile),\
+		$$(if $$(Prj.$(1).Gen.Tools.MemGen.MemSrc),\
+			$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
+				-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
+				$$(Prj.$(1).Gen.Tools.MemGen.MemSrc)))
+
+#	Compile all .v files, producing a .vvp file for Vvp.
 	@$$(call LineH2,Building Prj $(1) : IVerilog)
 	mkdir -p $$(Prj.$(1).Gen.Tools.IVerilog.OutPath)
-	$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) -o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) -Wall -Wno-timescale -DVCDFILE=\"$$(Prj.$(1).Gen.OutFile)\" $$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc)
+	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+		$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) \
+			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
+			-Wall -Wno-timescale \
+			-DVCDFILE=\"$$(Prj.$(1).Gen.OutFile)\" \
+			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc) \
+			$$(Prj.$(1).Gen.Tools.MemGen.OutFile),\
+		$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) \
+			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
+			-Wall -Wno-timescale \
+			-DVCDFILE=\"$$(Prj.$(1).Gen.OutFile)\" \
+			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc))
+
+#	Execute vvp and produce simulation outputs.
 	@$$(call LineH2,Building Prj $(2) : Vvp)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Vvp.OutPath)
 	$$(Cfg.Prj.Targets.Sim.Tools.Vvp.Invoke) $$(Prj.$(1).Gen.Tools.Vvp.VvpSrc)
+
+#	Copy the .sav files that describe the gtkwave view to output directory.
 	@$$(call LineH2,Building Prj $(2) : Sav)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Sav.OutPath)
 	$$(Cfg.Prj.Targets.Sim.Tools.Sav.Invoke) $$(Prj.$(1).Gen.Tools.Sav.SavSrc) $$(Prj.$(1).Gen.Tools.Sav.OutPath)
+
+#	It's all done.
 	@$$(call LineH2,Building Prj $(1) : Done)
 	echo Done > $$(Prj.$(1).Gen.RuleFile)
 endef
@@ -297,10 +337,10 @@ Prj.$(1).Gen.Tools.SeqAsm.SeqSrc          = $$(filter %.seq,$$(Prj.$(1).Gen.Src)
 Prj.$(1).Gen.Tools.SeqAsm.DevSrc          = $$(filter %.dev,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.SeqAsm.OutPath         = $$(Prj.$(1).Gen.BasePath)/SeqAsm
 Prj.$(1).Gen.Tools.SeqAsm.OutFile         = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.mem
-Prj.$(1).Gen.Tools.MemGen.MemSrc          = $$(filter %.mem,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile)
+Prj.$(1).Gen.Tools.MemGen.MemSrc          = $$(filter %.mem,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.MemGen.OutPath         = $$(Prj.$(1).Gen.BasePath)/MemGen
 Prj.$(1).Gen.Tools.MemGen.OutFile         = $$(Prj.$(1).Gen.Tools.MemGen.OutPath)/MemGen.v
-Prj.$(1).Gen.Tools.Xst.VerilogSrc         = $$(filter %.v,$$(Prj.$(1).Gen.Src)) $$(Prj.$(1).Gen.Tools.MemGen.OutFile)
+Prj.$(1).Gen.Tools.Xst.VerilogSrc         = $$(filter %.v,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.Xst.OutPath            = $$(Prj.$(1).Gen.BasePath)/Xst
 Prj.$(1).Gen.Tools.Xst.TmpPath            = $$(Prj.$(1).Gen.Tools.Xst.OutPath)/tmp
 Prj.$(1).Gen.Tools.Xst.ProjectFile        = $$(Prj.$(1).Gen.Tools.Xst.OutPath)/XstProject.prj
@@ -356,22 +396,51 @@ Prj.$(1).Gen.Tools.BitGen.BgnFileMV       = $$(Prj.$(1).Gen.OutFile).bgn
 Prj.$(1).Gen.Tools.BitGen.DrcFileMV       = $$(Prj.$(1).Gen.OutFile).drc
 
 $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
+# 	Start building the project.
 	@$$(call LineH1,Building Prj $(1))
 	mkdir -p $$(Prj.$(1).Gen.BasePath)
+
+#	Compile any .seq files, and produce .mem files for MemGen.
 	@$$(call LineH2,Building Prj $(1) : SeqAsm)
 	mkdir -p $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)
-	$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) -o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) -s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) -c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) -d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc)
+	$$(if $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) \
+			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
+			-s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) \
+			-c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) \
+			-d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) \
+			$$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc))
+
+#	Compile any .mem files, and produce a MemGen.v file for IVerilog.
 	@$$(call LineH2,Building Prj $(1) : MemGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.MemGen.OutPath)
-	$$(Cfg.Prj.Targets.FPGA.Tools.MemGen.Invoke) -o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)
+	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+		$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
+			-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
+			$$(Prj.$(1).Gen.Tools.MemGen.MemSrc) \
+			$$(Prj.$(1).Gen.Tools.SeqAsm.OutFile),\
+		$$(if $$(Prj.$(1).Gen.Tools.MemGen.MemSrc),\
+			$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
+				-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
+				$$(Prj.$(1).Gen.Tools.MemGen.MemSrc)))
+
+#	Compile all .v files with Xst.
 	@$$(call LineH2,Building Prj $(1) : Xst)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Xst.OutPath)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Xst.TmpPath)
 	rm -rf $$(Prj.$(1).Gen.Tools.Xst.ProjectFile)
 	rm -rf $$(Prj.$(1).Gen.Tools.Xst.LSearchFile)
 	rm -rf $$(Prj.$(1).Gen.Tools.Xst.CommandsFile)
-	$$(foreach fileName,$$(Prj.$(1).Gen.Tools.Xst.VerilogSrc),\
-		echo verilog $$(call PrjFPGAGetLibraryName,$(1)) $$(fileName) >> $$(Prj.$(1).Gen.Tools.Xst.ProjectFile);)
+
+	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+		$$(foreach fileName,$$(Prj.$(1).Gen.Tools.Xst.VerilogSrc) \
+				    $$(Prj.$(1).Gen.Tools.MemGen.OutFile),\
+			echo verilog $$(call PrjFPGAGetLibraryName,$(1)) $$(fileName) >> $$(Prj.$(1).Gen.Tools.Xst.ProjectFile);),\
+		$$(foreach fileName,$$(Prj.$(1).Gen.Tools.Xst.VerilogSrc),\
+			echo verilog $$(call PrjFPGAGetLibraryName,$(1)) $$(fileName) >> $$(Prj.$(1).Gen.Tools.Xst.ProjectFile);))
+
 	echo $$(call PrjFPGAGetLibraryName,$(1)) >> $$(Prj.$(1).Gen.Tools.Xst.LSearchFile)
 	echo set >> $$(Prj.$(1).Gen.Tools.Xst.CommandsFile)
 	echo -tmpdir $$(Prj.$(1).Gen.Tools.Xst.TmpPath) >> $$(Prj.$(1).Gen.Tools.Xst.CommandsFile)
@@ -386,39 +455,69 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	echo -opt_mode $$(Cfg.Prj.Targets.FPGA.Tools.Xst.OptMode) >> $$(Prj.$(1).Gen.Tools.Xst.CommandsFile)
 	echo -opt_level $$(Cfg.Prj.Targets.FPGA.Tools.Xst.OptLevel) >> $$(Prj.$(1).Gen.Tools.Xst.CommandsFile)
 	echo -p $$(Cfg.Prj.Targets.FPGA.Part) >> $$(Prj.$(1).Gen.Tools.Xst.CommandsFile)
-	$$(Cfg.Prj.Targets.FPGA.Tools.Xst.Invoke) -ifn $$(Prj.$(1).Gen.Tools.Xst.CommandsFile) -ofn $$(Prj.$(1).Gen.Tools.Xst.LogFile)
+
+	$$(Cfg.Prj.Targets.FPGA.Tools.Xst.Invoke) \
+		-ifn $$(Prj.$(1).Gen.Tools.Xst.CommandsFile) \
+		-ofn $$(Prj.$(1).Gen.Tools.Xst.LogFile)
+
 	mv -f $$(Prj.$(1).Gen.Tools.Xst.XrptFileMV) $$(Prj.$(1).Gen.Tools.Xst.TmpPath)
+
+#       Call the ngdbuild tool.
 	@$$(call LineH2,Building Prj $(1) : NgdBuild)
 	mkdir -p $$(Prj.$(1).Gen.Tools.NgdBuild.OutPath)
 	mkdir -p $$(Prj.$(1).Gen.Tools.NgdBuild.TmpPath)
 	rm -rf $$(Prj.$(1).Gen.Tools.NgdBuild.CommandsFile)
+
 	echo -p $$(Cfg.Prj.Targets.FPGA.Part) >> $$(Prj.$(1).Gen.Tools.NgdBuild.CommandsFile)
 	echo -uc $$(Prj.$(1).Gen.Tools.NgdBuild.UcfSrc) >> $$(Prj.$(1).Gen.Tools.NgdBuild.CommandsFile)
 	echo -dd $$(Prj.$(1).Gen.Tools.NgdBuild.TmpPath) >> $$(Prj.$(1).Gen.Tools.NgdBuild.CommandsFile)
-	$$(Cfg.Prj.Targets.FPGA.Tools.NgdBuild.Invoke) -f $$(Prj.$(1).Gen.Tools.NgdBuild.CommandsFile) $$(Prj.$(1).Gen.Tools.NgdBuild.NgcSrc) $$(Prj.$(1).Gen.Tools.NgdBuild.OutFile)
+
+	$$(Cfg.Prj.Targets.FPGA.Tools.NgdBuild.Invoke) \
+		-f $$(Prj.$(1).Gen.Tools.NgdBuild.CommandsFile) \
+		$$(Prj.$(1).Gen.Tools.NgdBuild.NgcSrc) \
+		$$(Prj.$(1).Gen.Tools.NgdBuild.OutFile)
+
 	mv -f $$(Prj.$(1).Gen.Tools.NgdBuild.BldFileMV) $$(Prj.$(1).Gen.Tools.NgdBuild.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.NgdBuild.XrptFileMV) $$(Prj.$(1).Gen.Tools.NgdBuild.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.NgdBuild.XbcdFileMV) $$(Prj.$(1).Gen.Tools.NgdBuild.TmpPath)
+
 	rm -rf $$(Prj.$(1).Gen.Tools.NgdBuild.XdbPathRM)
+
+#       Call the map tool.
 	@$$(call LineH2,Building Prj $(1) : Map)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Map.OutPath)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Map.TmpPath)
 	rm -rf $$(Prj.$(1).Gen.Tools.Map.CommandsFile)
+
 	echo -detail >> $$(Prj.$(1).Gen.Tools.Map.CommandsFile)
 	echo -pr b >> $$(Prj.$(1).Gen.Tools.Map.CommandsFile)
 	echo -o $$(Prj.$(1).Gen.Tools.Map.NcdOutFile) >> $$(Prj.$(1).Gen.Tools.Map.CommandsFile)
-	$$(Cfg.Prj.Targets.FPGA.Tools.Map.Invoke) -f $$(Prj.$(1).Gen.Tools.Map.CommandsFile) $$(Prj.$(1).Gen.Tools.Map.NgdSrc) $$(Prj.$(1).Gen.Tools.Map.PcfOutFile)
+
+	$$(Cfg.Prj.Targets.FPGA.Tools.Map.Invoke) \
+		-f $$(Prj.$(1).Gen.Tools.Map.CommandsFile) \
+		$$(Prj.$(1).Gen.Tools.Map.NgdSrc) \
+		$$(Prj.$(1).Gen.Tools.Map.PcfOutFile)
+
 	mv -f $$(Prj.$(1).Gen.Tools.Map.XrptFileMV) $$(Prj.$(1).Gen.Tools.Map.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Map.DeviceDetailsMV) $$(Prj.$(1).Gen.Tools.Map.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Map.MapFileMV) $$(Prj.$(1).Gen.Tools.Map.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Map.MrpFileMV) $$(Prj.$(1).Gen.Tools.Map.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Map.NgmFileMV) $$(Prj.$(1).Gen.Tools.Map.TmpPath)
+
+#       Call the par tool.
 	@$$(call LineH2,Building Prj $(1) : Par)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Par.OutPath)
 	mkdir -p $$(Prj.$(1).Gen.Tools.Par.TmpPath)
 	rm -rf $$(Prj.$(1).Gen.Tools.Par.CommandsFile)
+
 	echo -w >> $$(Prj.$(1).Gen.Tools.Par.CommandsFile)
-	$$(Cfg.Prj.Targets.FPGA.Tools.Par.Invoke) -f $$(Prj.$(1).Gen.Tools.Par.CommandsFile) $$(Prj.$(1).Gen.Tools.Par.NcdSrc) $$(Prj.$(1).Gen.Tools.Par.NcdOutFile) $$(Prj.$(1).Gen.Tools.Par.PcfSrc)
+
+	$$(Cfg.Prj.Targets.FPGA.Tools.Par.Invoke) \
+		-f $$(Prj.$(1).Gen.Tools.Par.CommandsFile) \
+		$$(Prj.$(1).Gen.Tools.Par.NcdSrc) \
+		$$(Prj.$(1).Gen.Tools.Par.NcdOutFile) \
+		$$(Prj.$(1).Gen.Tools.Par.PcfSrc)
+
 	mv -f $$(Prj.$(1).Gen.Tools.Par.XrptFileMV) $$(Prj.$(1).Gen.Tools.Par.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Par.TwrFileMV) $$(Prj.$(1).Gen.Tools.Par.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Par.PadFileMV) $$(Prj.$(1).Gen.Tools.Par.TmpPath)
@@ -428,17 +527,28 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	mv -f $$(Prj.$(1).Gen.Tools.Par.PtwxFileMV) $$(Prj.$(1).Gen.Tools.Par.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Par.UnroutesFileMV) $$(Prj.$(1).Gen.Tools.Par.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.Par.XpiFileMV) $$(Prj.$(1).Gen.Tools.Par.TmpPath)
+
+#	Call the bitgen tool.
 	@$$(call LineH2,Building Prj $(1) : BitGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.BitGen.OutPath)
 	mkdir -p $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	rm -rf $$(Prj.$(1).Gen.Tools.BitGen.CommandsFile)
+
 	echo -w >> $$(Prj.$(1).Gen.Tools.BitGen.CommandsFile)
 	echo -g StartUpClk:CClk >> $$(Prj.$(1).Gen.Tools.BitGen.CommandsFile)
 	echo -g CRC:Enable >> $$(Prj.$(1).Gen.Tools.BitGen.CommandsFile)
-	$$(Cfg.Prj.Targets.FPGA.Tools.BitGen.Invoke) -f $$(Prj.$(1).Gen.Tools.BitGen.CommandsFile) $$(Prj.$(1).Gen.Tools.BitGen.NcdSrc) $$(Prj.$(1).Gen.Tools.BitGen.BitOutFile) $$(Prj.$(1).Gen.Tools.BitGen.PcfSrc)
+
+	$$(Cfg.Prj.Targets.FPGA.Tools.BitGen.Invoke) \
+		-f $$(Prj.$(1).Gen.Tools.BitGen.CommandsFile) \
+		$$(Prj.$(1).Gen.Tools.BitGen.NcdSrc) \
+		$$(Prj.$(1).Gen.Tools.BitGen.BitOutFile) \
+		$$(Prj.$(1).Gen.Tools.BitGen.PcfSrc)
+
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.DeviceDetailsMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.BgnFileMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
 	mv -f $$(Prj.$(1).Gen.Tools.BitGen.DrcFileMV) $$(Prj.$(1).Gen.Tools.BitGen.TmpPath)
+
+#	It's all done.
 	@$$(call LineH2,Building Prj $(1) : Done)
 	echo Done > $$(Prj.$(1).Gen.RuleFile)
 endef
