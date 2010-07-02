@@ -13,6 +13,8 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
    reg [9:0] 	      CounterX;
    reg [8:0] 	      CounterY;
 
+   wire 	      value;
+
    reg 		      clock2 = 0;
 
    always @ (posedge clock) begin
@@ -110,9 +112,9 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
       end
    end // always @ (posedge clock2)
 
-//    assign value = framebuffer[{iy,ix}];
+   assign value = framebuffer[{iy,ix}];
 
-//    assign vga_r = value & inDisplayArea;
-//    assign vga_g = value & inDisplayArea;
-//    assign vga_b = value & inDisplayArea;
+   assign vga_r = value & inDisplayArea;
+   assign vga_g = value & inDisplayArea;
+   assign vga_b = value & inDisplayArea;
 endmodule // Pong1

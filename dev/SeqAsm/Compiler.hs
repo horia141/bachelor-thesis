@@ -11,8 +11,16 @@ import Text.ParserCombinators.Parsec.Perm
 import Text.Regex.Posix ((=~))
 
 import Core (CDevice(..),CSequencer(..),CComponent(..),CInst(..),CArgType(..),CFormatAtom(..),SInst(..),SArgType(..))
-import Utils (toLefts,toRights,gatherEithers,digitToBase2,intToBinaryString,maybeToEither)
+import Utils (toLefts,toRights,gatherEithers,digitToBase2,intToBinaryString,intToDecString,intToHexString,maybeToEither)
 import Configs () -- just for Either Monad instance
+
+maxNumberOfLines = 6
+maxNumberOfAddresses = 4
+
+header0 = "Compiled Line"
+header1 = "Line"
+header2 = "Adddress"
+header3 = "Instruction"
 
 compile :: CDevice -> String -> Either String String
 compile device text = do
@@ -26,15 +34,19 @@ genBody (CDevice romName sequencer components seqOutputs seqInputs) =
     "Name: " ++ romName ++ "\n" ++
     "AddrSize: " ++ (show $ cSequencerAddressSize sequencer) ++ "\n" ++
     "WordSize: " ++ (show $ cSequencerInstructionSize sequencer) ++ "\n" ++
-    "Format: Bin" ++ "\n\n"
-
+    "Format: Bin" ++ "\n\n" ++
+    "# " ++ header0 ++ " " ++ (replicate ((cSequencerInstructionSize sequencer) - (length header0) - 2) ' ') ++ 
+    "# " ++ header1 ++ " " ++ (replicate (maxNumberOfLines - (length header1)) ' ') ++ 
+    header2 ++ " " ++ (replicate (maxNumberOfAddresses - (length header2) + 2) ' ') ++ 
+    header3 ++ "\n"
+    
 getLabelAddresses :: [SInst] -> [(String,Int)]
 getLabelAddresses insts =
     map (\ inst -> (sInstLabel inst,sInstAddress inst)) $ filter ((/="") . sInstLabel) insts
 
 compileInst :: CDevice -> [(String,Int)] -> SInst -> Either String String
 compileInst device@(CDevice romName sequencer components seqOutputs seqInputs) labels (SInst label address instName operands line lineNumber) = 
-    toLefts (("Error compiling line " ++ show lineNumber ++ " " ++ show line ++ "!\n")++) $ do
+    toLefts (("Error compiling line " ++ show lineNumber ++ " " ++ (show $ strip line) ++ "!\n")++) $ do
     inst <- maybeToEither ("Instruction " ++ show instName ++ " is invalid for sequencer " ++ (show $ cSequencerName sequencer) ++ "!") $ 
             lookup instName (cSequencerInstructions sequencer)
     argValues <- resolveArguments device labels (cInstArguments inst) operands
@@ -43,7 +55,14 @@ compileInst device@(CDevice romName sequencer components seqOutputs seqInputs) l
     let opCode = intToBinaryString (cSequencerCommandSize sequencer) (cInstOpCode inst)
 
     if length opCode + length evaledFormat == cSequencerInstructionSize sequencer
-      then return $ opCode ++ evaledFormat
+      then let body0 = opCode ++ evaledFormat
+               body1 = intToDecString maxNumberOfLines lineNumber
+               body2 = intToHexString maxNumberOfAddresses address ++ ":h"
+               body3 = line
+           in return $ body0 ++ " " ++ (replicate ((length header0) - (cSequencerInstructionSize sequencer) + 2) ' ') ++ 
+                       "# " ++ body1 ++ " " ++ (replicate ((length header1) - maxNumberOfLines) ' ') ++
+                       body2 ++ " " ++ (replicate ((length header2) - maxNumberOfAddresses - 2) ' ') ++ 
+                       body3
       else fail "Evaluated instruction has a different size from sequencer instruction size!"
 
 resolveArguments :: CDevice -> [(String,Int)] -> [(String,CArgType)] -> [SArgType] -> Either String [(String,String)]
@@ -123,7 +142,7 @@ parseSeqText text =
 
 parseLine :: (Int,(Int,String)) -> Either String SInst
 parseLine (address,(lineNumber,line)) =
-    toLefts (("Could not make sense of line " ++ show lineNumber ++ " " ++ show line ++ "!\n")++) $
+    toLefts (("Could not make sense of line " ++ show lineNumber ++ " " ++ (show $ strip line) ++ "!\n")++) $
     toLefts show $ 
     parse (do {whiteSpace seqLexer; r <- seqInst address line lineNumber; eof; return r}) "" line
 
@@ -198,5 +217,5 @@ seqInst address line lineNumber = do
             sInstAddress = address,
             sInstInstName = instName,
             sInstOperands = operands,
-            sInstLine = strip line,
+            sInstLine = line,
             sInstLineNumber = lineNumber}

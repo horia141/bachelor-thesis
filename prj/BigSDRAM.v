@@ -43,7 +43,7 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_cke,ddr_csn,ddr_rasn,ddr
 	.oreg_wen(seq_oreg_wen));
 
    BigSDRAMRom
-   rom (.addr(seq_next[5:0]),
+   rom (.addr(seq_next),
 	.data_o(rom_data_o));
 
    DdrCtl1

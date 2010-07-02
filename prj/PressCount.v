@@ -45,7 +45,7 @@ module PressCount(clock0,clock180,reset,countu,countd,nr_presses,vga_hsync,vga_v
 	.oreg_wen(seq_oreg_wen));
 
    PressCountRom
-   coderom (.addr(seq_next[3:0]),
+   coderom (.addr(seq_next),
 	    .data_o(coderom_data_o));
 
    Alu

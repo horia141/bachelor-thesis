@@ -43,7 +43,7 @@ module RotaryLed(clock0,clock180,reset,rotary,leds,vga_hsync,vga_vsync,vga_r,vga
 	.oreg_wen(seq_oreg_wen));
 
    RotaryLedRom
-   coderom (.addr(seq_next[4:0]),
+   coderom (.addr(seq_next),
 	    .data_o(coderom_data_o));
 
    Alu

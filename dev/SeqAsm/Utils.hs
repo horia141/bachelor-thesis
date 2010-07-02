@@ -4,7 +4,9 @@ module Utils
      maybeToEither,
      gatherEithers,
      digitToBase2,
-     intToBinaryString) where
+     intToBinaryString,
+     intToDecString,
+     intToHexString) where     
 
 import Data.Either (partitionEithers)
 import Data.List (intercalate)
@@ -68,8 +70,20 @@ digitToBase2 "h" 'f' = Right "1111"
 digitToBase2 "h" digit = Left $ "Invalid hex digit " ++ show digit ++ " in literal!"
 
 intToBinaryString :: Int -> Int -> String
-intToBinaryString size a =
-    let binString = showIntAtBase 2 intToDigit a ""
-    in if length binString > size
-       then error $ "FATAL: intToBinaryString " ++ show size ++ " " ++ show a ++ " can't produce proper string!"
-       else (replicate (size - (length binString)) '0') ++ binString
+intToBinaryString = intToBaseString 2
+
+intToDecString :: Int -> Int -> String
+intToDecString = intToBaseString 10
+
+intToHexString :: Int -> Int -> String
+intToHexString = intToBaseString 16
+
+intToBaseString :: Int -> Int -> Int -> String
+intToBaseString base size a
+    | base <= 16 =
+        let baseString = showIntAtBase base intToDigit a ""
+        in if length baseString <= size
+           then (replicate (size - (length baseString)) '0') ++ baseString
+           else error $ "FATAL: intToBinaryString " ++ show size ++ " " ++ show a ++ " can't produce proper string!"
+    | otherwise =
+        error $ "FATAL: intToBaseString " ++ show base ++ " " ++ show size ++ " " ++ show a ++ " can't handle that base!"
