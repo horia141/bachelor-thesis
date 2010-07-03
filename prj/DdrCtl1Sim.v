@@ -54,12 +54,12 @@ module DdrCtl1Sim;
    end
 
    initial begin
-      #0 clock2x0 = 0;
+      #0 clock2x0 = 1;
       forever #5 clock2x0 = ~clock2x0;
    end
 
    initial begin
-      #5 clock2x180 = 0;
+      #5 clock2x180 = 1;
       forever #5 clock2x180 = ~clock2x180;
    end
 
