@@ -22,12 +22,15 @@ header1 = "Line"
 header2 = "Adddress"
 header3 = "Instruction"
 
-compile :: CDevice -> String -> Either String String
-compile device text = do
+compile :: CDevice -> String -> Either String (String,String)
+compile device text =
+    toLefts ("Could not compile source program!\n"++) $ do
     insts <- parseSeqText text
-    binaryLines <- gatherEithers $ map (compileInst device (getLabelAddresses insts)) insts
+    (checkedDevice,checkedInsts) <- validate device insts
+    binaryLines <- gatherEithers $ map (compileInst checkedDevice (getLabelAddresses checkedInsts)) checkedInsts
 
-    return $ genBody device ++ intercalate "\n" binaryLines ++ "\n"
+    return $ (genBody checkedDevice ++ intercalate "\n" binaryLines ++ "\n",
+              genBodyText checkedDevice ++ intercalate "\n" (map (show . stripLabels . strip . sInstLine) insts))
 
 genBody :: CDevice -> String
 genBody (CDevice romName sequencer components seqOutputs seqInputs) =
@@ -39,6 +42,19 @@ genBody (CDevice romName sequencer components seqOutputs seqInputs) =
     "# " ++ header1 ++ " " ++ (replicate (maxNumberOfLines - (length header1)) ' ') ++ 
     header2 ++ " " ++ (replicate (maxNumberOfAddresses - (length header2) + 2) ' ') ++ 
     header3 ++ "\n"
+
+genBodyText :: CDevice -> String
+genBodyText (CDevice romName sequencer components seqOutputs seqInputs) =
+    "Name: " ++ romName ++ "Text" ++ "\n" ++
+    "AddrSize: " ++ (show $ cSequencerAddressSize sequencer) ++ "\n" ++
+    "WordSize: 4096" ++ "\n" ++
+    "Format: Str" ++ "\n\n"
+
+stripLabels :: String -> String
+stripLabels line =
+    case line =~ "^[[:space:]]*@[[:alpha:]_][[:alnum:]_]*[[:space:]]+(.+)$" :: (String,String,String,[String]) of
+      ("",matched,left,[instruction]) -> instruction
+      _ -> line
     
 getLabelAddresses :: [SInst] -> [(String,Int)]
 getLabelAddresses insts =
@@ -149,6 +165,74 @@ parseLine (address,(lineNumber,line)) =
 justComment :: String -> Bool
 justComment line = line =~ "^[[:space:]]*#"
 
+validate :: CDevice -> [SInst] -> Either String (CDevice,[SInst])
+validate device insts =
+    toLefts ("Could not validate device and program!\n"++) $
+    checkProgramFitsInMemory device insts >>
+    checkEveryComponentInOutput device insts >>
+    checkSequencerOpCodeFits device insts >>
+    checkComponentsOpCodeFits device insts >>
+    checkSequencerCanCommand device insts
+
+checkProgramFitsInMemory :: CDevice -> [SInst] -> Either String (CDevice,[SInst])
+checkProgramFitsInMemory device insts =
+    let instCount = length insts
+        maxInstCount = 2^(cSequencerAddressSize $ cDeviceSequencer device)
+        sequencerName = cSequencerName $ cDeviceSequencer device
+    in if instCount <= maxInstCount
+       then return (device,insts)
+       else fail $ "There are too many instructions (" ++ show instCount ++ ") for sequencer of type " ++ show sequencerName ++ " (it allows just " ++ show maxInstCount ++ ")!"
+
+checkEveryComponentInOutput :: CDevice -> [SInst] -> Either String (CDevice,[SInst])
+checkEveryComponentInOutput device insts =
+    toRights (head) $ gatherEithers $ 
+    map (isInOutput (cDeviceSeqOutputs device)) (cDeviceComponents device)
+    where isInOutput :: [String] -> (String,CComponent) -> Either String (CDevice,[SInst])
+          isInOutput outputs (componentName,component) =
+              if elem componentName outputs
+              then return (device,insts)
+              else fail $ "Component " ++ show componentName ++ " is not present as a sequencer output in the device file!"
+
+checkSequencerOpCodeFits :: CDevice -> [SInst] -> Either String (CDevice,[SInst])
+checkSequencerOpCodeFits device insts =
+    toRights (head) $ gatherEithers $
+    map (opCodeFits (cSequencerCommandSize $ cDeviceSequencer device)) (cSequencerInstructions $ cDeviceSequencer device)
+    where opCodeFits :: Int -> (String,CInst) -> Either String (CDevice,[SInst])
+          opCodeFits commandSize (instName,inst) =
+              if cInstOpCode inst < 2^commandSize
+              then return (device,insts)
+              else fail $ "Sequencer instruction " ++ show instName ++ " (opcode: " ++ show (cInstOpCode inst) ++ ") is too big for sequencer " ++
+                          show (cSequencerName $ cDeviceSequencer device) ++ " command field (size:" ++ show commandSize ++ ")!"
+
+checkComponentsOpCodeFits :: CDevice -> [SInst] -> Either String (CDevice,[SInst])
+checkComponentsOpCodeFits device insts =
+    toRights (head) $ gatherEithers $ 
+    map (checkComponent . snd) (cDeviceComponents device)
+    where checkComponent :: CComponent -> Either String (CDevice,[SInst])
+          checkComponent component =
+              toRights (head) $ gatherEithers $
+              map (opCodeFits component (cComponentCommandSize component)) (cComponentInstructions component)
+          opCodeFits :: CComponent -> Int -> (String,CInst) -> Either String (CDevice,[SInst])
+          opCodeFits component commandSize (instName,inst) =
+              if cInstOpCode inst < 2^commandSize
+              then return (device,insts)
+              else fail $ "Component instruction " ++ show instName ++ " (opcode: " ++ show (cInstOpCode inst) ++ ") is too big for component " ++
+                          show (cComponentName component) ++ " command field (size: " ++ show commandSize ++ ")!"
+                               
+checkSequencerCanCommand :: CDevice -> [SInst] -> Either String (CDevice,[SInst])
+checkSequencerCanCommand device insts =
+    toRights (head) $ gatherEithers $
+    map (checkCommand (cSequencerComponentCommandSize $ cDeviceSequencer device)) (cDeviceComponents device)
+    where checkCommand :: Int -> (String,CComponent) -> Either String (CDevice,[SInst])
+          checkCommand componentCommandSize (componentName,component) =
+              if cComponentCommandSize component <= componentCommandSize
+              then return (device,insts)
+              else fail $ "Sequencer " ++ show (cSequencerName $ cDeviceSequencer device) ++ " cannot command component " ++
+                          show componentName ++ " of type " ++ show (cComponentName component) ++ "!\n" ++ 
+                          "The latter's command field (size: " ++ show (cComponentCommandSize component) ++
+                          ") is greater than the one for the sequencer (size: " ++
+                          show (cSequencerComponentCommandSize $ cDeviceSequencer device) ++ ")!"
+ 
 seqLexer :: TokenParser ()
 seqLexer = makeTokenParser (LanguageDef {
                              commentStart    = "",

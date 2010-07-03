@@ -10,6 +10,7 @@ RotaryLedSim.clock180
 @200
 -seq
 @820
+RotaryLedSim.rotaryled.seq.d_Instruction[4095:0]
 RotaryLedSim.rotaryled.seq.d_Input[2047:0]
 RotaryLedSim.rotaryled.seq.d_State[2047:0]
 @200

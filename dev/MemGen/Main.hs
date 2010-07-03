@@ -15,6 +15,7 @@ import System.Environment
 data MemFormat
     = Bin
     | Hex
+    | Str
     deriving (Show)
 
 data MemDef
@@ -69,10 +70,12 @@ psFormat = do reserved psLexer "Format"
               case format of
                 "Bin" -> return Bin
                 "Hex" -> return Hex
+                "Str" -> return Str
 
 psContentLine :: MemFormat -> Parser String
 psContentLine Bin = lexeme psLexer $ many1 $ oneOf "xXzZ01_"
 psContentLine Hex = lexeme psLexer $ many1 $ oneOf "xXzZ0123456789ABCDEFabcdef_"
+psContentLine Str = stringLiteral psLexer
 
 psMemFile :: Parser MemDef
 psMemFile = do (name,wordSize,addrSize,format) <- permute (readyp <$$> psName
@@ -121,6 +124,7 @@ genSimRom (Def name wordSize addrSize format content) =
           veriNumber :: MemFormat -> String -> String
           veriNumber Bin number = show wordSize ++ "'b" ++ number
           veriNumber Hex number = show wordSize ++ "'h" ++ number
+          veriNumber Str string = show string;
 
 data ClOptions
     = ClOptions {

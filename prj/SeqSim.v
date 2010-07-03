@@ -102,6 +102,7 @@ module SeqSim;
 	.reset(reset),
 
 	.inst(inst),
+	.inst_text("NOT OF INTEREST"),
 	.inst_en(inst_en),
 	.ireg_0(ireg_0),
 	.ireg_1(ireg_1),

@@ -20,7 +20,9 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_cke,ddr_csn,ddr_rasn,ddr
    wire [11:0] 	      seq_oreg;
    wire [7:0] 	      seq_oreg_wen;
 
-   wire [19:0] 	      rom_data_o;
+   wire [19:0] 	      coderom_data_o;
+
+   wire [4095:0]      coderomtext_data_o;
 
    wire [31:0] 	      ddrctl_page;
    wire 	      ddrctl_ready;
@@ -31,7 +33,8 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_cke,ddr_csn,ddr_rasn,ddr
    seq (.clock(clock0),
 	.reset(reset),
 
-	.inst(rom_data_o),
+	.inst(coderom_data_o),
+	.inst_text(coderomtext_data_o),
 	.inst_en(1),
 	.ireg_0(ddrctl_page[7:0]),
 	.ireg_1({7'h00,ddrctl_ready}),
@@ -43,8 +46,12 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_cke,ddr_csn,ddr_rasn,ddr
 	.oreg_wen(seq_oreg_wen));
 
    BigSDRAMRom
-   rom (.addr(seq_next),
-	.data_o(rom_data_o));
+   coderom (.addr(seq_next),
+ 	    .data_o(coderom_data_o));
+
+   BigSDRAMRomText
+   coderomtext (.addr(seq_next),
+   	        .data_o(coderomtext_data_o));
 
    DdrCtl1
    ddrctl (.clock0(clock180),

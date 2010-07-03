@@ -43,6 +43,7 @@ data CComponent
 
 data CInst
     = CInst {
+        cInstName :: String,
         cInstOpCode :: Int,
         cInstArguments :: [(String,CArgType)],
         cInstFormat :: [CFormatAtom]}

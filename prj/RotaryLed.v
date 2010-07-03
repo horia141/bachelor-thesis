@@ -18,6 +18,8 @@ module RotaryLed(clock0,clock180,reset,rotary,leds,vga_hsync,vga_vsync,vga_r,vga
 
    wire [19:0] 	     coderom_data_o;
 
+   wire [4095:0]     coderomtext_data_o;
+
    wire [7:0] 	     alu_result;
 
    wire 	     mrotary_rotary_left_status;
@@ -32,6 +34,7 @@ module RotaryLed(clock0,clock180,reset,rotary,leds,vga_hsync,vga_vsync,vga_r,vga
 	.reset(reset),
 
 	.inst(coderom_data_o),
+	.inst_text(coderomtext_data_o),
 	.inst_en(1),
 	.ireg_0(alu_result),
 	.ireg_1({7'h0,mrotary_rotary_left_status}),
@@ -44,7 +47,11 @@ module RotaryLed(clock0,clock180,reset,rotary,leds,vga_hsync,vga_vsync,vga_r,vga
 
    RotaryLedRom
    coderom (.addr(seq_next),
-	    .data_o(coderom_data_o));
+            .data_o(coderom_data_o));
+
+   RotaryLedRomText
+   coderomtext (.addr(seq_next),
+	        .data_o(coderomtext_data_o));
 
    Alu
    alu (.clock(clock180),

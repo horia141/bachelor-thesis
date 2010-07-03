@@ -12,6 +12,7 @@ PressCountSim.reset
 @200
 -seq
 @820
+PressCountSim.presscount.seq.d_Instruction[4095:0]
 PressCountSim.presscount.seq.d_Input[2047:0]
 PressCountSim.presscount.seq.d_State[2047:0]
 @200

@@ -169,9 +169,10 @@ interpretInstruction wordSize (YamlScalar instructionName _ _,Mapping instructio
     parsedFormat <- extractFormat $ C8.unpack $ value format
 
     return $ (name,CInst {
-                   cInstOpCode = opCodeInt,
-                   cInstArguments = arguments,
-                   cInstFormat = parsedFormat})
+                    cInstName = name,
+                    cInstOpCode = opCodeInt,
+                    cInstArguments = arguments,
+                    cInstFormat = parsedFormat})
 
 extractNameAndArgs :: Int -> String -> Either String (String,[(String,CArgType)])
 extractNameAndArgs wordSize fullName = do

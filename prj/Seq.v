@@ -20,37 +20,39 @@
 // jz label(l) src(s)      -> 0101_aaaa_aaaa_xxxx_xxss
 // jn label(l) src(s)      -> 0110_aaaa_aaaa_xxxx_xxss
 
-module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
-   input wire         clock;
-   input wire         reset;
+module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
+   input wire          clock;
+   input wire          reset;
 
-   input wire [19:0]  inst;
-   input wire 	      inst_en;
-   input wire [7:0]   ireg_0;
-   input wire [7:0]   ireg_1;
-   input wire [7:0]   ireg_2;
-   input wire [7:0]   ireg_3;
+   input wire [19:0]   inst;
+   input wire [4095:0] inst_text;
+   input wire 	       inst_en;
+   input wire [7:0]    ireg_0;
+   input wire [7:0]    ireg_1;
+   input wire [7:0]    ireg_2;
+   input wire [7:0]    ireg_3;
 
-   output wire [7:0]  next;
-   output wire [11:0] oreg;
-   output wire [7:0]  oreg_wen;
+   output wire [7:0]   next;
+   output wire [11:0]  oreg;
+   output wire [7:0]   oreg_wen;
 
-   reg [1:0] 	      s_State;
-   reg [7:0] 	      s_Address;
-   reg [11:0] 	      s_OReg;
-   reg [7:0] 	      s_ORegWen;
+   reg [1:0] 	       s_State;
+   reg [7:0] 	       s_Address;
+   reg [11:0] 	       s_OReg;
+   reg [7:0] 	       s_ORegWen;
 
-   wire [3:0] 	      w_InstCode;
-   wire [2:0] 	      w_InstDst;
-   wire [3:0] 	      w_InstDstCmd;
-   wire [7:0] 	      w_InstImm0;
-   wire [7:0] 	      w_InstImm1;
-   wire [1:0] 	      w_InstSrc;
-   wire [7:0] 	      w_IregMux;
-   wire [7:0] 	      w_OregWen;
+   wire [3:0] 	       w_InstCode;
+   wire [2:0] 	       w_InstDst;
+   wire [3:0] 	       w_InstDstCmd;
+   wire [7:0] 	       w_InstImm0;
+   wire [7:0] 	       w_InstImm1;
+   wire [1:0] 	       w_InstSrc;
+   wire [7:0] 	       w_IregMux;
+   wire [7:0] 	       w_OregWen;
 
-   reg [256*8-1:0]    d_Input;
-   reg [256*8-1:0]    d_State;
+   reg [256*8-1:0]     d_Instruction;
+   reg [256*8-1:0]     d_Input;
+   reg [256*8-1:0]     d_State;
 
    assign next = s_Address;
    assign oreg = s_OReg;
@@ -176,6 +178,15 @@ module Seq(clock,reset,inst,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_w
 	 endcase // case (s_State)
       end // else: !if(reset)
    end // always @ (posedge clock)
+
+   always @ * begin
+      if (inst_en) begin
+	 $sformat(d_Instruction,"EN %s",inst_text);
+      end
+      else begin
+	 $sformat(d_Instruction,"NN");
+      end
+   end
 
    always @ * begin
       if (inst_en) begin

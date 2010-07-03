@@ -250,6 +250,7 @@ Prj.$(1).Gen.Tools.SeqAsm.SeqSrc       = $$(filter %.seq,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.SeqAsm.DevSrc       = $$(filter %.dev,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.SeqAsm.OutPath      = $$(Prj.$(1).Gen.BasePath)/SeqAsm
 Prj.$(1).Gen.Tools.SeqAsm.OutFile      = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.mem
+Prj.$(1).Gen.Tools.SeqAsm.OutTextFile  = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.text.mem
 Prj.$(1).Gen.Tools.MemGen.MemSrc       = $$(filter %.mem,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.MemGen.OutPath      = $$(Prj.$(1).Gen.BasePath)/MemGen
 Prj.$(1).Gen.Tools.MemGen.OutFile      = $$(Prj.$(1).Gen.Tools.MemGen.OutPath)/MemGen.v
@@ -272,6 +273,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 	$$(if $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
 		$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
+			-t $$(Prj.$(1).Gen.Tools.SeqAsm.OutTextFile) \
 			-s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) \
 			-c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) \
 			-d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) \
@@ -285,7 +287,8 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 		$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
 			$$(Prj.$(1).Gen.Tools.MemGen.MemSrc) \
-			$$(Prj.$(1).Gen.Tools.SeqAsm.OutFile),\
+			$$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
+			$$(Prj.$(1).Gen.Tools.SeqAsm.OutTextFile),\
 		$$(if $$(Prj.$(1).Gen.Tools.MemGen.MemSrc),\
 			$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
 				-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
@@ -337,6 +340,7 @@ Prj.$(1).Gen.Tools.SeqAsm.SeqSrc          = $$(filter %.seq,$$(Prj.$(1).Gen.Src)
 Prj.$(1).Gen.Tools.SeqAsm.DevSrc          = $$(filter %.dev,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.SeqAsm.OutPath         = $$(Prj.$(1).Gen.BasePath)/SeqAsm
 Prj.$(1).Gen.Tools.SeqAsm.OutFile         = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.mem
+Prj.$(1).Gen.Tools.SeqAsm.OutTextFile     = $$(Prj.$(1).Gen.Tools.SeqAsm.OutPath)/SeqAsm.text.mem
 Prj.$(1).Gen.Tools.MemGen.MemSrc          = $$(filter %.mem,$$(Prj.$(1).Gen.Src))
 Prj.$(1).Gen.Tools.MemGen.OutPath         = $$(Prj.$(1).Gen.BasePath)/MemGen
 Prj.$(1).Gen.Tools.MemGen.OutFile         = $$(Prj.$(1).Gen.Tools.MemGen.OutPath)/MemGen.v
@@ -406,6 +410,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	$$(if $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
 		$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
+			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutTextFile) \
 			-s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) \
 			-c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) \
 			-d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) \
@@ -419,7 +424,8 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 		$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
 			$$(Prj.$(1).Gen.Tools.MemGen.MemSrc) \
-			$$(Prj.$(1).Gen.Tools.SeqAsm.OutFile),\
+			$$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
+			$$(Prj.$(1).Gen.Tools.SeqAsm.OutTextFile),\
 		$$(if $$(Prj.$(1).Gen.Tools.MemGen.MemSrc),\
 			$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
 				-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \

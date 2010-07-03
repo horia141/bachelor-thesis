@@ -13,7 +13,9 @@ module BlockFall(clock0,clock180,reset,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    wire [11:0] 	      seq_oreg;
    wire [7:0] 	      seq_oreg_wen;
 
-   wire [19:0] 	      rom_data_o;
+   wire [19:0] 	      coderom_data_o;
+
+   wire [4095:0]      coderomtext_data_o;
 
    wire [7:0] 	      alu_result;
 
@@ -23,7 +25,8 @@ module BlockFall(clock0,clock180,reset,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    seq (.clock(clock0),
 	.reset(reset),
 
-	.inst(rom_data_o),
+	.inst(coderom_data_o),
+	.inst_text(coderomtext_data_o),
 	.inst_en(1),
 	.ireg_0(alu_result),
 	.ireg_1({7'h0,swc_ready}),
@@ -35,8 +38,12 @@ module BlockFall(clock0,clock180,reset,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 	.oreg_wen(seq_oreg_wen));
 
    BlockFallRom
-   rom (.addr(seq_next),
-	.data_o(rom_data_o));
+   coderom (.addr(seq_next),
+	    .data_o(coderom_data_o));
+
+   BlockFallRomText
+   coderomtext (.addr(seq_next),
+ 	        .data_o(coderomtext_data_o));
 
    Alu
    alu (.clock(clock180),
