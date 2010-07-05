@@ -5,10 +5,14 @@
 `define Seq_JR 4'h4
 `define Seq_JZ 4'h5
 `define Seq_JN 4'h6
+`define Seq_WZ 4'h7
+`define Seq_WN 4'h8
 
-`define Seq_State_Reset 2'h0
-`define Seq_State_Ready 2'h1
-`define Seq_State_Error 2'h2
+`define Seq_State_Reset 3'h0
+`define Seq_State_Ready 3'h1
+`define Seq_State_WaitZ 3'h2
+`define Seq_State_WaitN 3'h3
+`define Seq_State_Error 3'h4
 
 // Instruction Format
 // no                      -> 0000_xxxx_xxxx_xxxx_xxxx
@@ -19,6 +23,8 @@
 // jr src(s)               -> 0100_xxxx_xxxx_xxxx_xxss
 // jz label(l) src(s)      -> 0101_aaaa_aaaa_xxxx_xxss
 // jn label(l) src(s)      -> 0110_aaaa_aaaa_xxxx_xxss
+// wz src(s)               -> 0111_xxxx_xxxx_xxxx_xxss
+// wn src(s)               -> 1000_xxxx_xxxx_xxxx_xxss
 
 module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,oreg,oreg_wen);
    input wire          clock;
@@ -36,7 +42,7 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
    output wire [11:0]  oreg;
    output wire [7:0]   oreg_wen;
 
-   reg [1:0] 	       s_State;
+   reg [2:0] 	       s_State;
    reg [7:0] 	       s_Address;
    reg [11:0] 	       s_OReg;
    reg [7:0] 	       s_ORegWen;
@@ -50,7 +56,7 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
    wire [7:0] 	       w_IregMux;
    wire [7:0] 	       w_OregWen;
 
-   reg [256*8-1:0]     d_Instruction;
+   reg [515*8-1:0]     d_Instruction;
    reg [256*8-1:0]     d_Input;
    reg [256*8-1:0]     d_State;
 
@@ -66,17 +72,17 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
    assign w_InstSrc = inst[1:0];
 
    assign w_IregMux = w_InstSrc == 0 ? ireg_0 :
-		       w_InstSrc == 1 ? ireg_1 :
-		       w_InstSrc == 2 ? ireg_2 :
+		      w_InstSrc == 1 ? ireg_1 :
+		      w_InstSrc == 2 ? ireg_2 :
 			                ireg_3;
    assign w_OregWen = w_InstDst == 0 ? 8'b00000001 :
-	               w_InstDst == 1 ? 8'b00000010 :
-		       w_InstDst == 2 ? 8'b00000100 :
-		       w_InstDst == 3 ? 8'b00001000 :
-		       w_InstDst == 4 ? 8'b00010000 :
-		       w_InstDst == 5 ? 8'b00100000 :
-		       w_InstDst == 6 ? 8'b01000000 :
-			                8'b10000000;
+	              w_InstDst == 1 ? 8'b00000010 :
+		      w_InstDst == 2 ? 8'b00000100 :
+		      w_InstDst == 3 ? 8'b00001000 :
+		      w_InstDst == 4 ? 8'b00010000 :
+		      w_InstDst == 5 ? 8'b00100000 :
+		      w_InstDst == 6 ? 8'b01000000 :
+			               8'b10000000;
 
    always @ (posedge clock) begin
       if (reset) begin
@@ -146,6 +152,20 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 		      s_ORegWen <= 0;
 		   end
 
+		   `Seq_WZ: begin
+		      s_State   <= w_IregMux == 0 ? `Seq_State_Ready : `Seq_State_WaitZ;
+		      s_Address <= w_IregMux == 0 ? s_Address + 1 : s_Address;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
+		   end
+
+		   `Seq_WN: begin
+		      s_State   <= w_IregMux != 0 ? `Seq_State_Ready : `Seq_State_WaitN;
+		      s_Address <= w_IregMux != 0 ? s_Address + 1 : s_Address;
+		      s_OReg    <= 0;
+		      s_ORegWen <= 0;
+		   end
+
 		   default: begin
 		      s_State   <= `Seq_State_Error;
 		      s_Address <= 0;
@@ -161,6 +181,20 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 		 s_ORegWen <= 0;
 	      end // else: !if(inst_en)
 	   end // case: `Seq_State_Ready
+
+	   `Seq_State_WaitZ: begin
+	      s_State   <= w_IregMux == 0 ? `Seq_State_Ready : `Seq_State_WaitZ;
+	      s_Address <= w_IregMux == 0 ? s_Address + 1 : s_Address;
+	      s_OReg    <= 0;
+	      s_ORegWen <= 0;
+	   end
+
+	   `Seq_State_WaitN: begin
+	      s_State   <= w_IregMux != 0 ? `Seq_State_Ready : `Seq_State_WaitN;
+	      s_Address <= w_IregMux != 0 ? s_Address + 1 : s_Address;
+	      s_OReg    <= 0;
+	      s_ORegWen <= 0;
+	   end
 
 	   `Seq_State_Error: begin
 	      s_State   <= `Seq_State_Error;
@@ -181,10 +215,10 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 
    always @ * begin
       if (inst_en) begin
-	 $sformat(d_Instruction,"EN %s",inst_text);
+	 d_Instruction = {"EN"," ",inst_text};
       end
       else begin
-	 $sformat(d_Instruction,"NN");
+	 d_Instruction = {"NN"};
       end
    end
 
@@ -219,6 +253,14 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 	      $sformat(d_Input,"EN (JN %2X %1D) %2X %2X %2X %2X",w_InstImm0,w_InstSrc,ireg_0,ireg_1,ireg_2,ireg_3);
 	   end
 
+	   `Seq_WZ: begin
+	      $sformat(d_Input,"EN (WZ %2X %1D) %2X %2X %2X %2X",w_InstImm0,w_InstSrc,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
+	   `Seq_WN: begin
+	      $sformat(d_Input,"EN (WN %2X %1D) %2X %2X %2X %2X",w_InstImm0,w_InstSrc,ireg_0,ireg_1,ireg_2,ireg_3);
+	   end
+
 	   default: begin
 	      $sformat(d_Input,"EN (? %4X) %2X %2X %2X %2X",inst[15:0],ireg_0,ireg_1,ireg_2,ireg_3);
 	   end
@@ -237,6 +279,14 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 
 	`Seq_State_Ready: begin
 	   $sformat(d_State,"R %2X %3X %8B",s_Address,s_OReg,s_ORegWen);
+	end
+
+	`Seq_State_WaitZ: begin
+	   $sformat(d_State,"Z %2X %3X %8B",s_Address,s_OReg,s_ORegWen);
+	end
+
+	`Seq_State_WaitN: begin
+	   $sformat(d_State,"N %2X %3X %8B",s_Address,s_OReg,s_ORegWen);
 	end
 
 	`Seq_State_Error: begin

@@ -1,4 +1,4 @@
-@start jz @start ddrctl.Ready
+       wn ddrctl.Ready
        ci ddrctl.la0 00:h
        ci ddrctl.la1 00:h
        ci ddrctl.la2 00:h
@@ -8,7 +8,7 @@
        ci ddrctl.ld2 00:h
        ci ddrctl.ld3 00:h
        cc ddrctl.wrp
-@test0 jz @test0 ddrctl.Ready
+       wn ddrctl.Ready
        ci ddrctl.la0 02:h
        ci ddrctl.la1 00:h
        ci ddrctl.la2 00:h
@@ -18,7 +18,7 @@
        ci ddrctl.ld2 00:h
        ci ddrctl.ld3 00:h
        cc ddrctl.wrp
-@test1 jz @test1 ddrctl.Ready
+       wn ddrctl.Ready
        ci ddrctl.la0 00:h
        ci ddrctl.la1 00:h
        ci ddrctl.la2 00:h
@@ -28,29 +28,29 @@
        ci ddrctl.ld2 00:h
        ci ddrctl.ld3 00:h
        cc ddrctl.wrp
-@testa jz @testa ddrctl.Ready
+       wn ddrctl.Ready
 @loop  ci swc.ld0 FF:h
        ci swc.ld1 FF:h
        ci swc.ld2 FF:h
        cc swc.ccd
-@test2 jz @test2 swc.Ready
+       wn swc.Ready
        ci ddrctl.la0 00:h
        ci ddrctl.la1 00:h
        ci ddrctl.la2 00:h
        ci ddrctl.la3 00:h
        cc ddrctl.rdp
-@test3 jz @test3 ddrctl.Ready
+       wn ddrctl.Ready
        cr ledbank.ldi ddrctl.Page
        ci swc.ld0 FF:h
        ci swc.ld1 FF:h
        ci swc.ld2 FF:h
        cc swc.ccd
-@test4 jz @test4 swc.Ready
+       wn swc.Ready
        ci ddrctl.la0 02:h
        ci ddrctl.la1 00:h
        ci ddrctl.la2 00:h
        ci ddrctl.la3 00:h
        cc ddrctl.rdp
-@test5 jz @test5 ddrctl.Ready
+       wn ddrctl.Ready
        cr ledbank.ldi ddrctl.Page
        ji @loop

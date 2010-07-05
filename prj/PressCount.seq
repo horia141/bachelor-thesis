@@ -6,4 +6,4 @@
          ci alu.sub 01:h
 @display cr ledbank.ldi alu.Result
          cr vga.ld3 alu.Result
-	    ji @startu	
+	 ji @startu	

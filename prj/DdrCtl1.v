@@ -36,7 +36,7 @@
 `define DdrCtl1_DdrModeExtend_DLL_Enable             1'b0
 `define DdrCtl1_DdrModeExtend_DLL_Disable            1'b1
 `define DdrCtl1_DdrModeExtend_DriveStrength_Normal   1'b0
-`define DdrCtl1_DdrModeExtend_DriveStrength_Reduced  1'b0
+`define DdrCtl1_DdrModeExtend_DriveStrength_Reduced  1'b1
 `define DdrCtl1_DdrModeExtend_OperatingMode_Reserved 11'b00000000000
 
 `define DdrCtl1_SelectModeRegister_Normal            2'b00

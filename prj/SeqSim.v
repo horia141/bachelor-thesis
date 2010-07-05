@@ -67,6 +67,18 @@ module SeqSim;
       inst_en = 1;
       ireg_2 = 8'h00;
 
+      #4 inst = {`Seq_WZ,14'bxxxxxxxxxxxxxx,2'h1};
+      inst_en = 1;
+      ireg_1 = 8'hA1;
+
+      #8 ireg_1 = 8'h00;
+
+      #4 inst = {`Seq_WN,14'bxxxxxxxxxxxxxx,2'h2};
+      inst_en = 1;
+      ireg_2 = 8'h00;
+
+      #8 ireg_2 = 8'hA1;
+
       #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
       inst_en = 1;
 
@@ -92,6 +104,74 @@ module SeqSim;
 
       #4 inst = {`Seq_JI,8'h48,8'bxxxxxxxx};
       inst_en = 1;
+
+      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
+      inst_en = 1;
+
+      // Test WZ and WN with nothing to wait for.
+      #4 inst = {`Seq_WZ,14'bxxxxxxxxxxxxxx,2'h1};
+      inst_en = 1;
+      ireg_1 = 8'h00;
+
+      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Seq_WN,14'bxxxxxxxxxxxxxx,2'h3};
+      inst_en = 1;
+      ireg_3 = 8'h10;
+
+      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
+      inst_en = 1;
+
+      // Test WZ and WN with inst_en going down.
+      #4 inst = {`Seq_WZ,14'bxxxxxxxxxxxxxx,2'h2};
+      inst_en = 1;
+      ireg_2 = 8'hAA;
+
+      #4 inst_en = 0;
+
+      #8 inst_en = 1;
+
+      #4 ireg_2 = 8'h00;
+
+      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Seq_WZ,14'bxxxxxxxxxxxxxx,2'h1};
+      inst_en = 1;
+      ireg_1 = 8'hAA;
+
+      #4 inst_en = 0;
+
+      #8 ireg_1 = 8'h00;
+
+      #4 inst_en = 1;
+
+      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Seq_WN,14'bxxxxxxxxxxxxxx,2'h2};
+      inst_en = 1;
+      ireg_2 = 8'h00;
+
+      #4 inst_en = 0;
+
+      #8 inst_en = 1;
+
+      #4 ireg_2 = 8'hAA;
+
+      #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
+      inst_en = 1;
+
+      #4 inst = {`Seq_WN,14'bxxxxxxxxxxxxxx,2'h1};
+      inst_en = 1;
+      ireg_1 = 8'h00;
+
+      #4 inst_en = 0;
+
+      #8 ireg_1 = 8'hAA;
+
+      #4 inst_en = 1;
 
       #4 inst = {`Seq_NO,16'bxxxxxxxxxxxxxxxx};
       inst_en = 1;

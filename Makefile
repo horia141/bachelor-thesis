@@ -410,7 +410,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 	$$(if $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
 		$$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutFile) \
-			-o $$(Prj.$(1).Gen.Tools.SeqAsm.OutTextFile) \
+			-t $$(Prj.$(1).Gen.Tools.SeqAsm.OutTextFile) \
 			-s $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile) \
 			-c $$(Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile) \
 			-d $$(Prj.$(1).Gen.Tools.SeqAsm.DevSrc) \

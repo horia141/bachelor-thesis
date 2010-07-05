@@ -1,7 +1,7 @@
 [timestart] 0
-[size] 1678 517
-[pos] 0 516
-*-13.778845 38720 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1678 1004
+[pos] -1 -1
+*-11.778845 930 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PressCountSim.
 [treeopen] PressCountSim.presscount.
 [treeopen] PressCountSim.presscount.pushbtnu.
@@ -11,8 +11,9 @@ PressCountSim.clock180
 PressCountSim.reset
 @200
 -seq
+@821
+PressCountSim.presscount.seq.d_Instruction[4119:0]
 @820
-PressCountSim.presscount.seq.d_Instruction[4095:0]
 PressCountSim.presscount.seq.d_Input[2047:0]
 PressCountSim.presscount.seq.d_State[2047:0]
 @200

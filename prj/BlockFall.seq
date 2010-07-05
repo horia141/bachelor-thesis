@@ -11,7 +11,7 @@
         jz @round6 alu.Result
         cc alu.not
         cc swc.ccu
-@wait7  jz @wait7 swc.Ready
+        wn swc.Ready
         cr vga.ld7 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -21,7 +21,7 @@
         jz @round5 alu.Result
         cc alu.not
         cc swc.ccu
-@wait6  jz @wait6 swc.Ready
+        wn swc.Ready
         cr vga.ld6 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -31,7 +31,7 @@
         jz @round4 alu.Result
         cc alu.not
         cc swc.ccu
-@wait5  jz @wait5 swc.Ready
+        wn swc.Ready
         cr vga.ld5 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -41,7 +41,7 @@
         jz @round3 alu.Result
         cc alu.not
         cc swc.ccu
-@wait4  jz @wait4 swc.Ready
+        wn swc.Ready
         cr vga.ld4 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -51,7 +51,7 @@
         jz @round2 alu.Result
         cc alu.not
         cc swc.ccu
-@wait3  jz @wait3 swc.Ready
+        wn swc.Ready
         cr vga.ld3 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -61,7 +61,7 @@
         jz @round1 alu.Result
         cc alu.not
         cc swc.ccu
-@wait2  jz @wait2 swc.Ready
+        wn swc.Ready
         cr vga.ld2 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -71,7 +71,7 @@
         jz @round0 alu.Result
         cc alu.not
         cc swc.ccu
-@wait1  jz @wait1 swc.Ready
+        wn swc.Ready
         cr vga.ld1 alu.Result
         cc alu.shr
         ci alu.add 10000000:b
@@ -81,7 +81,7 @@
         jz @start alu.Result
         cc alu.not
         cc swc.ccu
-@wait0  jz @wait0 swc.Ready
+        wn swc.Ready
         cr vga.ld0 alu.Result
         cc alu.shr
         ci alu.add 10000000:b

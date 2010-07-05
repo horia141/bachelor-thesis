@@ -1,17 +1,18 @@
 [timestart] 0
 [size] 1678 1004
 [pos] 0 0
-*-13.000000 12000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-12.000000 12000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] Auto2Sim.
 [treeopen] Auto2Sim.auto2.
 @28
 Auto2Sim.clock0
 Auto2Sim.clock180
 Auto2Sim.reset
-@201
+@200
 -seq
+@821
+Auto2Sim.auto2.seq.d_Instruction[4119:0]
 @820
-Auto2Sim.auto2.seq.d_Instruction[4095:0]
 Auto2Sim.auto2.seq.d_Input[2047:0]
 Auto2Sim.auto2.seq.d_State[2047:0]
 @200
