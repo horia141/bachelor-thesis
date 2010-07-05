@@ -274,6 +274,7 @@ module RegBankS8(clock,reset,inst,inst_en,out);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -346,4 +347,5 @@ module RegBankS8(clock,reset,inst,inst_en,out);
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // RegBankS8

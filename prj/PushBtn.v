@@ -100,6 +100,7 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -157,4 +158,5 @@ module PushBtn(clock,reset,inst,inst_en,button,button_status);
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // PushBtn

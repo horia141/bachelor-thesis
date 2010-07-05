@@ -96,6 +96,7 @@ module RegBankP2(clock,reset,inst,inst_en,out_0,out_1);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -140,4 +141,5 @@ module RegBankP2(clock,reset,inst,inst_en,out_0,out_1);
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // RegBankP2

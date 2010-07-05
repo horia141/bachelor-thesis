@@ -126,6 +126,7 @@ module Alu(clock,reset,inst,inst_en,result);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -197,5 +198,6 @@ module Alu(clock,reset,inst,inst_en,result);
 	   $sformat(d_State,"?");
 	end
       endcase // case (s_State)
-   end
+   end // always @ *
+`endif //  `ifdef SIM
 endmodule // Alu

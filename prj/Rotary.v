@@ -127,6 +127,7 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -235,4 +236,5 @@ module Rotary(clock,reset,inst,inst_en,rotary,rotary_left_status,rotary_right_st
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // Rotary

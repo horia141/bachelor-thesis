@@ -133,6 +133,7 @@ module VGA(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -201,4 +202,5 @@ module VGA(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // VGA

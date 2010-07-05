@@ -177,6 +177,7 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -281,4 +282,5 @@ module Swc(clock,reset,inst,inst_en,counter,ready);
 	end
       endcase // case (s_State)
    end // always @ *
+`endif
 endmodule // Swc

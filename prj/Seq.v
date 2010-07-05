@@ -222,7 +222,6 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 	 d_Instruction = {"NN"};
       end
    end
-`endif
 
    always @ * begin
       if (inst_en) begin
@@ -300,4 +299,5 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // Seq

@@ -1128,6 +1128,7 @@ module DdrCtl1(clock0,clock90,clock180,reset,inst,inst_en,page,ready,ddr_cke,ddr
       end
    end
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -1649,4 +1650,5 @@ module DdrCtl1(clock0,clock90,clock180,reset,inst,inst_en,page,ready,ddr_cke,ddr
 	       i_InitCnt200Done ? "200Done" : "200NotDone",
 	       i_InitDo200 ? "Do200" : "No200");
    end
+`endif //  `ifdef SIM
 endmodule // DdrCtl1

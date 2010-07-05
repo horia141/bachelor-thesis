@@ -126,6 +126,7 @@ module LedBank(clock,reset,inst,inst_en,leds);
       end // else: !if(reset)
    end // always @ (posedge clock)
 
+`ifdef SIM
    always @ * begin
       if (inst_en) begin
 	 case (w_InstCode)
@@ -198,4 +199,5 @@ module LedBank(clock,reset,inst,inst_en,leds);
 	end
       endcase // case (s_State)
    end // always @ *
+`endif //  `ifdef SIM
 endmodule // LedBank
