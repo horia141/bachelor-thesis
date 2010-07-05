@@ -49,9 +49,11 @@ module RotaryLed(clock0,clock180,reset,rotary,leds,vga_hsync,vga_vsync,vga_r,vga
    coderom (.addr(seq_next),
             .data_o(coderom_data_o));
 
+`ifdef SIM
    RotaryLedRomText
    coderomtext (.addr(seq_next),
 	        .data_o(coderomtext_data_o));
+`endif
 
    Alu
    alu (.clock(clock180),

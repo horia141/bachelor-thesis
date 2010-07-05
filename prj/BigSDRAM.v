@@ -49,9 +49,11 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_cke,ddr_csn,ddr_rasn,ddr
    coderom (.addr(seq_next),
  	    .data_o(coderom_data_o));
 
+`ifdef SIM
    BigSDRAMRomText
    coderomtext (.addr(seq_next),
    	        .data_o(coderomtext_data_o));
+`endif
 
    DdrCtl1
    ddrctl (.clock0(clock180),

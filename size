@@ -19,3 +19,4 @@ Index   Build   Dev     Prj     Total   Commit
 17      486     656     8539    9681    Finished SeqAsm configurations loader.
 18      616     959     8403    9978    Small fix in DdrCtl1Sim module.
 19      622     1058    8451    10131   Improvements to the assembler.
+20      623     1058    8592    10273   Fixed issue with text roms.

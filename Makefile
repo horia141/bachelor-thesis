@@ -303,6 +303,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
 			-Wall -Wno-timescale \
 			-DVCDFILE=\"$$(Prj.$(1).Gen.OutFile)\" \
+			-DSIM \
 			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc) \
 			$$(Prj.$(1).Gen.Tools.MemGen.OutFile),\
 		$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) \

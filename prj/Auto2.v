@@ -42,10 +42,12 @@ module Auto2(clock0,clock180,reset,leds,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    coderom (.addr(seq_next),
 	    .data_o(coderom_data_o));
 
+`ifdef SIM
    Auto2RomText
    coderomtext (.addr(seq_next),
  	        .data_o(coderomtext_data_o));
-
+`endif
+   
    Alu
    alu (.clock(clock180),
 	.reset(reset),

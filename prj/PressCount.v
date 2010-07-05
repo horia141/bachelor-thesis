@@ -51,10 +51,11 @@ module PressCount(clock0,clock180,reset,countu,countd,nr_presses,vga_hsync,vga_v
    coderom (.addr(seq_next),
             .data_o(coderom_data_o));
 
+`ifdef SIM
    PressCountRomText
    coderomtext (.addr(seq_next),
   	        .data_o(coderomtext_data_o));
-
+`endif
 
    Alu
    alu (.clock(clock180),
