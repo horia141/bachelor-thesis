@@ -66,6 +66,18 @@ Prj.LedBank.Sim.Out = LedBankSim
 Prj.VGA.All.Src = VGA.v 
 Prj.VGA.All.Ref = VGAInterface.All
 
+Prj.VGAInterface.All.Src = VGAInterface.v
+Prj.VGAInterface.All.Ref =
+
+Prj.VGAInterface.Sim.Src = VGAInterfaceSim.v VGAInterfaceSim.sav
+Prj.VGAInterface.Sim.Ref = VGAInterface.All
+Prj.VGAInterface.Sim.Out = VGAInterfaceSim
+
+Prj.VGAInterface.FPGA.Src = VGAInterfaceFPGA.v VGAInterfaceFPGA.ucf
+Prj.VGAInterface.FPGA.Ref = VGAInterface.All
+Prj.VGAInterface.FPGA.Out = VGAInterfaceFPGA
+Prj.VGAInterface.FPGA.Top = VGAInterfaceFPGA
+
 Prj.PushBtn.All.Src = PushBtn.v
 Prj.PushBtn.All.Ref = PushBtnInterface.All
 
@@ -161,8 +173,8 @@ Prj.ClockManager.FPGA.Ref = ClockManager.All SlowClock.All
 Prj.ClockManager.FPGA.Out = ClockManagerFPGA
 Prj.ClockManager.FPGA.Top = ClockManagerFPGA
 
-Prj.VGAInterface.All.Src = VGAInterfaceBad.v
-Prj.VGAInterface.All.Ref =
+# Prj.VGAInterface.All.Src = VGAInterfaceBad.v
+# Prj.VGAInterface.All.Ref =
 
 Prj.PushBtnInterface.All.Src = PushBtnInterface.v
 Prj.PushBtnInterface.All.Ref =

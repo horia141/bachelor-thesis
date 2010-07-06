@@ -213,7 +213,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 
    assign ddr_dm = 2'b00;
    assign ddr_dq = i_CoreTakeCommand1 ? (ddr_clock90 == 0 ? s_IntfPage[31:16] : s_IntfPage[15:0]) : 16'bzzzzzzzzzzzzzzzz;
-   assign ddr_dqs = (i_CoreTakeCommand2 && clock90 == 0 && ddr_clock0 == 0) || (i_CoreTakeCommand3 && clock0 == 1) ? {ddr_clock0,ddr_clock0} : 2'bzz;
+   assign ddr_dqs = (i_CoreTakeCommand2 && clock90 == 0) || (i_CoreTakeCommand3 && clock0 == 1) ? {ddr_clock0,ddr_clock0} : 2'bzz;
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
