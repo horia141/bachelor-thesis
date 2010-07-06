@@ -59,11 +59,10 @@
 `define DdrCtl1_CoreState_Read_Activate       4'h7
 `define DdrCtl1_CoreState_Read_Read           4'h8
 `define DdrCtl1_CoreState_Read_Wait0          4'h9
-`define DdrCtl1_CoreState_Read_Wait1          4'hA
-`define DdrCtl1_CoreState_Write_Activate      4'hB
-`define DdrCtl1_CoreState_Write_Write         4'hC
-`define DdrCtl1_CoreState_Write_Wait0         4'hD
-`define DdrCtl1_CoreState_Write_Wait1         4'hE
+`define DdrCtl1_CoreState_Write_Activate      4'hA
+`define DdrCtl1_CoreState_Write_Write         4'hB
+`define DdrCtl1_CoreState_Write_Wait0         4'hC
+`define DdrCtl1_CoreState_Write_Wait1         4'hD
 
 `define DdrCtl1_InitState_Reset                5'h00
 `define DdrCtl1_InitState_PowerUp              5'h01
@@ -121,7 +120,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
    reg [4:0] 	      i_CoreCommand;
    reg [1:0] 	      i_CoreBank;
    reg [12:0] 	      i_CoreAddr;
-   reg 		      i_CoreTakeCommand;
+   reg 		      i_CoreTakeCommand0;
+   reg 		      i_CoreTakeCommand1;
+   reg 		      i_CoreTakeCommand2;
+   reg 		      i_CoreTakeCommand3;
    reg 		      i_CoreRefreshDone;
    reg 		      i_CoreReadDone;
    reg 		      i_CoreWriteDone;
@@ -168,7 +170,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 
    always @ * begin
       if (i_InitDone) begin
-	 if (i_CoreTakeCommand && clock90 == 1) begin
+	 if (i_CoreTakeCommand0 && clock90 == 1) begin
 	    ddr_cke = i_CoreCommand[4];
 	    ddr_csn = i_CoreCommand[3];
 	    ddr_rasn = i_CoreCommand[2];
@@ -196,7 +198,8 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	    ddr_wen = i_InitCommand[0];
 	    ddr_ba = i_InitBank;
 	    ddr_addr = i_InitAddr;
-	 end begin
+	 end
+	 else begin
 	    ddr_cke = 1;
 	    ddr_csn = 0;
 	    ddr_rasn = 1;
@@ -207,10 +210,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	 end
       end // else: !if(i_InitDone)
    end // always @ *
-   
+
    assign ddr_dm = 2'b00;
-   assign ddr_dq = s_CoreState == `DdrCtl1_CoreState_Write_Write || s_CoreState == `DdrCtl1_CoreState_Write_Wait0 ? (ddr_clock90 == 0 ? s_IntfPage[31:16] : s_IntfPage[15:0]) : 16'bzzzzzzzzzzzzzzzz;
-   assign ddr_dqs = (s_CoreState == `DdrCtl1_CoreState_Write_Write && clock90 == 0 && ddr_clock0 == 0) || (s_CoreState == `DdrCtl1_CoreState_Write_Wait0 && clock0 == 1) ? {ddr_clock0,ddr_clock0} : 2'bzz;
+   assign ddr_dq = i_CoreTakeCommand1 ? (ddr_clock90 == 0 ? s_IntfPage[31:16] : s_IntfPage[15:0]) : 16'bzzzzzzzzzzzzzzzz;
+   assign ddr_dqs = (i_CoreTakeCommand2 && clock90 == 0 && ddr_clock0 == 0) || (i_CoreTakeCommand3 && clock0 == 1) ? {ddr_clock0,ddr_clock0} : 2'bzz;
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
@@ -496,10 +499,6 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	   end
 
 	   `DdrCtl1_CoreState_Read_Wait0: begin
-	      s_CoreState <= `DdrCtl1_CoreState_Read_Wait1;
-	   end
-
-	   `DdrCtl1_CoreState_Read_Wait1: begin
 	      s_CoreState <= `DdrCtl1_CoreState_Ready;
 	   end
 
@@ -531,7 +530,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	 i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	 i_CoreBank        = 0;
 	 i_CoreAddr        = 0;
-	 i_CoreTakeCommand = 0;
+	 i_CoreTakeCommand0 = 0;
+	 i_CoreTakeCommand1 = 0;
+	 i_CoreTakeCommand2 = 0;
+	 i_CoreTakeCommand3 = 0;
 	 i_CoreRefreshDone = 0;
 	 i_CoreReadDone    = 0;
 	 i_CoreWriteDone   = 0;
@@ -542,7 +544,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -552,7 +557,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -562,7 +570,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -572,7 +583,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_AutoRefresh;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 1;
+	      i_CoreTakeCommand0 = 1;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -582,7 +596,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -592,7 +609,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -602,7 +622,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 1;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -612,7 +635,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_Activate;
 	      i_CoreBank        = s_IntfAddress[24:23];
 	      i_CoreAddr        = s_IntfAddress[22:10];
-	      i_CoreTakeCommand = 1;
+	      i_CoreTakeCommand0 = 1;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -622,7 +648,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_Read;
 	      i_CoreBank        = s_IntfAddress[24:23];
 	      i_CoreAddr        = {3'b001,s_IntfAddress[9:0]};
-	      i_CoreTakeCommand = 1;
+	      i_CoreTakeCommand0 = 1;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -632,17 +661,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
-	      i_CoreRefreshDone = 0;
-	      i_CoreReadDone    = 0;
-	      i_CoreWriteDone   = 0;
-	   end
-
-	   `DdrCtl1_CoreState_Read_Wait1: begin
-	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-	      i_CoreBank        = 0;
-	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 1;
 	      i_CoreWriteDone   = 0;
@@ -652,7 +674,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_Activate;
 	      i_CoreBank        = s_IntfAddress[24:23];
 	      i_CoreAddr        = s_IntfAddress[22:10];
-	      i_CoreTakeCommand = 1;
+	      i_CoreTakeCommand0 = 1;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -662,7 +687,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_Write;
 	      i_CoreBank        = s_IntfAddress[24:23];
 	      i_CoreAddr        = {3'b001,s_IntfAddress[9:0]};
-	      i_CoreTakeCommand = 1;
+	      i_CoreTakeCommand0 = 1;
+	      i_CoreTakeCommand1 = 1;
+	      i_CoreTakeCommand2 = 1;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -672,7 +700,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 1;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 1;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -682,7 +713,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 1;
@@ -692,7 +726,10 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	      i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
 	      i_CoreBank        = 0;
 	      i_CoreAddr        = 0;
-	      i_CoreTakeCommand = 0;
+	      i_CoreTakeCommand0 = 0;
+	      i_CoreTakeCommand1 = 0;
+	      i_CoreTakeCommand2 = 0;
+	      i_CoreTakeCommand3 = 0;
 	      i_CoreRefreshDone = 0;
 	      i_CoreReadDone    = 0;
 	      i_CoreWriteDone   = 0;
@@ -1050,7 +1087,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
       end
       else begin
 	 if (i_InitDone) begin
-	    if (s_AutoRefreshCounter == 395) begin
+	    if (s_AutoRefreshCounter == 320) begin
 	       if (i_CoreRefreshDone) begin
 		  s_AutoRefreshCounter <= 0;
 	       end
@@ -1073,7 +1110,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 	 i_AutoRefreshDoRefresh = 0;
       end
       else begin
-	 if (s_AutoRefreshCounter == 395) begin
+	 if (s_AutoRefreshCounter == 320) begin
 	    i_AutoRefreshDoRefresh = 1;
 	 end
 	 else begin
@@ -1139,21 +1176,11 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
    end // always @ *
 
    always @ (negedge ddr_clock90) begin
-      if (s_CoreState == `DdrCtl1_CoreState_Read_Wait0 && clock90 == 0 && ddr_dqs[0] == 0 && ddr_dqs[1] == 0) begin
-	 s_HalfPage0 <= ddr_dq;
-      end
-      else begin
-	 s_HalfPage0 <= s_HalfPage0;
-      end
+      s_HalfPage0 <= ddr_dq;
    end
 
    always @ (posedge ddr_clock90) begin
-      if (s_CoreState == `DdrCtl1_CoreState_Read_Wait0 && ddr_dqs[0] == 1 && ddr_dqs[1] == 1) begin
-	 s_HalfPage1 <= ddr_dq;
-      end
-      else begin
-	 s_HalfPage1 <= s_HalfPage1;
-      end
+      s_HalfPage1 <= ddr_dq;
    end
 
 `ifdef SIM
@@ -1369,19 +1396,6 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 
 	`DdrCtl1_CoreState_Read_Wait0: begin
 	   $sformat(d_CoreState,"r Wait0 %5B %2B %4X (%S %S %S) (%S %S %S)",
-		    i_CoreCommand,
-		    i_CoreBank,
-		    i_CoreAddr,
-		    i_CoreRefreshDone ? "RefreshDone" : "RefreshNotDone",
-		    i_CoreReadDone ? "ReadDone" : "ReadNotDone",
-		    i_CoreWriteDone ? "WriteDone" : "WriteNotDone",
-		    i_AutoRefreshDoRefresh ? "DoRefresh" : "NoRefresh",
-		    i_IntfDoRead ? "DoRead" : "NoRead",
-		    i_IntfDoWrite ? "DoWrite" : "NoWrite");
-	end
-
-	`DdrCtl1_CoreState_Read_Wait1: begin
-	   $sformat(d_CoreState,"r Wait1 %5B %2B %4X (%S %S %S) (%S %S %S)",
 		    i_CoreCommand,
 		    i_CoreBank,
 		    i_CoreAddr,

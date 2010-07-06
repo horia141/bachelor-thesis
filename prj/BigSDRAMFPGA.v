@@ -1,8 +1,6 @@
-module BigSDRAMFPGA(clock,reset,clock_fb,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+module BigSDRAMFPGA(clock,reset,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock;
    input wire 	      reset;
-
-   input wire 	      clock_fb;
 
    output wire [7:0]  leds;
 
@@ -43,11 +41,9 @@ module BigSDRAMFPGA(clock,reset,clock_fb,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,d
 	.clock270(cm1_clock270),
 	.clock2x(cm1_clock2x0));
 
-   ClockManager #(.ExternalFeedBack(1))
+   ClockManager #(.ExternalFeedBack(0))
    cm2 (.clock(cm1_clock2x0),
 	.reset(reset),
-
-	.clock_fb(clock_fb),
 
 	.locked(cm2_locked),
 	.clock0(cm2_clock0),
