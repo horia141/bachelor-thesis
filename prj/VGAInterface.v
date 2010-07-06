@@ -12,32 +12,32 @@ module VGAInterface(clock,reset,color_r,color_g,color_b,fb_addr_h,fb_addr_v,vga_
    parameter                   VBackPorch = 23;
    
    input wire                  clock;
-   input wire 		       reset;
+   input wire                  reset;
 
-   input wire 		       color_r;
-   input wire 		       color_g;
-   input wire 		       color_b;
+   input wire                  color_r;
+   input wire                  color_g;
+   input wire                  color_b;
 
    output wire [HAddrSize-1:0] fb_addr_h;
    output wire [VAddrSize-1:0] fb_addr_v;
 
-   output wire 		       vga_hsync;
-   output wire 		       vga_vsync;
-   output wire 		       vga_r;
-   output wire 		       vga_g;
-   output wire 		       vga_b;
+   output wire                 vga_hsync;
+   output wire                 vga_vsync;
+   output wire                 vga_r;
+   output wire                 vga_g;
+   output wire                 vga_b;
 
-   reg [HAddrSize-1:0] 	       s_HCounter;
-   wire 		       i_HInVisibleArea;
-   wire 		       i_HInFrontPorch;
-   wire 		       i_HInSyncPulse;
-   wire 		       i_HInBackPorch;
+   reg [HAddrSize-1:0]         s_HCounter;
+   wire                        i_HInVisibleArea;
+   wire                        i_HInFrontPorch;
+   wire                        i_HInSyncPulse;
+   wire                        i_HInBackPorch;
 
-   reg [VAddrSize-1:0] 	       s_VCounter;
-   wire 		       i_VInVisibleArea;
-   wire 		       i_VInFrontPorch;
-   wire 		       i_VInSyncPulse;
-   wire 		       i_VInBackPorch;
+   reg [VAddrSize-1:0]         s_VCounter;
+   wire                        i_VInVisibleArea;
+   wire                        i_VInFrontPorch;
+   wire                        i_VInSyncPulse;
+   wire                        i_VInBackPorch;
 
    assign fb_addr_h = {HAddrSize{i_HInVisibleArea & i_VInVisibleArea}} & s_HCounter;
    assign fb_addr_v = {VAddrSize{i_HInVisibleArea & i_VInVisibleArea}} & s_VCounter;
@@ -60,35 +60,34 @@ module VGAInterface(clock,reset,color_r,color_g,color_b,fb_addr_h,fb_addr_v,vga_
 
    always @ (posedge clock) begin
       if (reset) begin
-	 s_HCounter <= HVisibleArea + HFrontPorch + HSyncPulse + HBackPorch - 1;
+         s_HCounter <= HVisibleArea + HFrontPorch + HSyncPulse + HBackPorch - 1;
       end
       else begin
-	 if (s_HCounter == HVisibleArea + HFrontPorch + HSyncPulse + HBackPorch - 1) begin
-	    s_HCounter <= 0;
-	 end
-	 else begin
-	    s_HCounter <= s_HCounter + 1;
-	 end
+         if (s_HCounter == HVisibleArea + HFrontPorch + HSyncPulse + HBackPorch - 1) begin
+            s_HCounter <= 0;
+         end
+         else begin
+            s_HCounter <= s_HCounter + 1;
+         end
       end // else: !if(reset)
    end // always @ (posedge clock)
 
    always @ (posedge clock) begin
       if (reset) begin
-	 s_VCounter <= VVisibleArea + VFrontPorch + VSyncPulse + VBackPorch - 1;
+         s_VCounter <= VVisibleArea + VFrontPorch + VSyncPulse + VBackPorch - 1;
       end
       else begin
-	 if (s_HCounter == HVisibleArea + HFrontPorch + HSyncPulse + HBackPorch - 1) begin
-	    if (s_VCounter == VVisibleArea + VFrontPorch + VSyncPulse + VBackPorch - 1) begin
-	       s_VCounter <= 0;
-	    end
-	    else begin
-	       s_VCounter <= s_VCounter + 1;
-	    end
-	 end
-	 else begin
-	    s_VCounter <= s_VCounter;
-	 end
+         if (s_HCounter == HVisibleArea + HFrontPorch + HSyncPulse + HBackPorch - 1) begin
+            if (s_VCounter == VVisibleArea + VFrontPorch + VSyncPulse + VBackPorch - 1) begin
+               s_VCounter <= 0;
+            end
+            else begin
+               s_VCounter <= s_VCounter + 1;
+            end
+         end
+         else begin
+            s_VCounter <= s_VCounter;
+         end
       end // else: !if(reset)
    end // always @ (posedge clock)
 endmodule // VGAInterface
-

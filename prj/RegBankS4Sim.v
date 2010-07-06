@@ -5,7 +5,7 @@ module RegBankS4Sim;
    reg        reset;
 
    reg [11:0] inst;
-   reg 	      inst_en;
+   reg        inst_en;
 
    wire [7:0] out;
 
@@ -85,10 +85,10 @@ module RegBankS4Sim;
 
    RegBankS4
    rbs4 (.clock(clock),
-	 .reset(reset),
+         .reset(reset),
 
-	 .inst(inst),
-	 .inst_en(inst_en),
+         .inst(inst),
+         .inst_en(inst_en),
 
-	 .out(out));
+         .out(out));
 endmodule // RegBankS4Sim

@@ -2,11 +2,11 @@
 
 module PressCountSim;
    reg         clock0;
-   reg 	       clock180;
-   reg 	       reset;
+   reg         clock180;
+   reg         reset;
 
-   reg 	       countu;
-   reg 	       countd;
+   reg         countu;
+   reg         countd;
 
    wire [7:0]  nr_presses;
 
@@ -60,11 +60,11 @@ module PressCountSim;
 
    PressCount
    presscount (.clock0(clock0),
-	       .clock180(clock180),
-	       .reset(reset),
+               .clock180(clock180),
+               .reset(reset),
 
-	       .countu(countu),
-	       .countd(countd),
+               .countu(countu),
+               .countd(countd),
 
-	       .nr_presses(nr_presses));
+               .nr_presses(nr_presses));
 endmodule // PressCountSim

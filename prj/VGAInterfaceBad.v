@@ -1,48 +1,48 @@
 module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    input wire         clock;
-   input wire 	      reset;
+   input wire         reset;
 
    input wire [63:0]  framebuffer;
 
-   output wire 	      vga_hsync;
-   output wire 	      vga_vsync;
-   output wire 	      vga_r;
-   output wire 	      vga_g;
-   output wire 	      vga_b;
+   output wire        vga_hsync;
+   output wire        vga_vsync;
+   output wire        vga_r;
+   output wire        vga_g;
+   output wire        vga_b;
 
-   reg [9:0] 	      CounterX;
-   reg [8:0] 	      CounterY;
+   reg [9:0]          CounterX;
+   reg [8:0]          CounterY;
 
-   wire 	      value;
+   wire               value;
 
-   reg 		      clock2 = 0;
+   reg                clock2 = 0;
 
    always @ (posedge clock) begin
       if (reset) begin
-	 clock2 = 0;
+         clock2 = 0;
       end
       else begin
-	 clock2 = ~clock2;
+         clock2 = ~clock2;
       end
    end
 
-   reg 	       vga_HS;
-   reg 	       vga_VS;
+   reg         vga_HS;
+   reg         vga_VS;
    wire        inDisplayArea = CounterX < 640 && CounterY < 480;
    wire        CounterXmaxed = (CounterX==767);
 
    always @ (posedge clock2) begin
       if(CounterXmaxed) begin
-	 CounterX <= 0;
+         CounterX <= 0;
       end
       else begin
-	 CounterX <= CounterX + 1;
+         CounterX <= CounterX + 1;
       end
    end
    
    always @ (posedge clock2) begin
       if(CounterXmaxed) begin
-	 CounterY <= CounterY + 1;
+         CounterY <= CounterY + 1;
       end
    end
    
@@ -60,55 +60,55 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
 
    always @ (posedge clock2) begin
       if (CounterX < 80) begin
-	 ix = 0;
+         ix = 0;
       end
       else if (CounterX < 160) begin
-	 ix = 1;
+         ix = 1;
       end
       else if (CounterX < 240) begin
-	 ix = 2;
+         ix = 2;
       end
       else if (CounterX < 320) begin
-	 ix = 3;
+         ix = 3;
       end
       else if (CounterX < 400) begin
-	 ix = 4;
+         ix = 4;
       end
       else if (CounterX < 480) begin
-	 ix = 5;
+         ix = 5;
       end
       else if (CounterX < 560) begin
-	 ix = 6;
+         ix = 6;
       end
       else if (CounterX < 640) begin
-	 ix = 7;
+         ix = 7;
       end
    end // always @ (posedge clock2)
 
    always @ (posedge clock2) begin
       if (CounterY < 60) begin
-	 iy = 0;
+         iy = 0;
       end
       else if (CounterY < 120) begin
-	 iy = 1;
+         iy = 1;
       end
       else if (CounterY < 180) begin
-	 iy = 2;
+         iy = 2;
       end
       else if (CounterY < 240) begin
-	 iy = 3;
+         iy = 3;
       end
       else if (CounterY < 300) begin
-	 iy = 4;
+         iy = 4;
       end
       else if (CounterY < 360) begin
-	 iy = 5;
+         iy = 5;
       end
       else if (CounterY < 420) begin
-	 iy = 6;
+         iy = 6;
       end
       else if (CounterY < 480) begin
-	 iy = 7;
+         iy = 7;
       end
    end // always @ (posedge clock2)
 
@@ -117,4 +117,5 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
    assign vga_r = value & inDisplayArea;
    assign vga_g = value & inDisplayArea;
    assign vga_b = value & inDisplayArea;
-endmodule // Pong1
+endmodule // VGAInterfaceBad
+

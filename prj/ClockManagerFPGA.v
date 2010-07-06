@@ -4,9 +4,9 @@ module ClockManagerFPGA(clock,reset,leds);
 
    output wire [2:0] leds;
 
-   wire 	     cm_locked;
-   wire 	     cm_clock0;
-   wire 	     cm_clock2x;
+   wire              cm_locked;
+   wire              cm_clock0;
+   wire              cm_clock2x;
 
    assign leds[2] = cm_locked;
 
@@ -20,13 +20,13 @@ module ClockManagerFPGA(clock,reset,leds);
 
    SlowClock #(.SlowFactor(32'h00FFFFFF))
    sc0 (.clock(cm_clock0),
-	.reset(reset & cm_locked),
+        .reset(reset & cm_locked),
 
-	.outclock(leds[1]));
+        .outclock(leds[1]));
 
    SlowClock #(.SlowFactor(32'h00FFFFFF))
    sc1 (.clock(cm_clock2x),
-	.reset(reset & cm_locked),
+        .reset(reset & cm_locked),
 
-	.outclock(leds[0]));
+        .outclock(leds[0]));
 endmodule // ClockManagerFPGA

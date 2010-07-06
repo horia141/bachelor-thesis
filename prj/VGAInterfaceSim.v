@@ -2,11 +2,11 @@
 
 module VGAInterfaceSim;
    reg         clock;
-   reg 	       reset;
+   reg         reset;
 
-   reg 	       color_r;
-   reg 	       color_g;
-   reg 	       color_b;
+   reg         color_r;
+   reg         color_g;
+   reg         color_b;
 
    wire [10:0] fb_addr_h;
    wire [10:0] fb_addr_v;
@@ -62,28 +62,28 @@ module VGAInterfaceSim;
    end // initial begin
 
    VGAInterface #(.HAddrSize(11),
-		  .HVisibleArea(4),
-		  .HFrontPorch(2),
-		  .HSyncPulse(3),
-		  .HBackPorch(2),
-		  .VAddrSize(11),
-		  .VVisibleArea(5),
-		  .VFrontPorch(2),
-		  .VSyncPulse(3),
-		  .VBackPorch(2))
+                  .HVisibleArea(4),
+                  .HFrontPorch(2),
+                  .HSyncPulse(3),
+                  .HBackPorch(2),
+                  .VAddrSize(11),
+                  .VVisibleArea(5),
+                  .VFrontPorch(2),
+                  .VSyncPulse(3),
+                  .VBackPorch(2))
    vgaint (.clock(clock),
-	   .reset(reset),
+           .reset(reset),
 
-	   .color_r(color_r),
-	   .color_g(color_g),
-	   .color_b(color_b),
+           .color_r(color_r),
+           .color_g(color_g),
+           .color_b(color_b),
 
-	   .fb_addr_h(fb_addr_h),
-	   .fb_addr_v(fb_addr_v),
+           .fb_addr_h(fb_addr_h),
+           .fb_addr_v(fb_addr_v),
 
-	   .vga_hsync(vga_hsync),
-	   .vga_vsync(vga_vsync),
-	   .vga_r(vga_r),
-	   .vga_g(vga_g),
-	   .vga_b(vga_b));
+           .vga_hsync(vga_hsync),
+           .vga_vsync(vga_vsync),
+           .vga_r(vga_r),
+           .vga_g(vga_g),
+           .vga_b(vga_b));
 endmodule // VGAInterfaceSim

@@ -2,10 +2,10 @@
 
 module SwcSim;
    reg         clock;
-   reg 	       reset;
+   reg         reset;
 
    reg [11:0]  inst;
-   reg 	       inst_en;
+   reg         inst_en;
 
    wire [23:0] counter;
    wire        ready;
@@ -155,11 +155,11 @@ module SwcSim;
 
    Swc
    swc (.clock(clock),
-	.reset(reset),
+        .reset(reset),
 
-	.inst(inst),
-	.inst_en(inst_en),
+        .inst(inst),
+        .inst_en(inst_en),
 
-	.counter(counter),
-	.ready(ready));
+        .counter(counter),
+        .ready(ready));
 endmodule // SwcSim

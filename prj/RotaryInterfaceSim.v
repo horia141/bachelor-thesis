@@ -2,7 +2,7 @@
 
 module RotaryInterfaceSim;
    reg       clock;
-   reg 	     reset;
+   reg       reset;
 
    reg [1:0] rotary;
 
@@ -55,10 +55,10 @@ module RotaryInterfaceSim;
 
    RotaryInterface
    rotaryint (.clock(clock),
-	      .reset(reset),
+              .reset(reset),
 
-	      .rotary(rotary),
+              .rotary(rotary),
 
-	      .rotary_left(rotary_left),
-	      .rotary_right(rotary_right));
+              .rotary_left(rotary_left),
+              .rotary_right(rotary_right));
 endmodule // RotaryInterfaceSim

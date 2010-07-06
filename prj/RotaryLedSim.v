@@ -2,11 +2,11 @@
 
 module RotaryLedSim;
    reg         clock0;
-   reg 	       clock180;
-   reg 	       reset;
+   reg         clock180;
+   reg         reset;
 
    reg [1:0]   rotary;
- 	       
+               
    wire [7:0]  leds;
 
    initial begin
@@ -102,10 +102,10 @@ module RotaryLedSim;
 
    RotaryLed
    rotaryled (.clock0(clock0),
-	      .clock180(clock180),
-	      .reset(reset),
+              .clock180(clock180),
+              .reset(reset),
 
-	      .rotary(rotary),
+              .rotary(rotary),
 
-	      .leds(leds));
+              .leds(leds));
 endmodule // ProtaryLedSim

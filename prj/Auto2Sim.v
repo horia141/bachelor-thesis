@@ -2,8 +2,8 @@
 
 module Auto2Sim;
    reg         clock0;
-   reg 	       clock180;
-   reg 	       reset;
+   reg         clock180;
+   reg         reset;
 
    wire [7:0]  leds;
 
@@ -32,8 +32,8 @@ module Auto2Sim;
 
    Auto2
    auto2 (.clock0(clock0),
-	  .clock180(clock180),
-	  .reset(reset),
+          .clock180(clock180),
+          .reset(reset),
 
-	  .leds(leds));
+          .leds(leds));
 endmodule // Auto2Sim

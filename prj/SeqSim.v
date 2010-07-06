@@ -2,10 +2,10 @@
 
 module SeqSim;
    reg         clock;
-   reg 	       reset;
+   reg         reset;
 
    reg [19:0]  inst;
-   reg 	       inst_en;
+   reg         inst_en;
    reg [7:0]   ireg_0;
    reg [7:0]   ireg_1;
    reg [7:0]   ireg_2;
@@ -179,17 +179,17 @@ module SeqSim;
 
    Seq
    seq (.clock(clock),
-	.reset(reset),
+        .reset(reset),
 
-	.inst(inst),
-	.inst_text("NOT OF INTEREST"),
-	.inst_en(inst_en),
-	.ireg_0(ireg_0),
-	.ireg_1(ireg_1),
-	.ireg_2(ireg_2),
-	.ireg_3(ireg_3),
+        .inst(inst),
+        .inst_text("NOT OF INTEREST"),
+        .inst_en(inst_en),
+        .ireg_0(ireg_0),
+        .ireg_1(ireg_1),
+        .ireg_2(ireg_2),
+        .ireg_3(ireg_3),
 
-	.next(next),
-	.oreg(oreg),
-	.oreg_wen(oreg_wen));
+        .next(next),
+        .oreg(oreg),
+        .oreg_wen(oreg_wen));
 endmodule // SeqSim

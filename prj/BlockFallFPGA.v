@@ -3,15 +3,15 @@ module BlockFallFPGA(clock,reset,leds,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    input wire        reset;
    
    output wire [7:0] leds;
-   output wire 	     vga_hsync;
-   output wire 	     vga_vsync;
-   output wire 	     vga_r;
-   output wire 	     vga_g;
-   output wire 	     vga_b;
+   output wire       vga_hsync;
+   output wire       vga_vsync;
+   output wire       vga_r;
+   output wire       vga_g;
+   output wire       vga_b;
 
-   wire 	     cm_locked;
-   wire 	     cm_clock0;
-   wire 	     cm_clock180;
+   wire              cm_locked;
+   wire              cm_clock0;
+   wire              cm_clock180;
 
    ClockManager
    cm (.clock(clock),

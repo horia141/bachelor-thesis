@@ -2,9 +2,9 @@
 
 module PushBtnInterfaceSim;
    reg  clock;
-   reg 	reset;
+   reg  reset;
 
-   reg 	button;
+   reg  button;
 
    wire button_pressed;
 
@@ -52,9 +52,9 @@ module PushBtnInterfaceSim;
 
    PushBtnInterface
    pushbtnint (.clock(clock),
-	       .reset(reset),
+               .reset(reset),
 
-	       .button(button),
+               .button(button),
 
-	       .button_pressed(button_pressed));
+               .button_pressed(button_pressed));
 endmodule // PushBtnInterfaceSim

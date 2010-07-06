@@ -2,10 +2,10 @@
 
 module AluSim;
    reg        clock;
-   reg 	      reset;
+   reg        reset;
 
    reg [11:0] inst;
-   reg 	      inst_en;
+   reg        inst_en;
 
    wire [7:0] result;
 
@@ -88,10 +88,10 @@ module AluSim;
 
    Alu
    alu (.clock(clock),
-	.reset(reset),
-	
-	.inst(inst),
-	.inst_en(inst_en),
+        .reset(reset),
+        
+        .inst(inst),
+        .inst_en(inst_en),
 
-	.result(result));
+        .result(result));
 endmodule // AluSim

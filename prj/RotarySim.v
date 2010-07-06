@@ -2,10 +2,10 @@
 
 module RotarySim;
    reg         clock;
-   reg 	       reset;
+   reg         reset;
 
    reg [11:0]  inst;
-   reg 	       inst_en;
+   reg         inst_en;
    reg [1:0]   rotary;
 
    wire        rotary_left_status;
@@ -226,12 +226,12 @@ module RotarySim;
 
    Rotary
    rotary (.clock(clock),
-	   .reset(reset),
+           .reset(reset),
 
-	   .inst(inst),
-	   .inst_en(inst_en),
-	   .rotary(rotary),
+           .inst(inst),
+           .inst_en(inst_en),
+           .rotary(rotary),
 
-	   .rotary_left_status(rotary_left_status),
-	   .rotary_right_status(rotary_right_status));
+           .rotary_left_status(rotary_left_status),
+           .rotary_right_status(rotary_right_status));
 endmodule // RotarySim

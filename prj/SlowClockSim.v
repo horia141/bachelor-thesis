@@ -26,7 +26,7 @@ module SlowClockSim;
 
    SlowClock #(.SlowFactor(8))
    slowclock (.clock(clock),
-	      .reset(reset),
+              .reset(reset),
 
-	      .outclock(outclock));
+              .outclock(outclock));
 endmodule // SlowClockSim

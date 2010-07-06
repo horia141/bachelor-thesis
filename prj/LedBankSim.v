@@ -2,10 +2,10 @@
 
 module SeqSim;
    reg         clock;
-   reg 	       reset;
+   reg         reset;
 
    reg [11:0]  inst;
-   reg 	       inst_en;
+   reg         inst_en;
 
    wire [7:0]  leds;
 
@@ -88,10 +88,10 @@ module SeqSim;
 
    LedBank
    ledbank (.clock(clock),
-	    .reset(reset),
+            .reset(reset),
 
-	    .inst(inst),
-	    .inst_en(inst_en),
+            .inst(inst),
+            .inst_en(inst_en),
 
-	    .leds(leds));
+            .leds(leds));
 endmodule // SeqSim

@@ -9,26 +9,25 @@ module VGAInterfaceFPGA(clock,reset,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    output wire vga_b;
 
    VGAInterface #(.HAddrSize(11),
-		  .HVisibleArea(800),
-		  .HFrontPorch(56),
-		  .HSyncPulse(120),
-		  .HBackPorch(64),
-		  .VAddrSize(11),
-		  .VVisibleArea(600),
-		  .VFrontPorch(37),
-		  .VSyncPulse(6),
-		  .VBackPorch(23))
+                  .HVisibleArea(800),
+                  .HFrontPorch(56),
+                  .HSyncPulse(120),
+                  .HBackPorch(64),
+                  .VAddrSize(11),
+                  .VVisibleArea(600),
+                  .VFrontPorch(37),
+                  .VSyncPulse(6),
+                  .VBackPorch(23))
    vgaint (.clock(clock),
-	   .reset(reset),
+           .reset(reset),
 
-	   .color_r(1),
-	   .color_g(1),
-	   .color_b(0),
+           .color_r(1),
+           .color_g(1),
+           .color_b(0),
 
-	   .vga_hsync(vga_hsync),
-	   .vga_vsync(vga_vsync),
-	   .vga_r(vga_r),
-	   .vga_g(vga_g),
-	   .vga_b(vga_b));
+           .vga_hsync(vga_hsync),
+           .vga_vsync(vga_vsync),
+           .vga_r(vga_r),
+           .vga_g(vga_g),
+           .vga_b(vga_b));
 endmodule // VGAInterfaceFPGA
-

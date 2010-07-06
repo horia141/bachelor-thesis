@@ -2,11 +2,11 @@
 
 module PushBtnSim;
    reg         clock;
-   reg 	       reset;
+   reg         reset;
 
    reg [11:0]  inst;
-   reg 	       inst_en;
-   reg 	       button;
+   reg         inst_en;
+   reg         button;
 
    wire        button_status;
 
@@ -139,13 +139,13 @@ module PushBtnSim;
    end      
 
    PushBtn #(.DebounceWait(10),
-	     .DebounceSize(4))
+             .DebounceSize(4))
    pushbtn (.clock(clock),
-	    .reset(reset),
+            .reset(reset),
 
-	    .inst(inst),
-	    .inst_en(inst_en),
-	    .button(button),
+            .inst(inst),
+            .inst_en(inst_en),
+            .button(button),
 
-	    .button_status(button_status));
+            .button_status(button_status));
 endmodule // PushBtnSim

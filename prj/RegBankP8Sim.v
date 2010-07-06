@@ -5,7 +5,7 @@ module RegBankP8Sim;
    reg        reset;
 
    reg [11:0] inst;
-   reg 	      inst_en;
+   reg        inst_en;
 
    wire [7:0] out_0;
    wire [7:0] out_1;
@@ -92,17 +92,17 @@ module RegBankP8Sim;
 
    RegBankP8
    rbp8 (.clock(clock),
-	 .reset(reset),
+         .reset(reset),
 
-	 .inst(inst),
-	 .inst_en(inst_en),
+         .inst(inst),
+         .inst_en(inst_en),
 
-	 .out_0(out_0),
-	 .out_1(out_1),
-	 .out_2(out_2),
-	 .out_3(out_3),
-	 .out_4(out_4),
-	 .out_5(out_5),
-	 .out_6(out_6),
-	 .out_7(out_7));
+         .out_0(out_0),
+         .out_1(out_1),
+         .out_2(out_2),
+         .out_3(out_3),
+         .out_4(out_4),
+         .out_5(out_5),
+         .out_6(out_6),
+         .out_7(out_7));
 endmodule // RegBankP8Sim

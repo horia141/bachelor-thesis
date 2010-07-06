@@ -5,7 +5,7 @@ module RegBankP2Sim;
    reg        reset;
 
    reg [11:0] inst;
-   reg 	      inst_en;
+   reg        inst_en;
 
    wire [7:0] out_0;
    wire [7:0] out_1;
@@ -68,11 +68,11 @@ module RegBankP2Sim;
 
    RegBankP2
    rbp2 (.clock(clock),
-	 .reset(reset),
+         .reset(reset),
 
-	 .inst(inst),
-	 .inst_en(inst_en),
+         .inst(inst),
+         .inst_en(inst_en),
 
-	 .out_0(out_0),
-	 .out_1(out_1));
+         .out_0(out_0),
+         .out_1(out_1));
 endmodule // RegBankP2Sim

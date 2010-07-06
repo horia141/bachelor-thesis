@@ -2,14 +2,14 @@
 
 module DdrCtl1Sim;
    reg         clock0;
-   reg 	       clock90;
-   reg 	       clock2x0;
-   reg 	       clock2x90;
-   reg 	       clock2x180;
-   reg 	       reset;
+   reg         clock90;
+   reg         clock2x0;
+   reg         clock2x90;
+   reg         clock2x180;
+   reg         reset;
 
    reg [11:0]  inst;
-   reg 	       inst_en;
+   reg         inst_en;
 
    wire [31:0] page;
    wire        ready;
@@ -211,40 +211,40 @@ module DdrCtl1Sim;
 
    Ddr
    ddr (.Clk(clock2x0),
-	.Clk_n(clock2x180),
-	
-	.Cke(ddrctl_ddr_cke),
-	.Cs_n(ddrctl_ddr_csn),
-	.Ras_n(ddrctl_ddr_rasn),
-	.Cas_n(ddrctl_ddr_casn),
-	.We_n(ddrctl_ddr_wen),
-	.Ba(ddrctl_ddr_ba),
-	.Addr(ddrctl_ddr_addr),
-	.Dm(ddrctl_ddr_dm),
-	.Dq(ddrctl_ddr_dq),
-	.Dqs(ddrctl_ddr_dqs));
+        .Clk_n(clock2x180),
+        
+        .Cke(ddrctl_ddr_cke),
+        .Cs_n(ddrctl_ddr_csn),
+        .Ras_n(ddrctl_ddr_rasn),
+        .Cas_n(ddrctl_ddr_casn),
+        .We_n(ddrctl_ddr_wen),
+        .Ba(ddrctl_ddr_ba),
+        .Addr(ddrctl_ddr_addr),
+        .Dm(ddrctl_ddr_dm),
+        .Dq(ddrctl_ddr_dq),
+        .Dqs(ddrctl_ddr_dqs));
 
    DdrCtl1
    ddrctl (.clock0(clock0),
-	   .clock90(clock90),
-	   .reset(reset),
+           .clock90(clock90),
+           .reset(reset),
 
-	   .inst(inst),
-	   .inst_en(inst_en),
+           .inst(inst),
+           .inst_en(inst_en),
 
-	   .page(page),
-	   .ready(ready),
+           .page(page),
+           .ready(ready),
 
-	   .ddr_clock0(clock2x0),
-	   .ddr_clock90(clock2x90),
-	   .ddr_cke(ddrctl_ddr_cke),
-	   .ddr_csn(ddrctl_ddr_csn),
-	   .ddr_rasn(ddrctl_ddr_rasn),
-	   .ddr_casn(ddrctl_ddr_casn),
-	   .ddr_wen(ddrctl_ddr_wen),
-	   .ddr_ba(ddrctl_ddr_ba),
-	   .ddr_addr(ddrctl_ddr_addr),
-	   .ddr_dm(ddrctl_ddr_dm),
-	   .ddr_dq(ddrctl_ddr_dq),
-	   .ddr_dqs(ddrctl_ddr_dqs));
+           .ddr_clock0(clock2x0),
+           .ddr_clock90(clock2x90),
+           .ddr_cke(ddrctl_ddr_cke),
+           .ddr_csn(ddrctl_ddr_csn),
+           .ddr_rasn(ddrctl_ddr_rasn),
+           .ddr_casn(ddrctl_ddr_casn),
+           .ddr_wen(ddrctl_ddr_wen),
+           .ddr_ba(ddrctl_ddr_ba),
+           .ddr_addr(ddrctl_ddr_addr),
+           .ddr_dm(ddrctl_ddr_dm),
+           .ddr_dq(ddrctl_ddr_dq),
+           .ddr_dqs(ddrctl_ddr_dqs));
 endmodule // DdrCtl1Sim
