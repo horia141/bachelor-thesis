@@ -6,6 +6,7 @@ Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All LedBank.All VGA.All
 Prj.Auto2.Sim.Src = Auto2Sim.v Auto2Sim.sav
 Prj.Auto2.Sim.Ref = Auto2.All
 Prj.Auto2.Sim.Out = Auto2Sim
+Prj.Auto2.Sim.Top = Auto2Sim
 
 Prj.Auto2.FPGA.Src = Auto2FPGA.v Auto2FPGA.ucf
 Prj.Auto2.FPGA.Ref = Auto2.All ClockManager.All
@@ -26,6 +27,7 @@ Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All VGA.All
 Prj.PressCount.Sim.Src = PressCountSim.v PressCountSim.sav
 Prj.PressCount.Sim.Ref = PressCount.All
 Prj.PressCount.Sim.Out = PressCountSim
+Prj.PressCount.Sim.Top = PressCountSim
 
 Prj.PressCount.FPGA.Src = PressCountFPGA.v PressCountFPGA.ucf
 Prj.PressCount.FPGA.Ref = PressCount.All ClockManager.All
@@ -38,6 +40,7 @@ Prj.RotaryLed.All.Ref = Seq.All Alu.All Rotary.All LedBank.All VGA.All
 Prj.RotaryLed.Sim.Src = RotaryLedSim.v RotaryLedSim.sav
 Prj.RotaryLed.Sim.Ref = RotaryLed.All
 Prj.RotaryLed.Sim.Out = RotaryLedSim
+Prj.RotaryLed.Sim.Top = RotaryLedSim
 
 Prj.RotaryLed.FPGA.Src = RotaryLedFPGA.v RotaryLedFPGA.ucf
 Prj.RotaryLed.FPGA.Ref = RotaryLed.All ClockManager.All
@@ -50,6 +53,7 @@ Prj.BigSDRAM.All.Ref = Seq.All Swc.All LedBank.All DdrCtl1.All
 Prj.BigSDRAM.Sim.Src = BigSDRAMSim.v BigSDRAMSim.sav
 Prj.BigSDRAM.Sim.Ref = BigSDRAM.All ExtSimDdr.All
 Prj.BigSDRAM.Sim.Out = BigSDRAMSim
+Prj.BigSDRAM.Sim.Top = BigSDRAMSim
 
 Prj.BigSDRAM.FPGA.Src = BigSDRAMFPGA.v BigSDRAMFPGA.ucf
 Prj.BigSDRAM.FPGA.Ref = BigSDRAM.All ClockManager.All
@@ -62,6 +66,7 @@ Prj.LedBank.All.Ref =
 Prj.LedBank.Sim.Src = LedBankSim.v LedBankSim.sav
 Prj.LedBank.Sim.Ref = LedBank.All
 Prj.LedBank.Sim.Out = LedBankSim
+Prj.LedBank.Sim.Top = LedBankSim
 
 Prj.VGA.All.Src = VGA.v 
 Prj.VGA.All.Ref = VGAInterface.All
@@ -72,6 +77,7 @@ Prj.VGAInterface.All.Ref =
 Prj.VGAInterface.Sim.Src = VGAInterfaceSim.v VGAInterfaceSim.sav
 Prj.VGAInterface.Sim.Ref = VGAInterface.All
 Prj.VGAInterface.Sim.Out = VGAInterfaceSim
+Prj.VGAInterface.Sim.Top = VGAInterfaceSim
 
 Prj.VGAInterface.FPGA.Src = VGAInterfaceFPGA.v VGAInterfaceFPGA.ucf
 Prj.VGAInterface.FPGA.Ref = VGAInterface.All
@@ -84,6 +90,7 @@ Prj.PushBtn.All.Ref = PushBtnInterface.All
 Prj.PushBtn.Sim.Src = PushBtnSim.v PushBtnSim.sav
 Prj.PushBtn.Sim.Ref = PushBtn.All
 Prj.PushBtn.Sim.Out = PushBtnSim
+Prj.PushBtn.Sim.Top = PushBtnSim
 
 Prj.Rotary.All.Src = Rotary.v
 Prj.Rotary.All.Ref = RotaryInterface.All
@@ -91,6 +98,7 @@ Prj.Rotary.All.Ref = RotaryInterface.All
 Prj.Rotary.Sim.Src = RotarySim.v RotarySim.sav
 Prj.Rotary.Sim.Ref = Rotary.All
 Prj.Rotary.Sim.Out = RotarySim
+Prj.Rotary.Sim.Top = RotarySim
 
 Prj.ExtSimDdr.All.Src = ExtSim/Ddr.v
 Prj.ExtSimDdr.All.Ref =
@@ -101,6 +109,7 @@ Prj.DdrCtl1.All.Ref =
 Prj.DdrCtl1.Sim.Src = DdrCtl1Sim.v DdrCtl1Sim.sav
 Prj.DdrCtl1.Sim.Ref = DdrCtl1.All ExtSimDdr.All
 Prj.DdrCtl1.Sim.Out = DdrCtl1Sim
+Prj.DdrCtl1.Sim.Top = DdrCtl1Sim
 
 Prj.Alu.All.Src = Alu.v
 Prj.Alu.All.Ref =
@@ -108,6 +117,7 @@ Prj.Alu.All.Ref =
 Prj.Alu.Sim.Src = AluSim.v AluSim.sav
 Prj.Alu.Sim.Ref = Alu.All
 Prj.Alu.Sim.Out = AluSim
+Prj.Alu.Sim.Top = AluSim
 
 Prj.Seq.All.Src = Seq.v
 Prj.Seq.All.Ref =
@@ -115,6 +125,7 @@ Prj.Seq.All.Ref =
 Prj.Seq.Sim.Src = SeqSim.v SeqSim.sav
 Prj.Seq.Sim.Ref = Seq.All
 Prj.Seq.Sim.Out = SeqSim
+Prj.Seq.Sim.Top = SeqSim
 
 Prj.Swc.All.Src = Swc.v
 Prj.Swc.All.Ref =
@@ -122,6 +133,7 @@ Prj.Swc.All.Ref =
 Prj.Swc.Sim.Src = SwcSim.v SwcSim.sav
 Prj.Swc.Sim.Ref = Swc.All
 Prj.Swc.Sim.Out = SwcSim
+Prj.Swc.Sim.Top = SwcSim
 
 Prj.RegBankP2.All.Src = RegBankP2.v
 Prj.RegBankP2.All.Ref =
@@ -129,6 +141,7 @@ Prj.RegBankP2.All.Ref =
 Prj.RegBankP2.Sim.Src = RegBankP2Sim.v RegBankP2Sim.sav
 Prj.RegBankP2.Sim.Ref = RegBankP2.All
 Prj.RegBankP2.Sim.Out = RegBankP2Sim
+Prj.RegBankP2.Sim.Top = RegBankP2Sim
 
 Prj.RegBankP4.All.Src = RegBankP4.v
 Prj.RegBankP4.All.Ref =
@@ -136,6 +149,7 @@ Prj.RegBankP4.All.Ref =
 Prj.RegBankP4.Sim.Src = RegBankP4Sim.v RegBankP4Sim.sav
 Prj.RegBankP4.Sim.Ref = RegBankP4.All
 Prj.RegBankP4.Sim.Out = RegBankP4Sim
+Prj.RegBankP4.Sim.Top = RegBankP4Sim
 
 Prj.RegBankP8.All.Src = RegBankP8.v
 Prj.RegBankP8.All.Ref =
@@ -143,6 +157,7 @@ Prj.RegBankP8.All.Ref =
 Prj.RegBankP8.Sim.Src = RegBankP8Sim.v RegBankP8Sim.sav
 Prj.RegBankP8.Sim.Ref = RegBankP8.All
 Prj.RegBankP8.Sim.Out = RegBankP8Sim
+Prj.RegBankP8.Sim.Top = RegBankP8Sim
 
 Prj.RegBankS2.All.Src = RegBankS2.v
 Prj.RegBankS2.All.Ref =
@@ -150,6 +165,7 @@ Prj.RegBankS2.All.Ref =
 Prj.RegBankS2.Sim.Src = RegBankS2Sim.v RegBankS2Sim.sav
 Prj.RegBankS2.Sim.Ref = RegBankS2.All
 Prj.RegBankS2.Sim.Out = RegBankS2Sim
+Prj.RegBankS2.Sim.Top = RegBankS2Sim
 
 Prj.RegBankS4.All.Src = RegBankS4.v
 Prj.RegBankS4.All.Ref =
@@ -157,6 +173,7 @@ Prj.RegBankS4.All.Ref =
 Prj.RegBankS4.Sim.Src = RegBankS4Sim.v RegBankS4Sim.sav
 Prj.RegBankS4.Sim.Ref = RegBankS4.All
 Prj.RegBankS4.Sim.Out = RegBankS4Sim
+Prj.RegBankS4.Sim.Top = RegBankS4Sim
 
 Prj.RegBankS8.All.Src = RegBankS8.v
 Prj.RegBankS8.All.Ref =
@@ -164,6 +181,7 @@ Prj.RegBankS8.All.Ref =
 Prj.RegBankS8.Sim.Src = RegBankS8Sim.v RegBankS8Sim.sav
 Prj.RegBankS8.Sim.Ref = RegBankS8.All
 Prj.RegBankS8.Sim.Out = RegBankS8Sim
+Prj.RegBankS8.Sim.Top = RegBankS8Sim
 
 Prj.ClockManager.All.Src = ClockManager.v
 Prj.ClockManager.All.Ref =
@@ -182,6 +200,7 @@ Prj.PushBtnInterface.All.Ref =
 Prj.PushBtnInterface.Sim.Src = PushBtnInterfaceSim.v PushBtnInterfaceSim.sav
 Prj.PushBtnInterface.Sim.Ref = PushBtnInterface.All
 Prj.PushBtnInterface.Sim.Out = PushBtnInterfaceSim
+Prj.PushBtnInterface.Sim.Top = PushBtnInterfaceSim
 
 Prj.RotaryInterface.All.Src = RotaryInterface.v
 Prj.RotaryInterface.All.Ref =
@@ -189,6 +208,7 @@ Prj.RotaryInterface.All.Ref =
 Prj.RotaryInterface.Sim.Src = RotaryInterfaceSim.v RotaryInterfaceSim.sav
 Prj.RotaryInterface.Sim.Ref = RotaryInterface.All
 Prj.RotaryInterface.Sim.Out = RotaryInterfaceSim
+Prj.RotaryInterface.Sim.Top = RotaryInterfaceSim
 
 Prj.SlowClock.All.Src = SlowClock.v
 Prj.SlowClock.All.Ref =
@@ -196,6 +216,7 @@ Prj.SlowClock.All.Ref =
 Prj.SlowClock.Sim.Src = SlowClockSim.v SlowClockSim.sav
 Prj.SlowClock.Sim.Ref = SlowClock.All
 Prj.SlowClock.Sim.Out = SlowClockSim
+Prj.SlowClock.Sim.Top = SlowClockSim
 
 Prj.SlowClock.FPGA.Src = SlowClockFPGA.v SlowClockFPGA.ucf
 Prj.SlowClock.FPGA.Ref = SlowClock.All
@@ -313,21 +334,20 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 #	Compile all .v files, producing a .vvp file for Vvp.
 	@$$(call LineH2,Building Prj $(1) : IVerilog)
 	mkdir -p $$(Prj.$(1).Gen.Tools.IVerilog.OutPath)
-	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
-		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
-		$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) \
-			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
-			-Wall -Wno-timescale \
-			-DVCDFILE=\"$$(Prj.$(1).Gen.Tools.Vvp.OutFile)\" \
-			-DSIM \
-			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc) \
-			$$(Prj.$(1).Gen.Tools.MemGen.OutFile),\
-		$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) \
-			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
-			-Wall -Wno-timescale \
-			-DVCDFILE=\"$$(Prj.$(1).Gen.Tools.Vvp.OutFile)\" \
-			-DSIM \
-			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc))
+	$$(Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke) \
+		-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
+		-s $(Prj.$(1).Top) \
+		-Wall -Wno-timescale \
+		-DVCDFILE=\"$$(Prj.$(1).Gen.Tools.Vvp.OutFile)\" \
+		-DSIM \
+		$$(foreach simDef,$$(filter Prj.$(1).Def.%,$$(.VARIABLES)),\
+			$$(if $$(value $$(simDef)), \
+				-D$$(word 5,$$(subst ., ,$$(simDef)))=$$(value $$(simDef)), \
+				-D$$(word 5,$$(subst ., ,$$(simDef))))) \
+		$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc) \
+		$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+			    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+			$$(Prj.$(1).Gen.Tools.MemGen.OutFile))
 
 #	Execute vvp and produce simulation outputs.
 	@$$(call LineH2,Building Prj $(2) : Vvp)
@@ -457,21 +477,19 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 #       Preprocess all .v files with IVerilog.
 	@$$(call LineH2,Building Prj $(1) : IVerilog)
 	mkdir -p $$(Prj.$(1).Gen.Tools.IVerilog.OutPath)
-	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
-		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
-		$$(Cfg.Prj.Targets.FPGA.Tools.IVerilog.Invoke) \
-			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
-			-Wall -Wno-timescale \
-			-E \
-			-DFPGA \
-			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc) \
-			$$(Prj.$(1).Gen.Tools.MemGen.OutFile),\
-		$$(Cfg.Prj.Targets.FPGA.Tools.IVerilog.Invoke) \
-			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
-			-Wall -Wno-timescale \
-			-E \
-			-DFPGA \
-			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc))
+	$$(Cfg.Prj.Targets.FPGA.Tools.IVerilog.Invoke) \
+		-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
+		-Wall -Wno-timescale \
+		-E \
+		-DFPGA \
+		$$(foreach fpgaDef,$$(filter Prj.$(1).Def.%,$$(.VARIABLES)),\
+			$$(if $$(value $$(fpgaDef)), \
+				-D$$(word 5,$$(subst ., ,$$(fpgaDef)))=$$(value $$(fpgaDef)), \
+				-D$$(word 5,$$(subst ., ,$$(fpgaDef))))) \
+		$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc) \
+		$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+			    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+			$$(Prj.$(1).Gen.Tools.MemGen.OutFile))
 
 #	Compile all .v files with Xst.
 	@$$(call LineH2,Building Prj $(1) : Xst)
