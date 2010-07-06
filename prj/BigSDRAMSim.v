@@ -4,6 +4,10 @@ module BigSDRAMSim;
    reg         clock0;
    reg 	       clock180;
    reg 	       clock270;
+   reg 	       clock2x0;
+   reg 	       clock2x90;
+   reg 	       clock2x180;
+
    reg 	       reset;
 
    wire [7:0]  leds;
@@ -41,14 +45,29 @@ module BigSDRAMSim;
    end
 
    initial begin
+      #0 clock2x0 = 1;
+      forever #5 clock2x0 = ~clock2x0;
+   end
+
+   initial begin
+      #2.5 clock2x90 = 1;
+      forever #5 clock2x90 = ~clock2x90;
+   end
+
+   initial begin
+      #5 clock2x180 = 1;
+      forever #5 clock2x180 = ~clock2x180;
+   end
+
+   initial begin
       #0 reset = 0;
       #60 reset = 1;
       #40 reset = 0;
    end
 
    Ddr
-   ddr (.Clk(clock0),
-	.Clk_n(clock180),
+   ddr (.Clk(clock2x0),
+	.Clk_n(clock2x180),
 	
 	.Cke(ddr_cke),
 	.Cs_n(ddr_csn),
@@ -68,6 +87,9 @@ module BigSDRAMSim;
 	     .reset(reset),
 
 	     .leds(leds),
+	     
+	     .ddr_clock0(clock2x0),
+	     .ddr_clock90(clock2x90),
 	     .ddr_cke(ddr_cke),
 	     .ddr_csn(ddr_csn),
 	     .ddr_rasn(ddr_rasn),

@@ -310,6 +310,7 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 			-o $$(Prj.$(1).Gen.Tools.IVerilog.OutFile) \
 			-Wall -Wno-timescale \
 			-DVCDFILE=\"$$(Prj.$(1).Gen.OutFile)\" \
+			-DSIM \
 			$$(Prj.$(1).Gen.Tools.IVerilog.VerilogSrc))
 
 #	Execute vvp and produce simulation outputs.

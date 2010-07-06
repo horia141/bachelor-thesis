@@ -1,14 +1,15 @@
-[timestart] 204947000
+[timestart] 204075100
 [size] 1678 1004
 [pos] -1 -1
-*-15.000000 205050000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.172703 204320000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] DdrCtl1Sim.
 [treeopen] DdrCtl1Sim.ddr.
 @28
+DdrCtl1Sim.clock2x0
+DdrCtl1Sim.clock2x90
+DdrCtl1Sim.clock2x180
 DdrCtl1Sim.clock0
 DdrCtl1Sim.clock90
-DdrCtl1Sim.clock180
-DdrCtl1Sim.clock270
 DdrCtl1Sim.reset
 @820
 DdrCtl1Sim.ddrctl.d_Input[2047:0]
@@ -17,7 +18,6 @@ DdrCtl1Sim.ddrctl.d_CoreState[2047:0]
 DdrCtl1Sim.ddrctl.d_InitState[2047:0]
 DdrCtl1Sim.ddrctl.d_InitCnt200usCounter[2047:0]
 DdrCtl1Sim.ddrctl.d_InitCnt200Counter[2047:0]
-@821
 DdrCtl1Sim.ddrctl.d_AutoRefreshCounter[2047:0]
 @28
 DdrCtl1Sim.ready

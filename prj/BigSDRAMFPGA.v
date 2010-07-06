@@ -5,6 +5,7 @@ module BigSDRAMFPGA(clock,reset,clock_fb,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,d
    input wire 	      clock_fb;
 
    output wire [7:0]  leds;
+
    output wire 	      ddr_clk;
    output wire 	      ddr_clkn;
    output wire 	      ddr_cke;
@@ -18,36 +19,50 @@ module BigSDRAMFPGA(clock,reset,clock_fb,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,d
    inout wire [15:0]  ddr_dq;
    inout wire [1:0]   ddr_dqs;
 
-   wire 	      cm_locked;
-   wire 	      cm_clock0;
-   wire 	      cm_clock180;
-   wire 	      cm_clock270;
-   wire 	      cm_clock2x;
-   wire 	      cm_clock2x180;
+   wire 	      cm1_locked;
+   wire 	      cm1_clock0;
+   wire 	      cm1_clock180;
+   wire 	      cm1_clock270;
+   wire 	      cm1_clock2x0;
 
-   assign ddr_clk = cm_clock2x;
-   assign ddr_clkn = cm_clock2x180;
+   wire 	      cm2_locked;
+   wire 	      cm2_clock0;
+   wire 	      cm2_clock90;
+   wire 	      cm2_clock180;
 
-   ClockManager #(.ExtFeedBack(1))
-   cm (.clock(clock),
-       .reset(reset),
+   assign ddr_clk = cm2_clock0;
+   assign ddr_clkn = cm2_clock180;
 
-       .clock_fb(clock_fb),
+   ClockManager #(.ExternalFeedBack(0))
+   cm1 (.clock(clock),
+	.reset(reset),
 
-       .locked(cm_locked),
-       .clock0(cm_clock0),
-       .clock180(cm_clock180),
-       .clock270(cm_clock270),
-       .clock2x(cm_clock2x),
-       .clock2x180(cm_clock2x180));
+	.locked(cm1_locked),
+	.clock0(cm1_clock0),
+	.clock180(cm1_clock180),
+	.clock270(cm1_clock270),
+	.clock2x(cm1_clock2x0));
+
+   ClockManager #(.ExternalFeedBack(1))
+   cm2 (.clock(cm1_clock2x0),
+	.reset(reset),
+
+	.clock_fb(clock_fb),
+
+	.locked(cm2_locked),
+	.clock0(cm2_clock0),
+	.clock90(cm2_clock90),
+	.clock180(cm2_clock180));
 
    BigSDRAM
-   bigsdram (.clock0(cm_clock0),
-	     .clock180(cm_clock180),
-	     .clock270(cm_clock270),
-	     .reset(reset & cm_locked),
+   bigsdram (.clock0(cm1_clock0),
+	     .clock180(cm1_clock180),
+	     .clock270(cm1_clock270),
+	     .reset(reset & cm1_locked & cm2_locked),
 
 	     .leds(leds),
+	     .ddr_clock0(cm2_clock0),
+	     .ddr_clock90(cm2_clock90),
 	     .ddr_cke(ddr_cke),
 	     .ddr_csn(ddr_csn),
 	     .ddr_rasn(ddr_rasn),

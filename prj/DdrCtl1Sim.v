@@ -3,9 +3,8 @@
 module DdrCtl1Sim;
    reg         clock0;
    reg 	       clock90;
-   reg 	       clock180;
-   reg 	       clock270;
    reg 	       clock2x0;
+   reg 	       clock2x90;
    reg 	       clock2x180;
    reg 	       reset;
 
@@ -44,18 +43,13 @@ module DdrCtl1Sim;
    end
 
    initial begin
-      #10 clock180 = 1;
-      forever #10 clock180 = ~clock180;
-   end
-
-   initial begin
-      #15 clock270 = 1;
-      forever #10 clock270 = ~clock270;
-   end
-
-   initial begin
       #0 clock2x0 = 1;
       forever #5 clock2x0 = ~clock2x0;
+   end
+
+   initial begin
+      #2.5 clock2x90 = 1;
+      forever #5 clock2x90 = ~clock2x90;
    end
 
    initial begin
@@ -73,13 +67,13 @@ module DdrCtl1Sim;
       #0.1 inst_en = 0;
 
       // Test each instruction.
-      # 204475 inst = {`DdrCtl1_LA0,8'h12};
+      # 204475 inst = {`DdrCtl1_LA0,8'h00};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_LA1,8'h3F};
+      #20 inst = {`DdrCtl1_LA1,8'h00};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_LA2,8'h2B};
+      #20 inst = {`DdrCtl1_LA2,8'h00};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LA3,8'h00};
@@ -139,38 +133,38 @@ module DdrCtl1Sim;
       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
-      // Test disabled instruction.
-      #240 inst = {`DdrCtl1_LD1,8'h0A};
-      inst_en = 0;
+//       // Test disabled instruction.
+//       #240 inst = {`DdrCtl1_LD1,8'h0A};
+//       inst_en = 0;
 
-      #20 inst = {`DdrCtl1_LD1,8'h01};
+//       #20 inst = {`DdrCtl1_LD1,8'h01};
+//       inst_en = 1;
+
+// //       // Test bad instruction.
+// // //       #20 inst = {8'hF,8'h10};
+// // //       inst_en = 1;
+
+// // //       #20 inst = {`DdrCtl1_LD2,8'hA0};
+// // //       inst_en = 1;
+
+// // //       #40 reset = 1;
+
+// // //       #80 reset = 0;
+
+// // //       #20 inst = {`DdrCtl1_LD2,8'hAB};
+// // //       inst_en = 1;
+
+// // //       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
+// // //       inst_en = 1;
+
+//       // Test writing to another bank.
+      #200 inst = {`DdrCtl1_LA0,8'h00};
       inst_en = 1;
 
-//       // Test bad instruction.
-// //       #20 inst = {8'hF,8'h10};
-// //       inst_en = 1;
-
-// //       #20 inst = {`DdrCtl1_LD2,8'hA0};
-// //       inst_en = 1;
-
-// //       #40 reset = 1;
-
-// //       #80 reset = 0;
-
-// //       #20 inst = {`DdrCtl1_LD2,8'hAB};
-// //       inst_en = 1;
-
-// //       #20 inst = {`DdrCtl1_NOP,8'bxxxxxxxx};
-// //       inst_en = 1;
-
-      // Test writing to another bank.
-      #200 inst = {`DdrCtl1_LA0,8'h12};
+      #20 inst = {`DdrCtl1_LA1,8'h00};
       inst_en = 1;
 
-      #20 inst = {`DdrCtl1_LA1,8'h3F};
-      inst_en = 1;
-
-      #20 inst = {`DdrCtl1_LA2,8'h2B};
+      #20 inst = {`DdrCtl1_LA2,8'h00};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LA3,8'h01};
@@ -216,8 +210,8 @@ module DdrCtl1Sim;
    end // initial begin
 
    Ddr
-   ddr (.Clk(clock2x180),
-	.Clk_n(clock2x0),
+   ddr (.Clk(clock2x0),
+	.Clk_n(clock2x180),
 	
 	.Cke(ddrctl_ddr_cke),
 	.Cs_n(ddrctl_ddr_csn),
@@ -233,7 +227,6 @@ module DdrCtl1Sim;
    DdrCtl1
    ddrctl (.clock0(clock0),
 	   .clock90(clock90),
-	   .clock180(clock180),
 	   .reset(reset),
 
 	   .inst(inst),
@@ -242,6 +235,8 @@ module DdrCtl1Sim;
 	   .page(page),
 	   .ready(ready),
 
+	   .ddr_clock0(clock2x0),
+	   .ddr_clock90(clock2x90),
 	   .ddr_cke(ddrctl_ddr_cke),
 	   .ddr_csn(ddrctl_ddr_csn),
 	   .ddr_rasn(ddrctl_ddr_rasn),
