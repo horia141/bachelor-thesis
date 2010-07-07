@@ -77,9 +77,9 @@ module RAMDPSim;
 
           .we(we),
           .addr0(addr0),
-	  .addr1(addr1),
+          .addr1(addr1),
           .data_i(data_i),
 
           .data_o0(data_o0),
-	  .data_o1(data_o1));
+          .data_o1(data_o1));
 endmodule // RAMDPSim

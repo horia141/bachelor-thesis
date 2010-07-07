@@ -5,7 +5,7 @@ module RAMDP(clock,reset,we,addr0,addr1,data_i,data_o0,data_o1);
    input wire                 clock;
    input wire                 reset;
 
-   input wire 		      we;
+   input wire                 we;
    input wire [AddrSize-1:0]  addr0;
    input wire [AddrSize-1:0]  addr1;
    input wire [DataSize-1:0]  data_i;
@@ -13,20 +13,20 @@ module RAMDP(clock,reset,we,addr0,addr1,data_i,data_o0,data_o1);
    output reg [DataSize-1:0]  data_o0;
    output reg [DataSize-1:0]  data_o1;
 
-   reg [DataSize-1:0] 	      s_Data[2**AddrSize-1:0];
+   reg [DataSize-1:0]         s_Data[2**AddrSize-1:0];
 
    always @ (posedge clock) begin
       if (reset) begin
-	 data_o0 <= 0;
-	 data_o1 <= 0;
+         data_o0 <= 0;
+         data_o1 <= 0;
       end
       else begin
-	 if (we) begin
-	    s_Data[addr0] <= data_i;
-	 end
+         if (we) begin
+            s_Data[addr0] <= data_i;
+         end
 
-	 data_o0 <= s_Data[addr0];
-	 data_o1 <= s_Data[addr1];
+         data_o0 <= s_Data[addr0];
+         data_o1 <= s_Data[addr1];
       end
    end // always @ (posedge clock)
 endmodule // RAMDP
