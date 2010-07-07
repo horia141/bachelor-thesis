@@ -223,6 +223,22 @@ Prj.SlowClock.FPGA.Ref = SlowClock.All
 Prj.SlowClock.FPGA.Out = SlowClockFPGA
 Prj.SlowClock.FPGA.Top = SlowClockFPGA
 
+Prj.RAMSP.All.Src = RAMSP.v
+Prj.RAMSP.All.Ref =
+
+Prj.RAMSP.Sim.Src = RAMSPSim.v RAMSPSim.sav
+Prj.RAMSP.Sim.Ref = RAMSP.All
+Prj.RAMSP.Sim.Out = RAMSPSim
+Prj.RAMSP.Sim.Top = RAMSPSim
+
+Prj.RAMDP.All.Src = RAMDP.v
+Prj.RAMDP.All.Ref =
+
+Prj.RAMDP.Sim.Src = RAMDPSim.v RAMDPSim.sav
+Prj.RAMDP.Sim.Ref = RAMDP.All
+Prj.RAMDP.Sim.Out = RAMDPSim
+Prj.RAMDP.Sim.Top = RAMDPSim
+
 Dev.MemGen.Src = MemGen/Main.hs
 Dev.MemGen.Ref =
 Dev.MemGen.Out = memgen

@@ -1,0 +1,15 @@
+[timestart] 0
+[size] 1678 1004
+[pos] -1 -1
+*-13.000000 24100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] RAMDPSim.
+@28
+RAMDPSim.clock
+RAMDPSim.reset
+RAMDPSim.ramdp.we
+@22
+RAMDPSim.ramdp.addr0[3:0]
+RAMDPSim.ramdp.data_i[7:0]
+RAMDPSim.ramdp.addr1[3:0]
+RAMDPSim.ramdp.data_o0[7:0]
+RAMDPSim.ramdp.data_o1[7:0]
