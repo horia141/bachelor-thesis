@@ -1,0 +1,72 @@
+[timestart] 0
+[size] 1678 1004
+[pos] -1 -1
+*-16.000000 20000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] VGA2Sim.
+[treeopen] VGA2Sim.vga.
+@28
+VGA2Sim.clock
+VGA2Sim.reset
+@820
+VGA2Sim.vga.d_Input[2047:0]
+VGA2Sim.vga.d_State[2047:0]
+@28
+VGA2Sim.vga.vga_hsync
+VGA2Sim.vga.vga_vsync
+VGA2Sim.vga.vga_r
+VGA2Sim.vga.vga_g
+VGA2Sim.vga.vga_b
+@22
+VGA2Sim.vga.ramr0.addr0[13:0]
+@200
+-ramr0
+@28
+VGA2Sim.vga.ramr0.we
+@22
+VGA2Sim.vga.ramr0.addr0[13:0]
+@28
+VGA2Sim.vga.ramr0.data_i
+@22
+VGA2Sim.vga.ramr0.addr1[13:0]
+@28
+VGA2Sim.vga.ramr0.data_o0
+VGA2Sim.vga.ramr0.data_o1
+@200
+-ramr1
+@28
+VGA2Sim.vga.ramr1.we
+@22
+VGA2Sim.vga.ramr1.addr0[13:0]
+@28
+VGA2Sim.vga.ramr1.data_i
+@22
+VGA2Sim.vga.ramr1.addr1[13:0]
+@28
+VGA2Sim.vga.ramr1.data_o0
+VGA2Sim.vga.ramr1.data_o1
+@200
+-ramg0
+@28
+VGA2Sim.vga.ramg0.we
+@22
+VGA2Sim.vga.ramg0.addr0[13:0]
+@28
+VGA2Sim.vga.ramg0.data_i
+@22
+VGA2Sim.vga.ramg0.addr1[13:0]
+@28
+VGA2Sim.vga.ramg0.data_o0
+VGA2Sim.vga.ramg0.data_o1
+@201
+-ramg1
+@28
+VGA2Sim.vga.ramg1.we
+@22
+VGA2Sim.vga.ramg1.addr0[13:0]
+@28
+VGA2Sim.vga.ramg1.data_i
+@22
+VGA2Sim.vga.ramg1.addr1[13:0]
+@28
+VGA2Sim.vga.ramg1.data_o0
+VGA2Sim.vga.ramg1.data_o1

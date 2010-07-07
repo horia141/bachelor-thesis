@@ -71,6 +71,14 @@ Prj.LedBank.Sim.Top = LedBankSim
 Prj.VGA.All.Src = VGA.v 
 Prj.VGA.All.Ref = VGAInterface.All
 
+Prj.VGA2.All.Src = VGA2.v
+Prj.VGA2.All.Ref = VGAInterface.All RAMDP.All
+
+Prj.VGA2.Sim.Src = VGA2Sim.v VGA2Sim.sav
+Prj.VGA2.Sim.Ref = VGA2.All
+Prj.VGA2.Sim.Out = VGA2Sim
+Prj.VGA2.Sim.Top = VGA2Sim
+
 Prj.VGAInterface.All.Src = VGAInterface.v
 Prj.VGAInterface.All.Ref =
 

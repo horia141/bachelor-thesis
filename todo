@@ -81,7 +81,7 @@ x remove Seq prefix for SeqAsm type names.
 
 * make all modules respect format : clocks & reset, instruction & other inputs, outputs, outside world inputs, outside world outputs.
 
-* add per-project defines in makefile which are "-D"-ed into source files.
++ add per-project defines in makefile which are "-D"-ed into source files.
 
 * DdrCtl1 error should let the module continue refreshing etc. and after reset and error recovery the memory shouldn't be reinitialized.
 
@@ -100,6 +100,8 @@ x remove Seq prefix for SeqAsm type names.
 + make compiler produce SeqAsm.mem annotations.
 
 + remove size attribute from immediate.
+
+* make the assembler support decimal immediates as well as immediates whose size is smaller than the sequencer immediate size (because it always gets expanded to it's proper size).
 
 : for the seqasm tool, core concepts are the fact that there is a stream of instructions which must be translated to a stream of bits, taking note of the system being targeted, the fact that there are certain elements useful in assembly only (labels, numbers, symbols etc.) and which have no meaning to the translated binary. Concepts which we take for granted ar the fact that there are instructions which must be translated into their binary equivalents, which take a number of arguments, which can be numbers (literals in different forms), labels, device instructions and device outputs. All translations from numbers to binary streams, from labels to binary streams, from device instructions to binary streams and from device ouputs to binary streams, are controlled by a Device.cfg file and a *.dev file (which together describe all sequencers and components and our particular system).
 
