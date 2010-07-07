@@ -20,7 +20,7 @@
        cc ddrctl.wrp
 @loop  ci swc.ld0 FF:h
        ci swc.ld1 FF:h
-       ci swc.ld2 0F:h
+       ci swc.ld2 FF:h
        cc swc.ccd
        wn swc.Ready
        ci ddrctl.la0 00:h
@@ -33,7 +33,7 @@
        ci ledbank.ld7 01:h
        ci swc.ld0 FF:h
        ci swc.ld1 FF:h
-       ci swc.ld2 0F:h
+       ci swc.ld2 FF:h
        cc swc.ccd
        wn swc.Ready
        ci ddrctl.la0 02:h

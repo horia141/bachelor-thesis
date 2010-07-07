@@ -1,4 +1,4 @@
-module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_clock0,ddr_clock90,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_clock0,ddr_clock90,ddr_clock270,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
    input wire         clock180;
    input wire         clock270;
@@ -8,6 +8,7 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_clock0,ddr_clock90,ddr_c
    
    input wire         ddr_clock0;
    input wire         ddr_clock90;
+   input wire 	      ddr_clock270;
    output wire        ddr_cke;
    output wire        ddr_csn;
    output wire        ddr_rasn;
@@ -71,6 +72,7 @@ module BigSDRAM(clock0,clock180,clock270,reset,leds,ddr_clock0,ddr_clock90,ddr_c
 
            .ddr_clock0(ddr_clock0),
            .ddr_clock90(ddr_clock90),
+	   .ddr_clock270(ddr_clock270),
            .ddr_cke(ddr_cke),
            .ddr_csn(ddr_csn),
            .ddr_rasn(ddr_rasn),

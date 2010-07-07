@@ -67,7 +67,7 @@ module DdrCtl1Sim;
       #0.1 inst_en = 0;
 
       // Test each instruction.
-      # 204475 inst = {`DdrCtl1_LA0,8'h00};
+      # 204615 inst = {`DdrCtl1_LA0,8'h00};
       inst_en = 1;
 
       #20 inst = {`DdrCtl1_LA1,8'h00};

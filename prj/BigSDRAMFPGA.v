@@ -27,6 +27,7 @@ module BigSDRAMFPGA(clock,reset,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,ddr_rasn,d
    wire               cm2_clock0;
    wire               cm2_clock90;
    wire               cm2_clock180;
+   wire 	      cm2_clock270;
 
    assign ddr_clk = cm2_clock0;
    assign ddr_clkn = cm2_clock180;
@@ -48,7 +49,8 @@ module BigSDRAMFPGA(clock,reset,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,ddr_rasn,d
         .locked(cm2_locked),
         .clock0(cm2_clock0),
         .clock90(cm2_clock90),
-        .clock180(cm2_clock180));
+        .clock180(cm2_clock180),
+	.clock270(cm2_clock270));
 
    BigSDRAM
    bigsdram (.clock0(cm1_clock0),
@@ -59,6 +61,7 @@ module BigSDRAMFPGA(clock,reset,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,ddr_rasn,d
              .leds(leds),
              .ddr_clock0(cm2_clock0),
              .ddr_clock90(cm2_clock90),
+	     .ddr_clock270(cm2_clock270),
              .ddr_cke(ddr_cke),
              .ddr_csn(ddr_csn),
              .ddr_rasn(ddr_rasn),

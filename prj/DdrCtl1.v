@@ -59,10 +59,12 @@
 `define DdrCtl1_CoreState_Read_Activate       4'h7
 `define DdrCtl1_CoreState_Read_Read           4'h8
 `define DdrCtl1_CoreState_Read_Wait0          4'h9
-`define DdrCtl1_CoreState_Write_Activate      4'hA
-`define DdrCtl1_CoreState_Write_Write         4'hB
-`define DdrCtl1_CoreState_Write_Wait0         4'hC
-`define DdrCtl1_CoreState_Write_Wait1         4'hD
+`define DdrCtl1_CoreState_Read_Wait1          4'hA
+`define DdrCtl1_CoreState_Write_Activate      4'hB
+`define DdrCtl1_CoreState_Write_Write         4'hC
+`define DdrCtl1_CoreState_Write_Wait0         4'hD
+`define DdrCtl1_CoreState_Write_Wait1         4'hE
+`define DdrCtl1_CoreState_Error               4'hF
 
 `define DdrCtl1_InitState_Reset                5'h00
 `define DdrCtl1_InitState_PowerUp              5'h01
@@ -83,8 +85,9 @@
 `define DdrCtl1_InitState_Refresh1_Wait2       5'h10
 `define DdrCtl1_InitState_ClearDLL             5'h11
 `define DdrCtl1_InitState_Initialized          5'h12
+`define DdrCtl1_InitState_Error                5'h13
 
-module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock90,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
+module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock90,ddr_clock270,ddr_cke,ddr_csn,ddr_rasn,ddr_casn,ddr_wen,ddr_ba,ddr_addr,ddr_dm,ddr_dq,ddr_dqs);
    input wire         clock0;
    input wire         clock90;
    input wire         reset;
@@ -97,6 +100,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 
    input wire         ddr_clock0;
    input wire         ddr_clock90;
+   input wire 	      ddr_clock270;
    output reg         ddr_cke;
    output reg         ddr_csn;
    output reg         ddr_rasn;
@@ -147,8 +151,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
    reg [7:0]          s_InitCnt200Counter;
    reg                i_InitCnt200Done;
 
-   reg [15:0]         s_HalfPage0;
-   reg [15:0]         s_HalfPage1;
+   reg [15:0]         s_HalfPage;
 
    wire [3:0]         w_InstCode;
    wire [7:0]         w_InstImm;
@@ -213,7 +216,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 
    assign ddr_dm = 2'b00;
    assign ddr_dq = i_CoreTakeCommand1 ? (ddr_clock90 == 0 ? s_IntfPage[31:16] : s_IntfPage[15:0]) : 16'bzzzzzzzzzzzzzzzz;
-   assign ddr_dqs = (i_CoreTakeCommand2 && clock90 == 0) || (i_CoreTakeCommand3 && clock0 == 1) ? {ddr_clock0,ddr_clock0} : 2'bzz;
+   assign ddr_dqs = (i_CoreTakeCommand2 || i_CoreTakeCommand3) ? {ddr_clock0,ddr_clock0} : 2'bzz;
 
    assign w_InstCode = inst[11:8];
    assign w_InstImm = inst[7:0];
@@ -228,6 +231,8 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
          s_IntfState   <= `DdrCtl1_IntfState_Reset;
          s_IntfAddress <= 0;
          s_IntfPage    <= 0;
+         i_IntfDoRead  <= 0;
+         i_IntfDoWrite <= 0;
       end
       else begin
          case (s_IntfState)
@@ -235,6 +240,8 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
               s_IntfState   <= `DdrCtl1_IntfState_WaitInit;
               s_IntfAddress <= 0;
               s_IntfPage    <= 0;
+              i_IntfDoRead  <= 0;
+              i_IntfDoWrite <= 0;
            end
 
            `DdrCtl1_IntfState_WaitInit: begin
@@ -242,11 +249,15 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
                  s_IntfState   <= `DdrCtl1_IntfState_Ready;
                  s_IntfAddress <= 0;
                  s_IntfPage    <= 0;
+		 i_IntfDoRead  <= 0;
+		 i_IntfDoWrite <= 0;
               end
               else begin
                  s_IntfState   <= `DdrCtl1_IntfState_WaitInit;
                  s_IntfAddress <= 0;
                  s_IntfPage    <= 0;
+		 i_IntfDoRead  <= 0;
+		 i_IntfDoWrite <= 0;
               end
            end // case: `DdrCtl1_IntfState_WaitInit
 
@@ -257,72 +268,96 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LA0: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= {s_IntfAddress[31:8],w_InstImm};
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LA1: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= {s_IntfAddress[31:16],w_InstImm,s_IntfAddress[7:0]};
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LA2: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= {s_IntfAddress[31:24],w_InstImm,s_IntfAddress[15:0]};
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LA3: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= {w_InstImm,s_IntfAddress[23:0]};
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LD0: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= {s_IntfPage[31:8],w_InstImm};
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LD1: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= {s_IntfPage[31:16],w_InstImm,s_IntfPage[7:0]};
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LD2: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= {s_IntfPage[31:24],w_InstImm,s_IntfPage[15:0]};
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_LD3: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Ready;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= {w_InstImm,s_IntfPage[23:0]};
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_RDP: begin
                       s_IntfState   <= `DdrCtl1_IntfState_WaitRead;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    `DdrCtl1_WRP: begin
                       s_IntfState   <= `DdrCtl1_IntfState_WaitWrite;
                       s_IntfAddress <= s_IntfAddress;
                       s_IntfPage    <= s_IntfPage;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
 
                    default: begin
                       s_IntfState   <= `DdrCtl1_IntfState_Error;
                       s_IntfAddress <= 0;
                       s_IntfPage    <= 0;
+		      i_IntfDoRead  <= 0;
+		      i_IntfDoWrite <= 0;
                    end
                  endcase // case (w_InstCode)
               end // if (inst_en)
@@ -330,6 +365,8 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
                  s_IntfState   <= `DdrCtl1_IntfState_Ready;
                  s_IntfAddress <= s_IntfAddress;
                  s_IntfPage    <= s_IntfPage;
+		 i_IntfDoRead  <= 0;
+		 i_IntfDoWrite <= 0;
               end // else: !if(inst_en)
            end // case: `DdrCtl1_IntfState_Ready
 
@@ -337,12 +374,16 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
               if (i_CoreReadDone) begin
                  s_IntfState   <= `DdrCtl1_IntfState_Ready;
                  s_IntfAddress <= s_IntfAddress;
-                 s_IntfPage    <= {s_HalfPage1,s_HalfPage0};
+                 s_IntfPage    <= {s_HalfPage,ddr_dq};
+		 i_IntfDoRead  <= 0;
+		 i_IntfDoWrite <= 0;
               end
               else begin
                  s_IntfState   <= `DdrCtl1_IntfState_WaitRead;
                  s_IntfAddress <= s_IntfAddress;
                  s_IntfPage    <= s_IntfPage;
+		 i_IntfDoRead  <= 1;
+		 i_IntfDoWrite <= 0;
               end
            end // case: `DdrCtl1_IntfState_WaitRead
 
@@ -351,11 +392,15 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
                  s_IntfState   <= `DdrCtl1_IntfState_Ready;
                  s_IntfAddress <= s_IntfAddress;
                  s_IntfPage    <= s_IntfPage;
+		 i_IntfDoRead  <= 0;
+		 i_IntfDoWrite <= 0;
               end
               else begin
                  s_IntfState   <= `DdrCtl1_IntfState_WaitWrite;
                  s_IntfAddress <= s_IntfAddress;
                  s_IntfPage    <= s_IntfPage;
+		 i_IntfDoRead  <= 0;
+		 i_IntfDoWrite <= 1;
               end
            end // case: `DdrCtl1_IntfState_WaitRead
                  
@@ -363,78 +408,77 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
               s_IntfState   <= `DdrCtl1_IntfState_Error;
               s_IntfAddress <= 0;
               s_IntfPage    <= 0;
+              i_IntfDoRead  <= 0;
+              i_IntfDoWrite <= 0;
            end
 
            default: begin
               s_IntfState   <= `DdrCtl1_IntfState_Error;
               s_IntfAddress <= 0;
               s_IntfPage    <= 0;
+              i_IntfDoRead  <= 0;
+              i_IntfDoWrite <= 0;
            end
          endcase // case (s_IntfState)
       end // else: !if(reset)
    end // always @ (posedge clock0)
 
-   always @ * begin
-      if (reset) begin
-         i_IntfDoRead  = 0;
-         i_IntfDoWrite = 0;
-      end
-      else begin
-         case (s_IntfState)
-           `DdrCtl1_IntfState_Reset: begin
-              i_IntfDoRead  = 0;
-              i_IntfDoWrite = 0;
-           end
-
-           `DdrCtl1_IntfState_WaitInit: begin
-              i_IntfDoRead  = 0;
-              i_IntfDoWrite = 0;
-           end
-
-           `DdrCtl1_IntfState_Ready: begin
-              i_IntfDoRead  = 0;
-              i_IntfDoWrite = 0;
-           end
-
-           `DdrCtl1_IntfState_WaitRead: begin
-              i_IntfDoRead  = 1;
-              i_IntfDoWrite = 0;
-           end
-
-           `DdrCtl1_IntfState_WaitWrite: begin
-              i_IntfDoRead  = 0;
-              i_IntfDoWrite = 1;
-           end
-
-           `DdrCtl1_IntfState_Error: begin
-              i_IntfDoRead  = 0;
-              i_IntfDoWrite = 0;
-           end
-
-           default: begin
-              i_IntfDoRead  = 0;
-              i_IntfDoWrite = 0;
-           end
-         endcase // case (s_IntfState)
-      end // else: !if(reset)
-   end // always @ *
-
    always @ (posedge clock0) begin
       if (reset) begin
          s_CoreState <= `DdrCtl1_CoreState_Reset;
+         i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+         i_CoreBank        <= 0;
+         i_CoreAddr        <= 0;
+         i_CoreTakeCommand0 <= 0;
+         i_CoreTakeCommand1 <= 0;
+         i_CoreTakeCommand2 <= 0;
+         i_CoreTakeCommand3 <= 0;
+         i_CoreRefreshDone <= 0;
+         i_CoreReadDone    <= 0;
+         i_CoreWriteDone   <= 0;
       end
       else begin
          case (s_CoreState)
            `DdrCtl1_CoreState_Reset: begin
               s_CoreState <= `DdrCtl1_CoreState_WaitInit;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_WaitInit: begin
               if (i_InitDone) begin
                  s_CoreState <= `DdrCtl1_CoreState_Ready;
+		 i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		 i_CoreBank        <= 0;
+		 i_CoreAddr        <= 0;
+		 i_CoreTakeCommand0 <= 0;
+		 i_CoreTakeCommand1 <= 0;
+		 i_CoreTakeCommand2 <= 0;
+		 i_CoreTakeCommand3 <= 0;
+		 i_CoreRefreshDone <= 0;
+		 i_CoreReadDone    <= 0;
+		 i_CoreWriteDone   <= 0;
               end
               else begin
                  s_CoreState <= `DdrCtl1_CoreState_WaitInit;
+		 i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		 i_CoreBank        <= 0;
+		 i_CoreAddr        <= 0;
+		 i_CoreTakeCommand0 <= 0;
+		 i_CoreTakeCommand1 <= 0;
+		 i_CoreTakeCommand2 <= 0;
+		 i_CoreTakeCommand3 <= 0;
+		 i_CoreRefreshDone <= 0;
+		 i_CoreReadDone    <= 0;
+		 i_CoreWriteDone   <= 0;
               end
            end
 
@@ -442,661 +486,640 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
               case ({i_AutoRefreshDoRefresh,i_IntfDoRead,i_IntfDoWrite})
                 3'b000: begin
                    s_CoreState <= `DdrCtl1_CoreState_Ready;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b001: begin
                    s_CoreState <= `DdrCtl1_CoreState_Write_Activate;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b010: begin
                    s_CoreState <= `DdrCtl1_CoreState_Read_Activate;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b011: begin
                    s_CoreState <= `DdrCtl1_CoreState_Read_Activate;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b100: begin
                    s_CoreState <= `DdrCtl1_CoreState_Refresh_AutoRefresh;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b101: begin
                    s_CoreState <= `DdrCtl1_CoreState_Refresh_AutoRefresh;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b110: begin
                    s_CoreState <= `DdrCtl1_CoreState_Refresh_AutoRefresh;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
 
                 3'b111: begin
                    s_CoreState <= `DdrCtl1_CoreState_Refresh_AutoRefresh;
+		   i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+		   i_CoreBank        <= 0;
+		   i_CoreAddr        <= 0;
+		   i_CoreTakeCommand0 <= 0;
+		   i_CoreTakeCommand1 <= 0;
+		   i_CoreTakeCommand2 <= 0;
+		   i_CoreTakeCommand3 <= 0;
+		   i_CoreRefreshDone <= 0;
+		   i_CoreReadDone    <= 0;
+		   i_CoreWriteDone   <= 0;
                 end
               endcase // case ({i_RefreshDoAutoRefresh,i_IntfDoRead,i_IntfDoWrite})
            end // case: `DdrCtl1_CoreState_Ready
 
            `DdrCtl1_CoreState_Refresh_AutoRefresh: begin
               s_CoreState <= `DdrCtl1_CoreState_Refresh_Wait0;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_AutoRefresh;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 1;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Refresh_Wait0: begin
               s_CoreState <= `DdrCtl1_CoreState_Refresh_Wait1;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
                 
            `DdrCtl1_CoreState_Refresh_Wait1: begin
               s_CoreState <= `DdrCtl1_CoreState_Refresh_Wait2;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 1;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Refresh_Wait2: begin
               s_CoreState <= `DdrCtl1_CoreState_Ready;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Read_Activate: begin
               s_CoreState <= `DdrCtl1_CoreState_Read_Read;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_Activate;
+              i_CoreBank        <= s_IntfAddress[24:23];
+              i_CoreAddr        <= s_IntfAddress[22:10];
+              i_CoreTakeCommand0 <= 1;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Read_Read: begin
               s_CoreState <= `DdrCtl1_CoreState_Read_Wait0;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_Read;
+              i_CoreBank        <= s_IntfAddress[24:23];
+              i_CoreAddr        <= {3'b001,s_IntfAddress[9:0]};
+              i_CoreTakeCommand0 <= 1;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Read_Wait0: begin
+              s_CoreState <= `DdrCtl1_CoreState_Read_Wait1;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 1;
+              i_CoreWriteDone   <= 0;
+           end
+
+	   `DdrCtl1_CoreState_Read_Wait1: begin
               s_CoreState <= `DdrCtl1_CoreState_Ready;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Write_Activate: begin
               s_CoreState <= `DdrCtl1_CoreState_Write_Write;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_Activate;
+              i_CoreBank        <= s_IntfAddress[24:23];
+              i_CoreAddr        <= s_IntfAddress[22:10];
+              i_CoreTakeCommand0 <= 1;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Write_Write: begin
               s_CoreState <= `DdrCtl1_CoreState_Write_Wait0;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_Write;
+              i_CoreBank        <= s_IntfAddress[24:23];
+              i_CoreAddr        <= {3'b001,s_IntfAddress[9:0]};
+              i_CoreTakeCommand0 <= 1;
+              i_CoreTakeCommand1 <= 1;
+              i_CoreTakeCommand2 <= 1;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            `DdrCtl1_CoreState_Write_Wait0: begin
               s_CoreState <= `DdrCtl1_CoreState_Write_Wait1;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 1;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 1;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 1;
            end
 
            `DdrCtl1_CoreState_Write_Wait1: begin
               s_CoreState <= `DdrCtl1_CoreState_Ready;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
+           end // case: `DdrCtl1_CoreState_Write_Wait1
+
+	   `DdrCtl1_CoreState_Error: begin
+	      s_CoreState <= `DdrCtl1_CoreState_Error;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
 
            default: begin
-              s_CoreState <= `DdrCtl1_CoreState_Reset;
+              s_CoreState <= `DdrCtl1_CoreState_Error;
+              i_CoreCommand     <= `DdrCtl1_DdrCommand_NoOperation;
+              i_CoreBank        <= 0;
+              i_CoreAddr        <= 0;
+              i_CoreTakeCommand0 <= 0;
+              i_CoreTakeCommand1 <= 0;
+              i_CoreTakeCommand2 <= 0;
+              i_CoreTakeCommand3 <= 0;
+              i_CoreRefreshDone <= 0;
+              i_CoreReadDone    <= 0;
+              i_CoreWriteDone   <= 0;
            end
          endcase // case (s_CoreState)
       end // else: !if(reset)
    end // always @ (posedge clock0)
 
-   always @ * begin
-      if (reset) begin
-         i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-         i_CoreBank        = 0;
-         i_CoreAddr        = 0;
-         i_CoreTakeCommand0 = 0;
-         i_CoreTakeCommand1 = 0;
-         i_CoreTakeCommand2 = 0;
-         i_CoreTakeCommand3 = 0;
-         i_CoreRefreshDone = 0;
-         i_CoreReadDone    = 0;
-         i_CoreWriteDone   = 0;
-      end
-      else begin
-         case (s_CoreState)
-           `DdrCtl1_CoreState_Reset: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_WaitInit: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Ready: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Refresh_AutoRefresh: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_AutoRefresh;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 1;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Refresh_Wait0: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Refresh_Wait1: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Refresh_Wait2: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 1;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Read_Activate: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_Activate;
-              i_CoreBank        = s_IntfAddress[24:23];
-              i_CoreAddr        = s_IntfAddress[22:10];
-              i_CoreTakeCommand0 = 1;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Read_Read: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_Read;
-              i_CoreBank        = s_IntfAddress[24:23];
-              i_CoreAddr        = {3'b001,s_IntfAddress[9:0]};
-              i_CoreTakeCommand0 = 1;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Read_Wait0: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 1;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Write_Activate: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_Activate;
-              i_CoreBank        = s_IntfAddress[24:23];
-              i_CoreAddr        = s_IntfAddress[22:10];
-              i_CoreTakeCommand0 = 1;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Write_Write: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_Write;
-              i_CoreBank        = s_IntfAddress[24:23];
-              i_CoreAddr        = {3'b001,s_IntfAddress[9:0]};
-              i_CoreTakeCommand0 = 1;
-              i_CoreTakeCommand1 = 1;
-              i_CoreTakeCommand2 = 1;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Write_Wait0: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 1;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 1;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-
-           `DdrCtl1_CoreState_Write_Wait1: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 1;
-           end
-
-           default: begin
-              i_CoreCommand     = `DdrCtl1_DdrCommand_NoOperation;
-              i_CoreBank        = 0;
-              i_CoreAddr        = 0;
-              i_CoreTakeCommand0 = 0;
-              i_CoreTakeCommand1 = 0;
-              i_CoreTakeCommand2 = 0;
-              i_CoreTakeCommand3 = 0;
-              i_CoreRefreshDone = 0;
-              i_CoreReadDone    = 0;
-              i_CoreWriteDone   = 0;
-           end
-         endcase // case (s_CoreState)
-      end // else: !if(reset)
-   end // always @ *
-
    always @ (posedge clock0) begin
       if (reset) begin
          s_InitState <= `DdrCtl1_InitState_Reset;
+	 i_InitCommand <= `DdrCtl1_DdrCommand_PowerUp;
+         i_InitBank    <= 0;
+         i_InitAddr    <= 0;
+         i_InitTakeCommand0 <= 1;
+         i_InitTakeCommand1 <= 0;
+         i_InitDone    <= 0;
+         i_InitDo200us <= 0;
+         i_InitDo200   <= 0;
       end
       else begin
          case (s_InitState)
            `DdrCtl1_InitState_Reset: begin
               s_InitState <= `DdrCtl1_InitState_PowerUp;
+              i_InitCommand <= `DdrCtl1_DdrCommand_PowerUp;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 1;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_PowerUp: begin
               s_InitState <= `DdrCtl1_InitState_Wait200us;
+              i_InitCommand <= `DdrCtl1_DdrCommand_PowerUp;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 1;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Wait200us: begin
               if (i_InitCnt200usDone) begin
                  s_InitState <= `DdrCtl1_InitState_BringCKEHigh;
+		 i_InitCommand <= `DdrCtl1_DdrCommand_PowerUp;
+		 i_InitBank    <= 0;
+		 i_InitAddr    <= 0;
+		 i_InitTakeCommand0 <= 1;
+		 i_InitTakeCommand1 <= 0;
+		 i_InitDone    <= 0;
+		 i_InitDo200us <= 1;
+		 i_InitDo200   <= 0;
               end
               else begin
                  s_InitState <= `DdrCtl1_InitState_Wait200us;
+		 i_InitCommand <= `DdrCtl1_DdrCommand_PowerUp;
+		 i_InitBank    <= 0;
+		 i_InitAddr    <= 0;
+		 i_InitTakeCommand0 <= 1;
+		 i_InitTakeCommand1 <= 0;
+		 i_InitDone    <= 0;
+		 i_InitDo200us <= 1;
+		 i_InitDo200   <= 0;
               end
            end
 
            `DdrCtl1_InitState_BringCKEHigh: begin
               s_InitState <= `DdrCtl1_InitState_PreChargeAll0;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_PreChargeAll0: begin
               s_InitState <= `DdrCtl1_InitState_EnableDLL;
+              i_InitCommand <= `DdrCtl1_DdrCommand_PreCharge;
+              i_InitBank    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitAddr    <= 13'b0010000000000;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_EnableDLL: begin
               s_InitState <= `DdrCtl1_InitState_ProgramMRResetDLL;
+              i_InitCommand <= `DdrCtl1_DdrCommand_LoadModeRegister;
+              i_InitBank    <= `DdrCtl1_SelectModeRegister_Extended;
+              i_InitAddr    <= {`DdrCtl1_DdrModeExtend_OperatingMode_Reserved,
+                               `DdrCtl1_DdrModeExtend_DriveStrength_Normal,
+                               `DdrCtl1_DdrModeExtend_DLL_Enable};
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_ProgramMRResetDLL: begin
               s_InitState <= `DdrCtl1_InitState_WaitMRD200;
+              i_InitCommand <= `DdrCtl1_DdrCommand_LoadModeRegister;
+              i_InitBank    <= `DdrCtl1_SelectModeRegister_Normal;
+              i_InitAddr    <= {`DdrCtl1_DdrMode_OperatingMode_NormalResetDLL,
+                               `DdrCtl1_DdrMode_CASLatency_2,
+                               `DdrCtl1_DdrMode_BurstType_Sequential,
+                               `DdrCtl1_DdrMode_BurstLength_2};
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_WaitMRD200: begin
               if (i_InitCnt200Done) begin
                  s_InitState <= `DdrCtl1_InitState_PreChargeAll1;
+		 i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+		 i_InitBank    <= 0;
+		 i_InitTakeCommand0 <= 0;
+		 i_InitTakeCommand1 <= 0;
+		 i_InitAddr    <= 0;
+		 i_InitDone    <= 0;
+		 i_InitDo200us <= 0;
+		 i_InitDo200   <= 1;
               end
               else begin
                  s_InitState <= `DdrCtl1_InitState_WaitMRD200;
+		 i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+		 i_InitBank    <= 0;
+		 i_InitTakeCommand0 <= 0;
+		 i_InitTakeCommand1 <= 0;
+		 i_InitAddr    <= 0;
+		 i_InitDone    <= 0;
+		 i_InitDo200us <= 0;
+		 i_InitDo200   <= 1;
               end
            end
 
            `DdrCtl1_InitState_PreChargeAll1: begin
               s_InitState <= `DdrCtl1_InitState_Refresh0_AutoRefresh;
+              i_InitCommand <= `DdrCtl1_DdrCommand_PreCharge;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 13'b0010000000000;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh0_AutoRefresh: begin
               s_InitState <= `DdrCtl1_InitState_Refresh0_Wait0;
+              i_InitCommand <= `DdrCtl1_DdrCommand_AutoRefresh;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh0_Wait0: begin
               s_InitState <= `DdrCtl1_InitState_Refresh0_Wait1;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh0_Wait1: begin
               s_InitState <= `DdrCtl1_InitState_Refresh0_Wait2;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh0_Wait2: begin
               s_InitState <= `DdrCtl1_InitState_Refresh1_AutoRefresh;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh1_AutoRefresh: begin
               s_InitState <= `DdrCtl1_InitState_Refresh1_Wait0;
+              i_InitCommand <= `DdrCtl1_DdrCommand_AutoRefresh;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh1_Wait0: begin
               s_InitState <= `DdrCtl1_InitState_Refresh1_Wait1;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh1_Wait1: begin
               s_InitState <= `DdrCtl1_InitState_Refresh1_Wait2;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Refresh1_Wait2: begin
               s_InitState <= `DdrCtl1_InitState_ClearDLL;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 0;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_ClearDLL: begin
               s_InitState <= `DdrCtl1_InitState_Initialized;
+              i_InitCommand <= `DdrCtl1_DdrCommand_LoadModeRegister;
+              i_InitBank    <= `DdrCtl1_SelectModeRegister_Normal;
+              i_InitAddr    <= {`DdrCtl1_DdrMode_OperatingMode_Normal,
+                               `DdrCtl1_DdrMode_CASLatency_2,
+                               `DdrCtl1_DdrMode_BurstType_Sequential,
+                               `DdrCtl1_DdrMode_BurstLength_2};
+              i_InitDone    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 1;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            `DdrCtl1_InitState_Initialized: begin
               s_InitState <= `DdrCtl1_InitState_Initialized;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 1;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
+           end // case: `DdrCtl1_InitState_Initialized
+
+	   `DdrCtl1_InitState_Error: begin
+	      s_InitState <= `DdrCtl1_InitState_Error;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 1;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
 
            default: begin
-              s_InitState <= `DdrCtl1_InitState_Reset;
+              s_InitState <= `DdrCtl1_InitState_Error;
+              i_InitCommand <= `DdrCtl1_DdrCommand_NoOperation;
+              i_InitBank    <= 0;
+              i_InitAddr    <= 0;
+              i_InitTakeCommand0 <= 0;
+              i_InitTakeCommand1 <= 0;
+              i_InitDone    <= 1;
+              i_InitDo200us <= 0;
+              i_InitDo200   <= 0;
            end
          endcase // case (s_InitState)
       end // else: !if(reset)
    end // always @ (posedge init0)
 
-   always @ * begin
-      if (reset) begin
-         i_InitCommand = `DdrCtl1_DdrCommand_PowerUp;
-         i_InitBank    = 0;
-         i_InitAddr    = 0;
-         i_InitTakeCommand0 = 1;
-         i_InitTakeCommand1 = 0;
-         i_InitDone    = 0;
-         i_InitDo200us = 0;
-         i_InitDo200   = 0;
-      end
-      else begin
-         case (s_InitState)
-           `DdrCtl1_InitState_Reset: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_PowerUp;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 1;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_PowerUp: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_PowerUp;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 1;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Wait200us: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_PowerUp;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 1;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 1;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_BringCKEHigh: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_PreChargeAll0: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_PreCharge;
-              i_InitBank    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitAddr    = 13'b0010000000000;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_EnableDLL: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_LoadModeRegister;
-              i_InitBank    = `DdrCtl1_SelectModeRegister_Extended;
-              i_InitAddr    = {`DdrCtl1_DdrModeExtend_OperatingMode_Reserved,
-                               `DdrCtl1_DdrModeExtend_DriveStrength_Normal,
-                               `DdrCtl1_DdrModeExtend_DLL_Enable};
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_ProgramMRResetDLL: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_LoadModeRegister;
-              i_InitBank    = `DdrCtl1_SelectModeRegister_Normal;
-              i_InitAddr    = {`DdrCtl1_DdrMode_OperatingMode_NormalResetDLL,
-                               `DdrCtl1_DdrMode_CASLatency_2,
-                               `DdrCtl1_DdrMode_BurstType_Sequential,
-                               `DdrCtl1_DdrMode_BurstLength_2};
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_WaitMRD200: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitAddr    = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 1;
-           end
-
-           `DdrCtl1_InitState_PreChargeAll1: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_PreCharge;
-              i_InitBank    = 0;
-              i_InitAddr    = 13'b0010000000000;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh0_AutoRefresh: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_AutoRefresh;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh0_Wait0: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh0_Wait1: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh0_Wait2: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh1_AutoRefresh: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_AutoRefresh;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh1_Wait0: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh1_Wait1: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Refresh1_Wait2: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 0;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_ClearDLL: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_LoadModeRegister;
-              i_InitBank    = `DdrCtl1_SelectModeRegister_Normal;
-              i_InitAddr    = {`DdrCtl1_DdrMode_OperatingMode_Normal,
-                               `DdrCtl1_DdrMode_CASLatency_2,
-                               `DdrCtl1_DdrMode_BurstType_Sequential,
-                               `DdrCtl1_DdrMode_BurstLength_2};
-              i_InitDone    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 1;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           `DdrCtl1_InitState_Initialized: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 1;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-
-           default: begin
-              i_InitCommand = `DdrCtl1_DdrCommand_NoOperation;
-              i_InitBank    = 0;
-              i_InitAddr    = 0;
-              i_InitTakeCommand0 = 0;
-              i_InitTakeCommand1 = 0;
-              i_InitDone    = 1;
-              i_InitDo200us = 0;
-              i_InitDo200   = 0;
-           end
-         endcase // case (s_InitState)
-      end // else: !if(reset)
-   end // always @ *
-
    always @ (posedge clock0) begin
       if (reset) begin
          s_AutoRefreshCounter <= 0;
+	 i_AutoRefreshDoRefresh <= 0;
       end
       else begin
          if (i_InitDone) begin
             if (s_AutoRefreshCounter == 320) begin
                if (i_CoreRefreshDone) begin
                   s_AutoRefreshCounter <= 0;
+		  i_AutoRefreshDoRefresh <= 0;
                end
                else begin
                   s_AutoRefreshCounter <= s_AutoRefreshCounter;
+		  i_AutoRefreshDoRefresh <= 1;
                end
             end
             else begin
                s_AutoRefreshCounter <= s_AutoRefreshCounter + 1;
+	       i_AutoRefreshDoRefresh <= 0;
             end // else: !if(i_InitDone)
          end // if (i_InitDone)
          else begin
@@ -1105,82 +1128,54 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
       end // else: !if(reset)
    end // always @ (posedge clock0)
 
-   always @ * begin
-      if (reset) begin
-         i_AutoRefreshDoRefresh = 0;
-      end
-      else begin
-         if (s_AutoRefreshCounter == 320) begin
-            i_AutoRefreshDoRefresh = 1;
-         end
-         else begin
-            i_AutoRefreshDoRefresh = 0;
-         end
-      end // else: !if(reset)
-   end // always @ *
-
    always @ (posedge clock0) begin
       if (reset) begin
          s_InitCnt200usCounter <= 0;
+	 i_InitCnt200usDone <= 0;
       end
       else begin
          if (i_InitDo200us) begin
-            s_InitCnt200usCounter <= s_InitCnt200usCounter + 1;
+	    if (s_InitCnt200usCounter == 10000) begin
+	       s_InitCnt200usCounter <= s_InitCnt200usCounter;
+               i_InitCnt200usDone <= 1;
+	    end
+	    else begin
+               s_InitCnt200usCounter <= s_InitCnt200usCounter + 1;
+	       i_InitCnt200usDone <= 0;
+	    end
          end
          else begin
             s_InitCnt200usCounter <= 0;
+	    i_InitCnt200usDone <= 0;
          end
       end // else: !if(reset)
    end // always @ (posedge clock0)
-
-   always @ * begin
-      if (reset) begin
-         i_InitCnt200usDone = 0;
-      end
-      else begin
-         if (s_InitCnt200usCounter == 10000) begin
-            i_InitCnt200usDone = 1;
-         end
-         else begin
-            i_InitCnt200usDone = 0;
-         end
-      end // else: !if(reset)
-   end // always @ *
 
    always @ (posedge clock0) begin
       if (reset) begin
          s_InitCnt200Counter <= 0;
+	 i_InitCnt200Done <= 0;
       end
       else begin
          if (i_InitDo200) begin
-            s_InitCnt200Counter <= s_InitCnt200Counter + 1;
+	    if (s_InitCnt200Counter == 200) begin
+	       s_InitCnt200Counter <= s_InitCnt200Counter;
+	       i_InitCnt200Done <= 1;
+	    end
+	    else begin
+               s_InitCnt200Counter <= s_InitCnt200Counter + 1;
+	       i_InitCnt200Done <= 0;
+	    end
          end
          else begin
             s_InitCnt200Counter <= 0;
-         end
+	    i_InitCnt200Done <= 0;
+	 end
       end // else: !if(reset)
    end // always @ (posedge clock0)
 
-   always @ * begin
-      if (reset) begin
-         i_InitCnt200Done = 0;
-      end
-      else begin
-         if (s_InitCnt200Counter == 200) begin
-            i_InitCnt200Done = 1;
-         end
-         else begin
-            i_InitCnt200Done = 0;
-         end
-      end // else: !if(reset)
-   end // always @ *
-
-   always @ (negedge ddr_clock90) begin
-      s_HalfPage0 <= ddr_dq;
-   end
-
-   always @ (posedge ddr_clock90) begin
-      s_HalfPage1 <= ddr_dq;
+   always @ (negedge ddr_clock0) begin
+      s_HalfPage <= ddr_dq;
    end
 
 `ifdef SIM
@@ -1396,6 +1391,19 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
 
         `DdrCtl1_CoreState_Read_Wait0: begin
            $sformat(d_CoreState,"r Wait0 %5B %2B %4X (%S %S %S) (%S %S %S)",
+                    i_CoreCommand,
+                    i_CoreBank,
+                    i_CoreAddr,
+                    i_CoreRefreshDone ? "RefreshDone" : "RefreshNotDone",
+                    i_CoreReadDone ? "ReadDone" : "ReadNotDone",
+                    i_CoreWriteDone ? "WriteDone" : "WriteNotDone",
+                    i_AutoRefreshDoRefresh ? "DoRefresh" : "NoRefresh",
+                    i_IntfDoRead ? "DoRead" : "NoRead",
+                    i_IntfDoWrite ? "DoWrite" : "NoWrite");
+        end // case: `DdrCtl1_CoreState_Read_Wait0
+
+	`DdrCtl1_CoreState_Read_Wait1: begin
+           $sformat(d_CoreState,"r Wait1 %5B %2B %4X (%S %S %S) (%S %S %S)",
                     i_CoreCommand,
                     i_CoreBank,
                     i_CoreAddr,
