@@ -44,6 +44,9 @@ module VGA2Sim;
       #4 inst = {`VGA2_LDD,5'bxxxxx,3'b100};
       inst_en = 1;
 
+      #4 inst = {`VGA2_LDI,5'bxxxxx,3'b010};
+      inst_en = 1;
+
       #4 inst = {`VGA2_NOP,8'bxxxxxxxx};
       inst_en = 1;
 

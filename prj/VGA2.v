@@ -2,6 +2,7 @@
 `define VGA2_LDR 4'h1
 `define VGA2_LDC 4'h2
 `define VGA2_LDD 4'h3
+`define VGA2_LDI 4'h4
 
 `define VGA2_State_Reset 2'h0
 `define VGA2_State_Ready 2'h1
@@ -61,10 +62,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    ramr0 (.clock(clock),
 	  .reset(reset),
 
-	  .we(s_WriteData & ~i_FrameBufferAddr[14]),
+	  .we(s_WriteData & ~i_FrameBufferAddr[0]),
 	  .data_i(s_FrameBufferData[2]),
-	  .addr0(i_FrameBufferAddr[13:0]),
-	  .addr1(i_VGAIntfAddr[17:4]),
+	  .addr0(i_FrameBufferAddr[14:1]),
+	  .addr1(i_VGAIntfAddr[18:5]),
 
 	  .data_o1(ramr0_data_o1));
 
@@ -73,10 +74,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    ramr1 (.clock(clock),
 	  .reset(reset),
 
-	  .we(s_WriteData & i_FrameBufferAddr[14]),
+	  .we(s_WriteData & i_FrameBufferAddr[0]),
 	  .data_i(s_FrameBufferData[2]),
-	  .addr0(i_FrameBufferAddr[13:0]),
-	  .addr1(i_VGAIntfAddr[17:4]),
+	  .addr0(i_FrameBufferAddr[14:1]),
+	  .addr1(i_VGAIntfAddr[18:5]),
 
 	  .data_o1(ramr1_data_o1));
 
@@ -85,10 +86,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    ramg0 (.clock(clock),
 	  .reset(reset),
 
-	  .we(s_WriteData & ~i_FrameBufferAddr[14]),
+	  .we(s_WriteData & ~i_FrameBufferAddr[0]),
 	  .data_i(s_FrameBufferData[1]),
-	  .addr0(i_FrameBufferAddr[13:0]),
-	  .addr1(i_VGAIntfAddr[17:4]),
+	  .addr0(i_FrameBufferAddr[14:1]),
+	  .addr1(i_VGAIntfAddr[18:5]),
 
 	  .data_o1(ramg0_data_o1));
 
@@ -97,10 +98,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    ramg1 (.clock(clock),
 	  .reset(reset),
 
-	  .we(s_WriteData & i_FrameBufferAddr[14]),
+	  .we(s_WriteData & i_FrameBufferAddr[0]),
 	  .data_i(s_FrameBufferData[1]),
-	  .addr0(i_FrameBufferAddr[13:0]),
-	  .addr1(i_VGAIntfAddr[17:4]),
+	  .addr0(i_FrameBufferAddr[14:1]),
+	  .addr1(i_VGAIntfAddr[18:5]),
 
 	  .data_o1(ramg1_data_o1));
 
@@ -109,10 +110,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    ramb0 (.clock(clock),
 	  .reset(reset),
 
-	  .we(s_WriteData & ~i_FrameBufferAddr[14]),
+	  .we(s_WriteData & ~i_FrameBufferAddr[0]),
 	  .data_i(s_FrameBufferData[0]),
-	  .addr0(i_FrameBufferAddr[13:0]),
-	  .addr1(i_VGAIntfAddr[17:4]),
+	  .addr0(i_FrameBufferAddr[14:1]),
+	  .addr1(i_VGAIntfAddr[18:5]),
 
 	  .data_o1(ramb0_data_o1));
 
@@ -121,10 +122,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    ramb1 (.clock(clock),
 	  .reset(reset),
 
-	  .we(s_WriteData & i_FrameBufferAddr[14]),
+	  .we(s_WriteData & i_FrameBufferAddr[0]),
 	  .data_i(s_FrameBufferData[0]),
-	  .addr0(i_FrameBufferAddr[13:0]),
-	  .addr1(i_VGAIntfAddr[17:4]),
+	  .addr0(i_FrameBufferAddr[14:1]),
+	  .addr1(i_VGAIntfAddr[18:5]),
 
 	  .data_o1(ramb1_data_o1));
 
@@ -141,9 +142,9 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    vgaintf (.clock(clock),
 	    .reset(reset),
 
-	    .color_r(~i_VGAIntfAddr[17] ? ramr0_data_o1 : ramr1_data_o1),
-	    .color_g(~i_VGAIntfAddr[17] ? ramg0_data_o1 : ramg1_data_o1),
-	    .color_b(~i_VGAIntfAddr[17] ? ramb0_data_o1 : ramb1_data_o1),
+	    .color_r(~i_VGAIntfAddr[0] ? ramr0_data_o1 : ramr1_data_o1),
+	    .color_g(~i_VGAIntfAddr[0] ? ramg0_data_o1 : ramg1_data_o1),
+	    .color_b(~i_VGAIntfAddr[0] ? ramb0_data_o1 : ramb1_data_o1),
 
 	    .fb_addr_h(vgaintf_fb_addr_h),
 	    .fb_addr_v(vgaintf_fb_addr_v),
@@ -207,6 +208,14 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 		      s_WriteData       <= 1;
 		   end
 
+		   `VGA2_LDI: begin
+		      s_State           <= `VGA2_State_Ready;
+		      s_FrameBufferRow  <= s_FrameBufferRow;
+		      s_FrameBufferCol  <= s_FrameBufferCol + 1;
+		      s_FrameBufferData <= w_InstImm[2:0];
+		      s_WriteData       <= 1;
+		   end
+
 		   default: begin
 		      s_State           <= `VGA2_State_Error;
 		      s_FrameBufferRow <= 0;
@@ -264,6 +273,10 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 	      $sformat(d_Input,"EN (LDD %3B)",w_InstImm[2:0]);
 	   end
 
+	   `VGA2_LDI: begin
+	      $sformat(d_Input,"EN (LDI %3B)",w_InstImm[2:0]);
+	   end
+
 	   default: begin
 	      $sformat(d_Input,"EN (? %2X)",w_InstImm);
 	   end
@@ -281,15 +294,16 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 	end
 
 	`VGA2_State_Ready: begin
-	   $sformat(d_State,"R (%D,%D)@%6X (%D,%D)@%4X %3B %1B",
-		    vgaintf_fb_addr_v,
-		    vgaintf_fb_addr_h,
-		    i_VGAIntfAddr,
-		    s_FrameBufferRow,
-		    s_FrameBufferCol,
-		    i_FrameBufferAddr,
-		    s_FrameBufferData,
-		    s_WriteData);
+	   $sformat(d_State,"R");
+// 	   $sformat(d_State,"R (%D,%D)@%6X (%D,%D)@%4X %3B %1B",
+// 		    vgaintf_fb_addr_v,
+// 		    vgaintf_fb_addr_h,
+// 		    i_VGAIntfAddr,
+// 		    s_FrameBufferRow,
+// 		    s_FrameBufferCol,
+// 		    i_FrameBufferAddr,
+// 		    s_FrameBufferData,
+// 		    s_WriteData);
 	end // case: `VGA2_State_Ready
 
 	`VGA2_State_Error: begin

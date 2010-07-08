@@ -1,0 +1,9 @@
+Sequencer:
+    RomName: RedRectangleRom
+    Type: Seq
+    Outputs: alu regbank vga
+    Inputs: alu.Result regbank.Out0 regbank.Out1
+Components:
+    alu: Alu
+    regbank: RegBankP2
+    vga: VGA2

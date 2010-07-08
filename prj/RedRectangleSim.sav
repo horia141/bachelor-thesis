@@ -1,0 +1,38 @@
+[timestart] 0
+[size] 1678 989
+[pos] -1 -1
+*-12.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] RedRectangleSim.
+[treeopen] RedRectangleSim.red.
+@28
+RedRectangleSim.clock0
+RedRectangleSim.clock180
+RedRectangleSim.reset
+@200
+-seq
+@820
+RedRectangleSim.red.seq.d_Instruction[4119:0]
+RedRectangleSim.red.seq.d_Input[2047:0]
+@821
+RedRectangleSim.red.seq.d_State[2047:0]
+@200
+-alu
+@820
+RedRectangleSim.red.alu.d_Input[2047:0]
+RedRectangleSim.red.alu.d_State[2047:0]
+@a00
+-regbank
+@820
+RedRectangleSim.red.regbank.d_Input[2047:0]
+RedRectangleSim.red.regbank.d_State[2047:0]
+@a00
+-vga
+@820
+RedRectangleSim.red.vga.d_Input[2047:0]
+RedRectangleSim.red.vga.d_State[2047:0]
+@28
+RedRectangleSim.vga_hsync
+RedRectangleSim.vga_vsync
+RedRectangleSim.vga_r
+RedRectangleSim.vga_g
+RedRectangleSim.vga_b

@@ -1,5 +1,18 @@
 # Configuration Variables
 
+Prj.RedRectangle.All.Src = RedRectangle.v RedRectangle.seq RedRectangle.dev
+Prj.RedRectangle.All.Ref = Seq.All Alu.All RegBankP2.All VGA2.All
+
+Prj.RedRectangle.Sim.Src = RedRectangleSim.v RedRectangleSim.sav
+Prj.RedRectangle.Sim.Ref = RedRectangle.All
+Prj.RedRectangle.Sim.Out = RedRectangleSim
+Prj.RedRectangle.Sim.Top = RedRectangleSim
+
+Prj.RedRectangle.FPGA.Src = RedRectangleFPGA.v RedRectangleFPGA.ucf
+Prj.RedRectangle.FPGA.Ref = RedRectangle.All ClockManager.All
+Prj.RedRectangle.FPGA.Out = RedRectangleFPGA
+Prj.RedRectangle.FPGA.Top = RedRectangleFPGA
+
 Prj.Auto2.All.Src = Auto2.v Auto2.seq Auto2.dev
 Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All LedBank.All VGA.All
 
