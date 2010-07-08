@@ -41,17 +41,17 @@ module VGA2Sim;
       #4 inst = {`VGA2_LDC,8'h20};
       inst_en = 1;
 
-      #4 inst = {`VGA2_LDD,5'bxxxxx,3'b100};
+      #4 inst = {`VGA2_LDD,4'bxxxx,4'b1100};
       inst_en = 1;
 
-      #4 inst = {`VGA2_LDI,5'bxxxxx,3'b010};
+      #4 inst = {`VGA2_LDI,4'bxxxx,4'b1010};
       inst_en = 1;
 
       #4 inst = {`VGA2_NOP,8'bxxxxxxxx};
       inst_en = 1;
 
       // Test disabled instruction.
-      #4 inst = {`VGA2_LDD,5'bxxxxx,3'b010};
+      #4 inst = {`VGA2_LDD,4'bxxxx,4'b1010};
       inst_en = 0;
 
       #4 inst = {`VGA2_LDR,8'h04};
@@ -74,7 +74,7 @@ module VGA2Sim;
       #4 inst = {`VGA2_LDC,8'h20};
       inst_en = 1;
 
-      #4 inst = {`VGA2_LDD,5'bxxxxx,3'b100};
+      #4 inst = {`VGA2_LDD,4'bxxxx,4'b1100};
       inst_en = 1;
 
       #4 inst = {`VGA2_NOP,8'bxxxxxxxx};
@@ -87,7 +87,20 @@ module VGA2Sim;
       #4 inst = {`VGA2_LDC,8'h04};
       inst_en = 1;
 
-      #4 inst = {`VGA2_LDD,5'bxxxxx,3'b010};
+      #4 inst = {`VGA2_LDD,4'bxxxx,4'b1010};
+      inst_en = 1;
+
+      #4 inst = {`VGA2_NOP,8'bxxxxxxxx};
+      inst_en = 1;
+
+      // Test writing a less-intense value.
+      #8 inst = {`VGA2_LDR,8'h00};
+      inst_en = 1;
+
+      #4 inst = {`VGA2_LDC,8'h40};
+      inst_en = 1;
+
+      #4 inst = {`VGA2_LDD,4'bxxxx,4'b0110};
       inst_en = 1;
 
       #4 inst = {`VGA2_NOP,8'bxxxxxxxx};
@@ -96,14 +109,14 @@ module VGA2Sim;
 
    VGA2
    vga (.clock(clock),
-	.reset(reset),
+        .reset(reset),
 
-	.inst(inst),
-	.inst_en(inst_en),
+        .inst(inst),
+        .inst_en(inst_en),
 
-	.vga_hsync(vga_hsync),
-	.vga_vsync(vga_vsync),
-	.vga_r(vga_r),
-	.vga_g(vga_g),
-	.vga_b(vga_b));
+        .vga_hsync(vga_hsync),
+        .vga_vsync(vga_vsync),
+        .vga_r(vga_r),
+        .vga_g(vga_g),
+        .vga_b(vga_b));
 endmodule // VGA2Sim

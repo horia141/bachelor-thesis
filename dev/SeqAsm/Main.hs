@@ -6,6 +6,8 @@ import Data.List (intercalate)
 import System.Console.GetOpt (OptDescr(..),ArgDescr(..),ArgOrder(..),getOpt,usageInfo)
 import System.Environment (getArgs)
 import System.Exit (ExitCode(..),exitSuccess,exitWith)
+    
+import Debug.Trace (trace)
 
 import Core (CDevice(..),CSequencer(..),CComponent(..),CInst(..),CArgType(..),CFormatAtom(..),SInst(..),SArgType(..))
 import Configs (parseSequencersCfg,parseComponentsCfg,parseDeviceCfg)

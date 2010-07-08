@@ -8,6 +8,12 @@
 `define Alu_XOR 4'h7
 `define Alu_SHL 4'h8
 `define Alu_SHR 4'h9
+`define Alu_EQL 4'hA
+`define Alu_NEQ 4'hB
+`define Alu_LTS 4'hC
+`define Alu_LTE 4'hD
+`define Alu_GTS 4'hE
+`define Alu_GTE 4'hF
 
 `define Alu_State_Reset 2'h0
 `define Alu_State_Ready 2'h1
@@ -101,6 +107,36 @@ module Alu(clock,reset,inst,inst_en,result);
                      s_Accum <= s_Accum >> 1;
                   end
 
+                  `Alu_EQL: begin
+                     s_State <= `Alu_State_Ready;
+                     s_Accum <= s_Accum == w_InstImm;
+                  end
+
+                  `Alu_NEQ: begin
+                     s_State <= `Alu_State_Ready;
+                     s_Accum <= s_Accum != w_InstImm;
+                  end
+
+                  `Alu_LTS: begin
+                     s_State <= `Alu_State_Ready;
+                     s_Accum <= s_Accum < w_InstImm;
+                  end
+
+                  `Alu_LTE: begin
+                     s_State <= `Alu_State_Ready;
+                     s_Accum <= s_Accum <= w_InstImm;
+                  end
+
+                  `Alu_GTS: begin
+                     s_State <= `Alu_State_Ready;
+                     s_Accum <= s_Accum > w_InstImm;
+                  end
+
+                  `Alu_GTE: begin
+                     s_State <= `Alu_State_Ready;
+                     s_Accum <= s_Accum >= w_InstImm;
+                  end
+
                   default: begin
                      s_State <= `Alu_State_Error;
                      s_Accum <= 0;
@@ -168,6 +204,30 @@ module Alu(clock,reset,inst,inst_en,result);
            
            `Alu_SHR: begin
               $sformat(d_Input,"EN SHR");
+           end
+
+           `Alu_EQL: begin
+              $sformat(d_Input,"EN (EQL %2X)",w_InstImm);
+           end
+
+           `Alu_NEQ: begin
+              $sformat(d_Input,"EN (NEQ %2X)",w_InstImm);
+           end
+
+           `Alu_LTS: begin
+              $sformat(d_Input,"EN (LTS %2X)",w_InstImm);
+           end
+
+           `Alu_LTE: begin
+              $sformat(d_Input,"EN (LTE %2X)",w_InstImm);
+           end
+
+           `Alu_GTS: begin
+              $sformat(d_Input,"EN (GTS %2X)",w_InstImm);
+           end
+
+           `Alu_GTE: begin
+              $sformat(d_Input,"EN (GTE %2X)",w_InstImm);
            end
            
            default: begin

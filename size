@@ -20,3 +20,5 @@ Index   Build   Dev     Prj     Total   Commit
 18      616     959     8403    9978    Small fix in DdrCtl1Sim module.
 19      622     1058    8451    10131   Improvements to the assembler.
 20      623     1058    8592    10273   Fixed issue with text roms.
+21      718     1058    9726    11502   Added VGA2 testbench.
+22      719     1060    9912    11691   Finished VGA2 testbench.

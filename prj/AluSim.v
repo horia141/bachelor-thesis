@@ -57,7 +57,61 @@ module AluSim;
 
       #4 inst = {`Alu_SHR,8'bxxxxxxxx};
       inst_en = 1;
+
+      #4 inst = {`Alu_LDI,8'hAB};
+      inst_en = 1;
+
+      #4 inst = {`Alu_EQL,8'hAB};
+      inst_en = 1;
+
+      #4 inst = {`Alu_EQL,8'h0F};
+      inst_en = 1;
       
+      #4 inst = {`Alu_LDI,8'hAB};
+      inst_en = 1;
+
+      #4 inst = {`Alu_NEQ,8'h0F};
+      inst_en = 1;
+
+      #4 inst = {`Alu_NEQ,8'h01};
+      inst_en = 1;
+      
+      #4 inst = {`Alu_LDI,8'hAA};
+      inst_en = 1;
+
+      #4 inst = {`Alu_LTS,8'hBB};
+      inst_en = 1;
+
+      #4 inst = {`Alu_LTE,8'h01};
+      inst_en = 1;
+
+      #4 inst = {`Alu_LDI,8'hAA};
+      inst_en = 1;
+
+      #4 inst = {`Alu_LTS,8'h43};
+      inst_en = 1;
+
+      #4 inst = {`Alu_LTE,8'h00};
+      inst_en = 1;
+      
+      #4 inst = {`Alu_LDI,8'hAA};
+      inst_en = 1;
+
+      #4 inst = {`Alu_GTS,8'h43};
+      inst_en = 1;
+
+      #4 inst = {`Alu_GTE,8'h01};
+      inst_en = 1;
+
+      #4 inst = {`Alu_LDI,8'hAA};
+      inst_en = 1;
+
+      #4 inst = {`Alu_GTS,8'hBB};
+      inst_en = 1;
+
+      #4 inst = {`Alu_GTE,8'hCC};
+      inst_en = 1;
+
       #4 inst = {`Alu_NOP,8'bxxxxxxxx};
       inst_en = 1;
 

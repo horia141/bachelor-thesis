@@ -1,7 +1,7 @@
 # Configuration Variables
 
 Prj.RedRectangle.All.Src = RedRectangle.v RedRectangle.seq RedRectangle.dev
-Prj.RedRectangle.All.Ref = Seq.All Alu.All RegBankP2.All VGA2.All
+Prj.RedRectangle.All.Ref = Seq.All Alu.All RegBankP4.All VGA2.All
 
 Prj.RedRectangle.Sim.Src = RedRectangleSim.v RedRectangleSim.sav
 Prj.RedRectangle.Sim.Ref = RedRectangle.All
@@ -91,6 +91,7 @@ Prj.VGA2.Sim.Src = VGA2Sim.v VGA2Sim.sav
 Prj.VGA2.Sim.Ref = VGA2.All
 Prj.VGA2.Sim.Out = VGA2Sim
 Prj.VGA2.Sim.Top = VGA2Sim
+Prj.VGA2.Sim.Def.SIM_FullState =
 
 Prj.VGAInterface.All.Src = VGAInterface.v
 Prj.VGAInterface.All.Ref =
