@@ -1,0 +1,26 @@
+[timestart] 0
+[size] 1678 1019
+[pos] -1 -1
+*-17.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] VGA2InterfaceSim.
+@28
+VGA2InterfaceSim.clock
+VGA2InterfaceSim.reset
+@22
+VGA2InterfaceSim.vgaint.s_HCounter[10:0]
+VGA2InterfaceSim.vgaint.s_VCounter[10:0]
+@28
+VGA2InterfaceSim.vgaint.i_HInVisibleArea
+VGA2InterfaceSim.vgaint.i_HInFrontPorch
+VGA2InterfaceSim.vgaint.i_HInSyncPulse
+VGA2InterfaceSim.vgaint.i_HInBackPorch
+VGA2InterfaceSim.vgaint.i_VInVisibleArea
+VGA2InterfaceSim.vgaint.i_VInFrontPorch
+VGA2InterfaceSim.vgaint.i_VInSyncPulse
+VGA2InterfaceSim.vgaint.i_VInBackPorch
+VGA2InterfaceSim.vgaint.color_r
+VGA2InterfaceSim.vgaint.color_g
+VGA2InterfaceSim.vgaint.color_b
+@22
+VGA2InterfaceSim.vgaint.fb_addr_h[10:0]
+VGA2InterfaceSim.vgaint.fb_addr_v[10:0]

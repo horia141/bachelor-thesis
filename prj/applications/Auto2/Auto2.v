@@ -75,7 +75,7 @@ module Auto2(clock0,clock180,reset,leds,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 
             .leds(leds));
 
-   VGA
+   VGA1
    vga (.clock(clock180),
         .reset(reset),
 

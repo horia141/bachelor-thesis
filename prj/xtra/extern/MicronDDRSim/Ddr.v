@@ -86,7 +86,7 @@
 `define x16
 
 module Ddr (Clk, Clk_n, Cke, Cs_n, Ras_n, Cas_n, We_n, Ba , Addr, Dm, Dq, Dqs);
-    `include "/home/horia/work/batchelor/v6/prj/ExtSim/DdrParameters.vh"
+    `include "/home/horia/work/batchelor/v6/prj/xtra/extern/MicronDDRSim/DdrParameters.vh"
 
     // Port Declarations
     input                         Clk;

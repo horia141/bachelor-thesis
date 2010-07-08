@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module SeqSim;
+module LedBankSim;
    reg         clock;
    reg         reset;
 

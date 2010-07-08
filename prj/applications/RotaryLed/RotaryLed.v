@@ -84,7 +84,7 @@ module RotaryLed(clock0,clock180,reset,rotary,leds,vga_hsync,vga_vsync,vga_r,vga
 
             .leds(ledbank_leds));
 
-   VGA
+   VGA1
    vga (.clock(clock180),
         .reset(reset),
 

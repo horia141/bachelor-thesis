@@ -8,4 +8,4 @@ Components:
     pushbtnu: PushBtn
     pushbtnd: PushBtn
     ledbank: LedBank
-    vga: VGA
+    vga: VGA1

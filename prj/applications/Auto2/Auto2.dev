@@ -7,4 +7,4 @@ Components:
     alu: Alu
     swc: Swc
     ledbank: LedBank
-    vga: VGA
+    vga: VGA1

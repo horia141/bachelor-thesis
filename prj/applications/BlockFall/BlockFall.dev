@@ -6,4 +6,4 @@ Sequencer:
 Components:
     alu: Alu
     swc: Swc
-    vga: VGA
+    vga: VGA1

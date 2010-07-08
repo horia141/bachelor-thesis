@@ -97,7 +97,7 @@ module PressCount(clock0,clock180,reset,countu,countd,nr_presses,vga_hsync,vga_v
 
             .leds(ledbank_leds));
 
-   VGA
+   VGA1
    vga (.clock(clock180),
         .reset(reset),
 

@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module VGAInterfaceSim;
+module VGA2InterfaceSim;
    reg         clock;
    reg         reset;
 
@@ -61,16 +61,16 @@ module VGAInterfaceSim;
       color_b = 1;
    end // initial begin
 
-   VGAInterface #(.HAddrSize(11),
-                  .HVisibleArea(4),
-                  .HFrontPorch(2),
-                  .HSyncPulse(3),
-                  .HBackPorch(2),
-                  .VAddrSize(11),
-                  .VVisibleArea(5),
-                  .VFrontPorch(2),
-                  .VSyncPulse(3),
-                  .VBackPorch(2))
+   VGA2Interface #(.HAddrSize(11),
+                   .HVisibleArea(4),
+                   .HFrontPorch(2),
+                   .HSyncPulse(3),
+                   .HBackPorch(2),
+                   .VAddrSize(11),
+                   .VVisibleArea(5),
+                   .VFrontPorch(2),
+                   .VSyncPulse(3),
+                   .VBackPorch(2))
    vgaint (.clock(clock),
            .reset(reset),
 
@@ -86,4 +86,4 @@ module VGAInterfaceSim;
            .vga_r(vga_r),
            .vga_g(vga_g),
            .vga_b(vga_b));
-endmodule // VGAInterfaceSim
+endmodule // VGA2InterfaceSim

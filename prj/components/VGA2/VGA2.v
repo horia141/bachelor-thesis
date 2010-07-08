@@ -150,16 +150,16 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 
           .data_o1(ramb1_data_o1));
 
-   VGAInterface #(.HAddrSize(11),
-                  .HVisibleArea(800),
-                  .HFrontPorch(56),
-                  .HSyncPulse(120),
-                  .HBackPorch(64),
-                  .VAddrSize(11),
-                  .VVisibleArea(600),
-                  .VFrontPorch(37),
-                  .VSyncPulse(6),
-                  .VBackPorch(23))
+   VGA2Interface #(.HAddrSize(11),
+                   .HVisibleArea(800),
+                   .HFrontPorch(56),
+                   .HSyncPulse(120),
+                   .HBackPorch(64),
+                   .VAddrSize(11),
+                   .VVisibleArea(600),
+                   .VFrontPorch(37),
+                   .VSyncPulse(6),
+                   .VBackPorch(23))
    vgaintf (.clock(clock),
             .reset(reset),
 

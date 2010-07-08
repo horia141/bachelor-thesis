@@ -1,293 +1,426 @@
 # Configuration Variables
 
-Prj.RedRectangle.All.Src = RedRectangle.v RedRectangle.seq RedRectangle.dev
-Prj.RedRectangle.All.Ref = Seq.All Alu.All RegBankP4.All VGA2.All
+# Projects configuration zone.
 
-Prj.RedRectangle.Sim.Src = RedRectangleSim.v RedRectangleSim.sav
-Prj.RedRectangle.Sim.Ref = RedRectangle.All
-Prj.RedRectangle.Sim.Out = RedRectangleSim
-Prj.RedRectangle.Sim.Top = RedRectangleSim
+# Projects in prj
 
-Prj.RedRectangle.FPGA.Src = RedRectangleFPGA.v RedRectangleFPGA.ucf
-Prj.RedRectangle.FPGA.Ref = RedRectangle.All ClockManager.All
-Prj.RedRectangle.FPGA.Out = RedRectangleFPGA
-Prj.RedRectangle.FPGA.Top = RedRectangleFPGA
+# Projects in prj/applications
 
-Prj.Auto2.All.Src = Auto2.v Auto2.seq Auto2.dev
-Prj.Auto2.All.Ref = Alu.All Seq.All Swc.All LedBank.All VGA.All
+# Auto2
 
-Prj.Auto2.Sim.Src = Auto2Sim.v Auto2Sim.sav
-Prj.Auto2.Sim.Ref = Auto2.All
-Prj.Auto2.Sim.Out = Auto2Sim
-Prj.Auto2.Sim.Top = Auto2Sim
+Prj.Auto2.All.Base = applications/Auto2
+Prj.Auto2.All.Src  = Auto2.v Auto2.seq Auto2.dev
+Prj.Auto2.All.Ref  = Alu.All Seq.All Swc.All LedBank.All VGA1.All
 
-Prj.Auto2.FPGA.Src = Auto2FPGA.v Auto2FPGA.ucf
-Prj.Auto2.FPGA.Ref = Auto2.All ClockManager.All
-Prj.Auto2.FPGA.Out = Auto2FPGA
-Prj.Auto2.FPGA.Top = Auto2FPGA
+Prj.Auto2.Sim.Base = $(Prj.Auto2.All.Base)
+Prj.Auto2.Sim.Src  = Auto2Sim.v Auto2Sim.sav
+Prj.Auto2.Sim.Ref  = Auto2.All
+Prj.Auto2.Sim.Out  = Auto2Sim
+Prj.Auto2.Sim.Top  = Auto2Sim
 
-Prj.BlockFall.All.Src = BlockFall.v BlockFall.seq BlockFall.dev
-Prj.BlockFall.All.Ref = Alu.All Seq.All Swc.All VGA.All
+Prj.Auto2.FPGA.Base = $(Prj.Auto2.All.Base)
+Prj.Auto2.FPGA.Src  = Auto2FPGA.v Auto2FPGA.ucf
+Prj.Auto2.FPGA.Ref  = Auto2.All ClockManager.All
+Prj.Auto2.FPGA.Out  = Auto2FPGA
+Prj.Auto2.FPGA.Top  = Auto2FPGA
 
-Prj.BlockFall.FPGA.Src = BlockFallFPGA.v BlockFallFPGA.ucf
-Prj.BlockFall.FPGA.Ref = BlockFall.All ClockManager.All
-Prj.BlockFall.FPGA.Out = BlockFallFPGA
-Prj.BlockFall.FPGA.Top = BlockFallFPGA
+# BigSDRAM
 
-Prj.PressCount.All.Src = PressCount.v PressCount.seq PressCount.dev
-Prj.PressCount.All.Ref = Seq.All Alu.All PushBtn.All LedBank.All VGA.All
+Prj.BigSDRAM.All.Base = applications/BigSDRAM
+Prj.BigSDRAM.All.Src  = BigSDRAM.v BigSDRAM.seq BigSDRAM.dev
+Prj.BigSDRAM.All.Ref  = Seq.All Swc.All LedBank.All DdrCtl1.All
 
-Prj.PressCount.Sim.Src = PressCountSim.v PressCountSim.sav
-Prj.PressCount.Sim.Ref = PressCount.All
-Prj.PressCount.Sim.Out = PressCountSim
-Prj.PressCount.Sim.Top = PressCountSim
+Prj.BigSDRAM.Sim.Base = $(Prj.BigSDRAM.All.Base)
+Prj.BigSDRAM.Sim.Src  = BigSDRAMSim.v BigSDRAMSim.sav
+Prj.BigSDRAM.Sim.Ref  = BigSDRAM.All MicronDDRSim.All
+Prj.BigSDRAM.Sim.Out  = BigSDRAMSim
+Prj.BigSDRAM.Sim.Top  = BigSDRAMSim
 
-Prj.PressCount.FPGA.Src = PressCountFPGA.v PressCountFPGA.ucf
-Prj.PressCount.FPGA.Ref = PressCount.All ClockManager.All
-Prj.PressCount.FPGA.Out = PressCountFPGA
-Prj.PressCount.FPGA.Top = PressCountFPGA
+Prj.BigSDRAM.FPGA.Base = $(Prj.BigSDRAM.All.Base)
+Prj.BigSDRAM.FPGA.Src  = BigSDRAMFPGA.v BigSDRAMFPGA.ucf
+Prj.BigSDRAM.FPGA.Ref  = BigSDRAM.All ClockManager.All
+Prj.BigSDRAM.FPGA.Out  = BigSDRAMFPGA
+Prj.BigSDRAM.FPGA.Top  = BigSDRAMFPGA
 
-Prj.RotaryLed.All.Src = RotaryLed.v RotaryLed.seq RotaryLed.dev
-Prj.RotaryLed.All.Ref = Seq.All Alu.All Rotary.All LedBank.All VGA.All
+# BlockFall
 
-Prj.RotaryLed.Sim.Src = RotaryLedSim.v RotaryLedSim.sav
-Prj.RotaryLed.Sim.Ref = RotaryLed.All
-Prj.RotaryLed.Sim.Out = RotaryLedSim
-Prj.RotaryLed.Sim.Top = RotaryLedSim
+Prj.BlockFall.All.Base = applications/BlockFall
+Prj.BlockFall.All.Src  = BlockFall.v BlockFall.seq BlockFall.dev
+Prj.BlockFall.All.Ref  = Alu.All Seq.All Swc.All VGA1.All
 
-Prj.RotaryLed.FPGA.Src = RotaryLedFPGA.v RotaryLedFPGA.ucf
-Prj.RotaryLed.FPGA.Ref = RotaryLed.All ClockManager.All
-Prj.RotaryLed.FPGA.Out = RotaryLedFPGA
-Prj.RotaryLed.FPGA.Top = RotaryLedFPGA
+Prj.BlockFall.FPGA.Base = $(Prj.BlockFall.All.Base)
+Prj.BlockFall.FPGA.Src  = BlockFallFPGA.v BlockFallFPGA.ucf
+Prj.BlockFall.FPGA.Ref  = BlockFall.All ClockManager.All
+Prj.BlockFall.FPGA.Out  = BlockFallFPGA
+Prj.BlockFall.FPGA.Top  = BlockFallFPGA
 
-Prj.BigSDRAM.All.Src = BigSDRAM.v BigSDRAM.seq BigSDRAM.dev
-Prj.BigSDRAM.All.Ref = Seq.All Swc.All LedBank.All DdrCtl1.All
+# PressCount
 
-Prj.BigSDRAM.Sim.Src = BigSDRAMSim.v BigSDRAMSim.sav
-Prj.BigSDRAM.Sim.Ref = BigSDRAM.All ExtSimDdr.All
-Prj.BigSDRAM.Sim.Out = BigSDRAMSim
-Prj.BigSDRAM.Sim.Top = BigSDRAMSim
+Prj.PressCount.All.Base = applications/PressCount
+Prj.PressCount.All.Src  = PressCount.v PressCount.seq PressCount.dev
+Prj.PressCount.All.Ref  = Seq.All Alu.All PushBtn.All LedBank.All VGA1.All
 
-Prj.BigSDRAM.FPGA.Src = BigSDRAMFPGA.v BigSDRAMFPGA.ucf
-Prj.BigSDRAM.FPGA.Ref = BigSDRAM.All ClockManager.All
-Prj.BigSDRAM.FPGA.Out = BigSDRAMFPGA
-Prj.BigSDRAM.FPGA.Top = BigSDRAMFPGA
+Prj.PressCount.Sim.Base = $(Prj.PressCount.All.Base)
+Prj.PressCount.Sim.Src  = PressCountSim.v PressCountSim.sav
+Prj.PressCount.Sim.Ref  = PressCount.All
+Prj.PressCount.Sim.Out  = PressCountSim
+Prj.PressCount.Sim.Top  = PressCountSim
 
-Prj.LedBank.All.Src = LedBank.v
-Prj.LedBank.All.Ref =
+Prj.PressCount.FPGA.Base = $(Prj.PressCount.All.Base)
+Prj.PressCount.FPGA.Src  = PressCountFPGA.v PressCountFPGA.ucf
+Prj.PressCount.FPGA.Ref  = PressCount.All ClockManager.All
+Prj.PressCount.FPGA.Out  = PressCountFPGA
+Prj.PressCount.FPGA.Top  = PressCountFPGA
 
-Prj.LedBank.Sim.Src = LedBankSim.v LedBankSim.sav
-Prj.LedBank.Sim.Ref = LedBank.All
-Prj.LedBank.Sim.Out = LedBankSim
-Prj.LedBank.Sim.Top = LedBankSim
+# RedRectangle
 
-Prj.VGA.All.Src = VGA.v 
-Prj.VGA.All.Ref = VGAInterface.All
+Prj.RedRectangle.All.Base = applications/RedRectangle
+Prj.RedRectangle.All.Src  = RedRectangle.v RedRectangle.seq RedRectangle.dev
+Prj.RedRectangle.All.Ref  = Seq.All Alu.All RegBankP4.All VGA2.All
 
-Prj.VGA2.All.Src = VGA2.v
-Prj.VGA2.All.Ref = VGAInterface.All RAMDP.All
+Prj.RedRectangle.Sim.Base = $(Prj.RedRectangle.All.Base)
+Prj.RedRectangle.Sim.Src  = RedRectangleSim.v RedRectangleSim.sav
+Prj.RedRectangle.Sim.Ref  = RedRectangle.All
+Prj.RedRectangle.Sim.Out  = RedRectangleSim
+Prj.RedRectangle.Sim.Top  = RedRectangleSim
 
-Prj.VGA2.Sim.Src = VGA2Sim.v VGA2Sim.sav
-Prj.VGA2.Sim.Ref = VGA2.All
-Prj.VGA2.Sim.Out = VGA2Sim
-Prj.VGA2.Sim.Top = VGA2Sim
+Prj.RedRectangle.FPGA.Base = $(Prj.RedRectangle.All.Base)
+Prj.RedRectangle.FPGA.Src  = RedRectangleFPGA.v RedRectangleFPGA.ucf
+Prj.RedRectangle.FPGA.Ref  = RedRectangle.All ClockManager.All
+Prj.RedRectangle.FPGA.Out  = RedRectangleFPGA
+Prj.RedRectangle.FPGA.Top  = RedRectangleFPGA
+
+# RotaryLed
+
+Prj.RotaryLed.All.Base = applications/RotaryLed
+Prj.RotaryLed.All.Src  = RotaryLed.v RotaryLed.seq RotaryLed.dev
+Prj.RotaryLed.All.Ref  = Seq.All Alu.All Rotary.All LedBank.All VGA1.All
+
+Prj.RotaryLed.Sim.Base = $(Prj.RotaryLed.All.Base)
+Prj.RotaryLed.Sim.Src  = RotaryLedSim.v RotaryLedSim.sav
+Prj.RotaryLed.Sim.Ref  = RotaryLed.All
+Prj.RotaryLed.Sim.Out  = RotaryLedSim
+Prj.RotaryLed.Sim.Top  = RotaryLedSim
+
+Prj.RotaryLed.FPGA.Base = $(Prj.RotaryLed.All.Base)
+Prj.RotaryLed.FPGA.Src  = RotaryLedFPGA.v RotaryLedFPGA.ucf
+Prj.RotaryLed.FPGA.Ref  = RotaryLed.All ClockManager.All
+Prj.RotaryLed.FPGA.Out  = RotaryLedFPGA
+Prj.RotaryLed.FPGA.Top  = RotaryLedFPGA
+
+# Projects in prj/components
+
+# Alu
+
+Prj.Alu.All.Base = components/Alu
+Prj.Alu.All.Src  = Alu.v
+Prj.Alu.All.Ref  =
+
+Prj.Alu.Sim.Base = $(Prj.Alu.All.Base)
+Prj.Alu.Sim.Src  = AluSim.v AluSim.sav
+Prj.Alu.Sim.Ref  = Alu.All
+Prj.Alu.Sim.Out  = AluSim
+Prj.Alu.Sim.Top  = AluSim
+
+# DdrCtl1
+
+Prj.DdrCtl1.All.Base = components/DdrCtl1
+Prj.DdrCtl1.All.Src  = DdrCtl1.v
+Prj.DdrCtl1.All.Ref  = 
+
+Prj.DdrCtl1.Sim.Base = $(Prj.DdrCtl1.All.Base)
+Prj.DdrCtl1.Sim.Src  = DdrCtl1Sim.v DdrCtl1Sim.sav
+Prj.DdrCtl1.Sim.Ref  = DdrCtl1.All MicronDDRSim.All
+Prj.DdrCtl1.Sim.Out  = DdrCtl1Sim
+Prj.DdrCtl1.Sim.Top  = DdrCtl1Sim
+
+# LedBank
+
+Prj.LedBank.All.Base = components/LedBank
+Prj.LedBank.All.Src  = LedBank.v
+Prj.LedBank.All.Ref  =
+
+Prj.LedBank.Sim.Base = $(Prj.LedBank.All.Base)
+Prj.LedBank.Sim.Src  = LedBankSim.v LedBankSim.sav
+Prj.LedBank.Sim.Ref  = LedBank.All
+Prj.LedBank.Sim.Out  = LedBankSim
+Prj.LedBank.Sim.Top  = LedBankSim
+
+# PushBtn
+
+Prj.PushBtn.All.Base = components/PushBtn
+Prj.PushBtn.All.Src  = PushBtn.v
+Prj.PushBtn.All.Ref  = PushBtnInterface.All
+
+Prj.PushBtn.Sim.Base = $(Prj.PushBtn.All.Base)
+Prj.PushBtn.Sim.Src  = PushBtnSim.v PushBtnSim.sav
+Prj.PushBtn.Sim.Ref  = PushBtn.All
+Prj.PushBtn.Sim.Out  = PushBtnSim
+Prj.PushBtn.Sim.Top  = PushBtnSim
+
+Prj.PushBtnInterface.All.Base = $(Prj.PushBtn.All.Base)
+Prj.PushBtnInterface.All.Src  = PushBtnInterface.v
+Prj.PushBtnInterface.All.Ref  =
+
+Prj.PushBtnInterface.Sim.Base = $(Prj.PushBtn.All.Base)
+Prj.PushBtnInterface.Sim.Src  = PushBtnInterfaceSim.v PushBtnInterfaceSim.sav
+Prj.PushBtnInterface.Sim.Ref  = PushBtnInterface.All
+Prj.PushBtnInterface.Sim.Out  = PushBtnInterfaceSim
+Prj.PushBtnInterface.Sim.Top  = PushBtnInterfaceSim
+
+# RegBank
+
+Prj.RegBankP2.All.Base = components/RegBank
+Prj.RegBankP2.All.Src  = RegBankP2.v
+Prj.RegBankP2.All.Ref  =
+
+Prj.RegBankP2.Sim.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankP2.Sim.Src  = RegBankP2Sim.v RegBankP2Sim.sav
+Prj.RegBankP2.Sim.Ref  = RegBankP2.All
+Prj.RegBankP2.Sim.Out  = RegBankP2Sim
+Prj.RegBankP2.Sim.Top  = RegBankP2Sim
+
+Prj.RegBankP4.All.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankP4.All.Src  = RegBankP4.v
+Prj.RegBankP4.All.Ref  =
+
+Prj.RegBankP4.Sim.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankP4.Sim.Src  = RegBankP4Sim.v RegBankP4Sim.sav
+Prj.RegBankP4.Sim.Ref  = RegBankP4.All
+Prj.RegBankP4.Sim.Out  = RegBankP4Sim
+Prj.RegBankP4.Sim.Top  = RegBankP4Sim
+
+Prj.RegBankP8.All.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankP8.All.Src  = RegBankP8.v
+Prj.RegBankP8.All.Ref  =
+
+Prj.RegBankP8.Sim.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankP8.Sim.Src  = RegBankP8Sim.v RegBankP8Sim.sav
+Prj.RegBankP8.Sim.Ref  = RegBankP8.All
+Prj.RegBankP8.Sim.Out  = RegBankP8Sim
+Prj.RegBankP8.Sim.Top  = RegBankP8Sim
+
+Prj.RegBankS2.All.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankS2.All.Src  = RegBankS2.v
+Prj.RegBankS2.All.Ref  =
+
+Prj.RegBankS2.Sim.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankS2.Sim.Src  = RegBankS2Sim.v RegBankS2Sim.sav
+Prj.RegBankS2.Sim.Ref  = RegBankS2.All
+Prj.RegBankS2.Sim.Out  = RegBankS2Sim
+Prj.RegBankS2.Sim.Top  = RegBankS2Sim
+
+Prj.RegBankS4.All.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankS4.All.Src  = RegBankS4.v
+Prj.RegBankS4.All.Ref  =
+
+Prj.RegBankS4.Sim.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankS4.Sim.Src  = RegBankS4Sim.v RegBankS4Sim.sav
+Prj.RegBankS4.Sim.Ref  = RegBankS4.All
+Prj.RegBankS4.Sim.Out  = RegBankS4Sim
+Prj.RegBankS4.Sim.Top  = RegBankS4Sim
+
+Prj.RegBankS8.All.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankS8.All.Src  = RegBankS8.v
+Prj.RegBankS8.All.Ref  =
+
+Prj.RegBankS8.Sim.Base = $(Prj.RegBankP2.All.Base)
+Prj.RegBankS8.Sim.Src  = RegBankS8Sim.v RegBankS8Sim.sav
+Prj.RegBankS8.Sim.Ref  = RegBankS8.All
+Prj.RegBankS8.Sim.Out  = RegBankS8Sim
+Prj.RegBankS8.Sim.Top  = RegBankS8Sim
+
+# Rotary
+
+Prj.Rotary.All.Base = components/Rotary
+Prj.Rotary.All.Src  = Rotary.v
+Prj.Rotary.All.Ref  = RotaryInterface.All
+
+Prj.Rotary.Sim.Base = $(Prj.Rotary.All.Base)
+Prj.Rotary.Sim.Src  = RotarySim.v RotarySim.sav
+Prj.Rotary.Sim.Ref  = Rotary.All
+Prj.Rotary.Sim.Out  = RotarySim
+Prj.Rotary.Sim.Top  = RotarySim
+
+Prj.RotaryInterface.All.Base = $(Prj.Rotary.All.Base)
+Prj.RotaryInterface.All.Src  = RotaryInterface.v
+Prj.RotaryInterface.All.Ref  =
+
+Prj.RotaryInterface.Sim.Base = $(Prj.Rotary.All.Base)
+Prj.RotaryInterface.Sim.Src  = RotaryInterfaceSim.v RotaryInterfaceSim.sav
+Prj.RotaryInterface.Sim.Ref  = RotaryInterface.All
+Prj.RotaryInterface.Sim.Out  = RotaryInterfaceSim
+Prj.RotaryInterface.Sim.Top  = RotaryInterfaceSim
+
+# Swc
+
+Prj.Swc.All.Base = components/Swc
+Prj.Swc.All.Src  = Swc.v
+Prj.Swc.All.Ref  =
+
+Prj.Swc.Sim.Base = $(Prj.Swc.All.Base)
+Prj.Swc.Sim.Src  = SwcSim.v SwcSim.sav
+Prj.Swc.Sim.Ref  = Swc.All
+Prj.Swc.Sim.Out  = SwcSim
+Prj.Swc.Sim.Top  = SwcSim
+
+# VGA1
+
+Prj.VGA1.All.Base = components/VGA1
+Prj.VGA1.All.Src  = VGA1.v 
+Prj.VGA1.All.Ref  = VGA1Interface.All
+
+Prj.VGA1Interface.All.Base = $(Prj.VGA1.All.Base)
+Prj.VGA1Interface.All.Src  = VGA1Interface.v
+Prj.VGA1Interface.All.Ref  =
+
+# VGA2
+
+Prj.VGA2.All.Base = components/VGA2
+Prj.VGA2.All.Src  = VGA2.v
+Prj.VGA2.All.Ref  = VGA2Interface.All RAMDP.All
+
+Prj.VGA2.Sim.Base = $(Prj.VGA2.All.Base)
+Prj.VGA2.Sim.Src  = VGA2Sim.v VGA2Sim.sav
+Prj.VGA2.Sim.Ref  = VGA2.All
+Prj.VGA2.Sim.Out  = VGA2Sim
+Prj.VGA2.Sim.Top  = VGA2Sim
 Prj.VGA2.Sim.Def.SIM_FullState =
 
-Prj.VGAInterface.All.Src = VGAInterface.v
-Prj.VGAInterface.All.Ref =
+Prj.VGA2Interface.All.Base = $(Prj.VGA2.All.Base)
+Prj.VGA2Interface.All.Src  = VGA2Interface.v
+Prj.VGA2Interface.All.Ref  =
 
-Prj.VGAInterface.Sim.Src = VGAInterfaceSim.v VGAInterfaceSim.sav
-Prj.VGAInterface.Sim.Ref = VGAInterface.All
-Prj.VGAInterface.Sim.Out = VGAInterfaceSim
-Prj.VGAInterface.Sim.Top = VGAInterfaceSim
+Prj.VGA2Interface.Sim.Base = $(Prj.VGA2.All.Base)
+Prj.VGA2Interface.Sim.Src  = VGA2InterfaceSim.v VGA2InterfaceSim.sav
+Prj.VGA2Interface.Sim.Ref  = VGA2Interface.All
+Prj.VGA2Interface.Sim.Out  = VGA2InterfaceSim
+Prj.VGA2Interface.Sim.Top  = VGA2InterfaceSim
 
-Prj.VGAInterface.FPGA.Src = VGAInterfaceFPGA.v VGAInterfaceFPGA.ucf
-Prj.VGAInterface.FPGA.Ref = VGAInterface.All
-Prj.VGAInterface.FPGA.Out = VGAInterfaceFPGA
-Prj.VGAInterface.FPGA.Top = VGAInterfaceFPGA
+Prj.VGA2Interface.FPGA.Base = $(Prj.VGA2.All.Base)
+Prj.VGA2Interface.FPGA.Src  = VGA2InterfaceFPGA.v VGA2InterfaceFPGA.ucf
+Prj.VGA2Interface.FPGA.Ref  = VGA2Interface.All
+Prj.VGA2Interface.FPGA.Out  = VGA2InterfaceFPGA
+Prj.VGA2Interface.FPGA.Top  = VGA2InterfaceFPGA
 
-Prj.PushBtn.All.Src = PushBtn.v
-Prj.PushBtn.All.Ref = PushBtnInterface.All
+# Projects in prj/sequencers
 
-Prj.PushBtn.Sim.Src = PushBtnSim.v PushBtnSim.sav
-Prj.PushBtn.Sim.Ref = PushBtn.All
-Prj.PushBtn.Sim.Out = PushBtnSim
-Prj.PushBtn.Sim.Top = PushBtnSim
+Prj.Seq.All.Base = sequencers/Seq
+Prj.Seq.All.Src  = Seq.v
+Prj.Seq.All.Ref  =
 
-Prj.Rotary.All.Src = Rotary.v
-Prj.Rotary.All.Ref = RotaryInterface.All
+Prj.Seq.Sim.Base = $(Prj.Seq.All.Base)
+Prj.Seq.Sim.Src  = SeqSim.v SeqSim.sav
+Prj.Seq.Sim.Ref  = Seq.All
+Prj.Seq.Sim.Out  = SeqSim
+Prj.Seq.Sim.Top  = SeqSim
 
-Prj.Rotary.Sim.Src = RotarySim.v RotarySim.sav
-Prj.Rotary.Sim.Ref = Rotary.All
-Prj.Rotary.Sim.Out = RotarySim
-Prj.Rotary.Sim.Top = RotarySim
+# Projects in prj/xtra
 
-Prj.ExtSimDdr.All.Src = ExtSim/Ddr.v
-Prj.ExtSimDdr.All.Ref =
+# Projects in prj/xtra/common
 
-Prj.DdrCtl1.All.Src = DdrCtl1.v
-Prj.DdrCtl1.All.Ref =
+# ClockManager
 
-Prj.DdrCtl1.Sim.Src = DdrCtl1Sim.v DdrCtl1Sim.sav
-Prj.DdrCtl1.Sim.Ref = DdrCtl1.All ExtSimDdr.All
-Prj.DdrCtl1.Sim.Out = DdrCtl1Sim
-Prj.DdrCtl1.Sim.Top = DdrCtl1Sim
+Prj.ClockManager.All.Base = xtra/common/ClockManager
+Prj.ClockManager.All.Src  = ClockManager.v
+Prj.ClockManager.All.Ref  =
 
-Prj.Alu.All.Src = Alu.v
-Prj.Alu.All.Ref =
+Prj.ClockManager.FPGA.Base = $(Prj.ClockManager.All.Base)
+Prj.ClockManager.FPGA.Src  = ClockManagerFPGA.v ClockManagerFPGA.ucf
+Prj.ClockManager.FPGA.Ref  = ClockManager.All SlowClock.All
+Prj.ClockManager.FPGA.Out  = ClockManagerFPGA
+Prj.ClockManager.FPGA.Top  = ClockManagerFPGA
 
-Prj.Alu.Sim.Src = AluSim.v AluSim.sav
-Prj.Alu.Sim.Ref = Alu.All
-Prj.Alu.Sim.Out = AluSim
-Prj.Alu.Sim.Top = AluSim
+# RAMDP
 
-Prj.Seq.All.Src = Seq.v
-Prj.Seq.All.Ref =
+Prj.RAMDP.All.Base = xtra/common/RAMDP
+Prj.RAMDP.All.Src  = RAMDP.v
+Prj.RAMDP.All.Ref  =
 
-Prj.Seq.Sim.Src = SeqSim.v SeqSim.sav
-Prj.Seq.Sim.Ref = Seq.All
-Prj.Seq.Sim.Out = SeqSim
-Prj.Seq.Sim.Top = SeqSim
+Prj.RAMDP.Sim.Base = $(Prj.RAMDP.All.Base)
+Prj.RAMDP.Sim.Src  = RAMDPSim.v RAMDPSim.sav
+Prj.RAMDP.Sim.Ref  = RAMDP.All
+Prj.RAMDP.Sim.Out  = RAMDPSim
+Prj.RAMDP.Sim.Top  = RAMDPSim
 
-Prj.Swc.All.Src = Swc.v
-Prj.Swc.All.Ref =
+# RAMSP
 
-Prj.Swc.Sim.Src = SwcSim.v SwcSim.sav
-Prj.Swc.Sim.Ref = Swc.All
-Prj.Swc.Sim.Out = SwcSim
-Prj.Swc.Sim.Top = SwcSim
+Prj.RAMSP.All.Base = xtra/common/RAMSP
+Prj.RAMSP.All.Src  = RAMSP.v
+Prj.RAMSP.All.Ref  =
 
-Prj.RegBankP2.All.Src = RegBankP2.v
-Prj.RegBankP2.All.Ref =
+Prj.RAMSP.Sim.Base = $(Prj.RAMSP.All.Base)
+Prj.RAMSP.Sim.Src  = RAMSPSim.v RAMSPSim.sav
+Prj.RAMSP.Sim.Ref  = RAMSP.All
+Prj.RAMSP.Sim.Out  = RAMSPSim
+Prj.RAMSP.Sim.Top  = RAMSPSim
 
-Prj.RegBankP2.Sim.Src = RegBankP2Sim.v RegBankP2Sim.sav
-Prj.RegBankP2.Sim.Ref = RegBankP2.All
-Prj.RegBankP2.Sim.Out = RegBankP2Sim
-Prj.RegBankP2.Sim.Top = RegBankP2Sim
+# SlowClock
 
-Prj.RegBankP4.All.Src = RegBankP4.v
-Prj.RegBankP4.All.Ref =
+Prj.SlowClock.All.Base = xtra/common/SlowClock
+Prj.SlowClock.All.Src  = SlowClock.v
+Prj.SlowClock.All.Ref  =
 
-Prj.RegBankP4.Sim.Src = RegBankP4Sim.v RegBankP4Sim.sav
-Prj.RegBankP4.Sim.Ref = RegBankP4.All
-Prj.RegBankP4.Sim.Out = RegBankP4Sim
-Prj.RegBankP4.Sim.Top = RegBankP4Sim
+Prj.SlowClock.Sim.Base = $(Prj.SlowClock.All.Base)
+Prj.SlowClock.Sim.Src  = SlowClockSim.v SlowClockSim.sav
+Prj.SlowClock.Sim.Ref  = SlowClock.All
+Prj.SlowClock.Sim.Out  = SlowClockSim
+Prj.SlowClock.Sim.Top  = SlowClockSim
 
-Prj.RegBankP8.All.Src = RegBankP8.v
-Prj.RegBankP8.All.Ref =
+Prj.SlowClock.FPGA.Base = $(Prj.SlowClock.All.Base)
+Prj.SlowClock.FPGA.Src  = SlowClockFPGA.v SlowClockFPGA.ucf
+Prj.SlowClock.FPGA.Ref  = SlowClock.All
+Prj.SlowClock.FPGA.Out  = SlowClockFPGA
+Prj.SlowClock.FPGA.Top  = SlowClockFPGA
 
-Prj.RegBankP8.Sim.Src = RegBankP8Sim.v RegBankP8Sim.sav
-Prj.RegBankP8.Sim.Ref = RegBankP8.All
-Prj.RegBankP8.Sim.Out = RegBankP8Sim
-Prj.RegBankP8.Sim.Top = RegBankP8Sim
+# Projects in prj/xtra/extern
 
-Prj.RegBankS2.All.Src = RegBankS2.v
-Prj.RegBankS2.All.Ref =
+# MicronDDRSim
 
-Prj.RegBankS2.Sim.Src = RegBankS2Sim.v RegBankS2Sim.sav
-Prj.RegBankS2.Sim.Ref = RegBankS2.All
-Prj.RegBankS2.Sim.Out = RegBankS2Sim
-Prj.RegBankS2.Sim.Top = RegBankS2Sim
+Prj.MicronDDRSim.All.Base = xtra/extern/MicronDDRSim
+Prj.MicronDDRSim.All.Src  = Ddr.v
+Prj.MicronDDRSim.All.Ref  =
 
-Prj.RegBankS4.All.Src = RegBankS4.v
-Prj.RegBankS4.All.Ref =
+# Projects in dev
 
-Prj.RegBankS4.Sim.Src = RegBankS4Sim.v RegBankS4Sim.sav
-Prj.RegBankS4.Sim.Ref = RegBankS4.All
-Prj.RegBankS4.Sim.Out = RegBankS4Sim
-Prj.RegBankS4.Sim.Top = RegBankS4Sim
+# LineBR
 
-Prj.RegBankS8.All.Src = RegBankS8.v
-Prj.RegBankS8.All.Ref =
+Dev.LineBR.Base = LineBR
+Dev.LineBR.Src  = Main.hs
+Dev.LineBR.Ref  =
+Dev.LineBR.Out  = linebr
 
-Prj.RegBankS8.Sim.Src = RegBankS8Sim.v RegBankS8Sim.sav
-Prj.RegBankS8.Sim.Ref = RegBankS8.All
-Prj.RegBankS8.Sim.Out = RegBankS8Sim
-Prj.RegBankS8.Sim.Top = RegBankS8Sim
+# MemGen
 
-Prj.ClockManager.All.Src = ClockManager.v
-Prj.ClockManager.All.Ref =
+Dev.MemGen.Base = MemGen
+Dev.MemGen.Src  = Main.hs
+Dev.MemGen.Ref  =
+Dev.MemGen.Out  = memgen
 
-Prj.ClockManager.FPGA.Src = ClockManagerFPGA.v ClockManagerFPGA.ucf
-Prj.ClockManager.FPGA.Ref = ClockManager.All SlowClock.All
-Prj.ClockManager.FPGA.Out = ClockManagerFPGA
-Prj.ClockManager.FPGA.Top = ClockManagerFPGA
+# SeqAsm
 
-# Prj.VGAInterface.All.Src = VGAInterfaceBad.v
-# Prj.VGAInterface.All.Ref =
+Dev.SeqAsm.Base = SeqAsm
+Dev.SeqAsm.Src  = Main.hs Core.hs Utils.hs Configs.hs Compiler.hs
+Dev.SeqAsm.Ref  =
+Dev.SeqAsm.Out  = seqasm
 
-Prj.PushBtnInterface.All.Src = PushBtnInterface.v
-Prj.PushBtnInterface.All.Ref =
-
-Prj.PushBtnInterface.Sim.Src = PushBtnInterfaceSim.v PushBtnInterfaceSim.sav
-Prj.PushBtnInterface.Sim.Ref = PushBtnInterface.All
-Prj.PushBtnInterface.Sim.Out = PushBtnInterfaceSim
-Prj.PushBtnInterface.Sim.Top = PushBtnInterfaceSim
-
-Prj.RotaryInterface.All.Src = RotaryInterface.v
-Prj.RotaryInterface.All.Ref =
-
-Prj.RotaryInterface.Sim.Src = RotaryInterfaceSim.v RotaryInterfaceSim.sav
-Prj.RotaryInterface.Sim.Ref = RotaryInterface.All
-Prj.RotaryInterface.Sim.Out = RotaryInterfaceSim
-Prj.RotaryInterface.Sim.Top = RotaryInterfaceSim
-
-Prj.SlowClock.All.Src = SlowClock.v
-Prj.SlowClock.All.Ref =
-
-Prj.SlowClock.Sim.Src = SlowClockSim.v SlowClockSim.sav
-Prj.SlowClock.Sim.Ref = SlowClock.All
-Prj.SlowClock.Sim.Out = SlowClockSim
-Prj.SlowClock.Sim.Top = SlowClockSim
-
-Prj.SlowClock.FPGA.Src = SlowClockFPGA.v SlowClockFPGA.ucf
-Prj.SlowClock.FPGA.Ref = SlowClock.All
-Prj.SlowClock.FPGA.Out = SlowClockFPGA
-Prj.SlowClock.FPGA.Top = SlowClockFPGA
-
-Prj.RAMSP.All.Src = RAMSP.v
-Prj.RAMSP.All.Ref =
-
-Prj.RAMSP.Sim.Src = RAMSPSim.v RAMSPSim.sav
-Prj.RAMSP.Sim.Ref = RAMSP.All
-Prj.RAMSP.Sim.Out = RAMSPSim
-Prj.RAMSP.Sim.Top = RAMSPSim
-
-Prj.RAMDP.All.Src = RAMDP.v
-Prj.RAMDP.All.Ref =
-
-Prj.RAMDP.Sim.Src = RAMDPSim.v RAMDPSim.sav
-Prj.RAMDP.Sim.Ref = RAMDP.All
-Prj.RAMDP.Sim.Out = RAMDPSim
-Prj.RAMDP.Sim.Top = RAMDPSim
-
-Dev.MemGen.Src = MemGen/Main.hs
-Dev.MemGen.Ref =
-Dev.MemGen.Out = memgen
-
-Dev.LineBR.Src = LineBR/Main.hs
-Dev.LineBR.Ref =
-Dev.LineBR.Out = linebr
-
-Dev.SeqAsm.Src = SeqAsm/Main.hs SeqAsm/Core.hs SeqAsm/Utils.hs SeqAsm/Configs.hs SeqAsm/Compiler.hs
-Dev.SeqAsm.Ref =
-Dev.SeqAsm.Out = seqasm
+# End of projects configuration zone.
 
 Cfg.OutPath                                      = out
 Cfg.RulePath                                     = $(Cfg.OutPath)/rule
 Cfg.Prj.SrcPath                                  = prj
 Cfg.Prj.OutPath                                  = $(Cfg.OutPath)/prj
 Cfg.Prj.Targets.Sim.Tools.SeqAsm.Invoke          = $(Dev.SeqAsm.Gen.OutFile)
-Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile  = $(Cfg.Prj.SrcPath)/Sequencers.cfg
-Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile  = $(Cfg.Prj.SrcPath)/Components.cfg
+Cfg.Prj.Targets.Sim.Tools.SeqAsm.SequencersFile  = $(Cfg.Prj.SrcPath)/sequencers/Sequencers.cfg
+Cfg.Prj.Targets.Sim.Tools.SeqAsm.ComponentsFile  = $(Cfg.Prj.SrcPath)/components/Components.cfg
 Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke          = $(Dev.MemGen.Gen.OutFile)
 Cfg.Prj.Targets.Sim.Tools.IVerilog.Invoke        = iverilog
 Cfg.Prj.Targets.Sim.Tools.Vvp.Invoke             = vvp
 Cfg.Prj.Targets.Sim.Tools.Sav.Invoke             = cp
 Cfg.Prj.Targets.FPGA.Part                        = xc3s500e-5fg320
 Cfg.Prj.Targets.FPGA.Tools.SeqAsm.Invoke         = $(Dev.SeqAsm.Gen.OutFile)
-Cfg.Prj.Targets.FPGA.Tools.SeqAsm.SequencersFile = $(Cfg.Prj.SrcPath)/Sequencers.cfg
-Cfg.Prj.Targets.FPGA.Tools.SeqAsm.ComponentsFile = $(Cfg.Prj.SrcPath)/Components.cfg
+Cfg.Prj.Targets.FPGA.Tools.SeqAsm.SequencersFile = $(Cfg.Prj.SrcPath)/sequencers/Sequencers.cfg
+Cfg.Prj.Targets.FPGA.Tools.SeqAsm.ComponentsFile = $(Cfg.Prj.SrcPath)/components/Components.cfg
 Cfg.Prj.Targets.FPGA.Tools.MemGen.Invoke         = $(Dev.MemGen.Gen.OutFile)
 Cfg.Prj.Targets.FPGA.Tools.IVerilog.Invoke       = iverilog
 Cfg.Prj.Targets.FPGA.Tools.Xst.Invoke            = xst
@@ -305,7 +438,7 @@ Cfg.Dev.Tools.Ghc.Invoke                         = ghc
 
 LineH1 = $(if $(wildcard $(Dev.LineBR.Gen.OutFile)),$(Dev.LineBR.Gen.OutFile) $(1))
 LineH2 = $(if $(wildcard $(Dev.LineBR.Gen.OutFile)),$(Dev.LineBR.Gen.OutFile) -p 3 -c - $(1))
-GetAllSrc = $(strip $(foreach ref,$($(1).$(2).Ref),$(call GetAllSrc,$(1),$(ref))) $($(1).$(2).Src))
+GetAllSrc = $(strip $(foreach ref,$($(1).$(2).Ref),$(call GetAllSrc,$(1),$(ref))) $(addprefix $($(1).$(2).Base)/,$($(1).$(2).Src)))
 
 PrjGetAllSrc = $(addprefix $(Cfg.Prj.SrcPath)/,$(call GetAllSrc,Prj,$(1)))
 

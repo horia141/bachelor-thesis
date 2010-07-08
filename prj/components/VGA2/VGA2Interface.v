@@ -1,4 +1,4 @@
-module VGAInterface(clock,reset,color_r,color_g,color_b,fb_addr_h,fb_addr_v,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
+module VGA2Interface(clock,reset,color_r,color_g,color_b,fb_addr_h,fb_addr_v,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    parameter                   HAddrSize = 11;
    parameter                   HVisibleArea = 800;
    parameter                   HFrontPorch = 56;
@@ -90,4 +90,4 @@ module VGAInterface(clock,reset,color_r,color_g,color_b,fb_addr_h,fb_addr_v,vga_
          end
       end // else: !if(reset)
    end // always @ (posedge clock)
-endmodule // VGAInterface
+endmodule // VGA2Interface

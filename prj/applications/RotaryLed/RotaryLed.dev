@@ -7,4 +7,4 @@ Components:
     alu: Alu
     mrotary: Rotary
     ledbank: LedBank
-    vga: VGA
+    vga: VGA1

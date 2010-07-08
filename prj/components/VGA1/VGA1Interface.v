@@ -1,4 +1,4 @@
-module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
+module VGA1Interface(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
    input wire         clock;
    input wire         reset;
 
@@ -117,5 +117,4 @@ module VGAInterfaceBad(clock,reset,framebuffer,vga_hsync,vga_vsync,vga_r,vga_g,v
    assign vga_r = value & inDisplayArea;
    assign vga_g = value & inDisplayArea;
    assign vga_b = value & inDisplayArea;
-endmodule // VGAInterfaceBad
-
+endmodule // VGA1Interface

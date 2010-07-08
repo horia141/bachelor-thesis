@@ -65,7 +65,7 @@ module BlockFall(clock0,clock180,reset,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
 
         .ready(swc_ready));
 
-   VGA
+   VGA1
    vga (.clock(clock180),
         .reset(reset),
 
