@@ -9,39 +9,27 @@
        ci ddrctl.ld3 00:h
        cc ddrctl.wrp
        wn ddrctl.Ready
-       ci ddrctl.la0 02:h
-       ci ddrctl.la1 00:h
-       ci ddrctl.la2 00:h
-       ci ddrctl.la3 00:h
-       ci ddrctl.ld0 0E:h
-       ci ddrctl.ld1 00:h
-       ci ddrctl.ld2 00:h
-       ci ddrctl.ld3 00:h
-       cc ddrctl.wrp
-@loop  ci swc.ld0 FF:h
-       ci swc.ld1 FF:h
-       ci swc.ld2 FF:h
-       cc swc.ccd
-       wn swc.Ready
-       ci ddrctl.la0 00:h
-       ci ddrctl.la1 00:h
-       ci ddrctl.la2 00:h
-       ci ddrctl.la3 00:h
+@loco  ci ddrctl.ld0 EF:h
+       ci ddrctl.ld1 EF:h
+       ci ddrctl.ld2 EF:h
+       ci ddrctl.ld3 EF:h
        cc ddrctl.rdp
-       wn ddrctl.Ready
+       no
+       no
+       no
+       no
+       no
+       no
+       no
+       no
+       no
+       no
+       no
+       no
        cr ledbank.ldi ddrctl.Page
-       ci ledbank.ld7 01:h
        ci swc.ld0 FF:h
        ci swc.ld1 FF:h
        ci swc.ld2 FF:h
        cc swc.ccd
        wn swc.Ready
-       ci ddrctl.la0 02:h
-       ci ddrctl.la1 00:h
-       ci ddrctl.la2 00:h
-       ci ddrctl.la3 00:h
-       cc ddrctl.rdp
-       wn ddrctl.Ready
-       cr ledbank.ldi ddrctl.Page
-       ci ledbank.ld7 00:h
-       ji @loop
+       ji @loco

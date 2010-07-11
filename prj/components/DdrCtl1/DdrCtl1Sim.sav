@@ -1,7 +1,7 @@
 [timestart] 211559740
-[size] 1678 989
+[size] 1678 1004
 [pos] -1 -1
-*-14.172703 211596550 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.172703 211612500 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] DdrCtl1Sim.
 [treeopen] DdrCtl1Sim.ddr.
 @28
@@ -32,4 +32,5 @@ DdrCtl1Sim.ddrctl.ddr_dq[15:0]
 @28
 DdrCtl1Sim.ddrctl.ddr_dqs[1:0]
 @22
-DdrCtl1Sim.ddrctl.s_HalfPage[15:0]
+DdrCtl1Sim.ddrctl.s_HalfPage0[15:0]
+DdrCtl1Sim.ddrctl.s_HalfPage1[15:0]

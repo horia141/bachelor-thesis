@@ -151,7 +151,8 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
    reg [7:0]          s_InitCnt200Counter;
    reg                i_InitCnt200Done;
 
-   reg [15:0]         s_HalfPage;
+   reg [15:0]         s_HalfPage0;
+   reg [15:0] 	      s_HalfPage1;
 
    wire [3:0]         w_InstCode;
    wire [7:0]         w_InstImm;
@@ -374,7 +375,7 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
               if (i_CoreReadDone) begin
                  s_IntfState   <= `DdrCtl1_IntfState_Ready;
                  s_IntfAddress <= s_IntfAddress;
-                 s_IntfPage    <= {s_HalfPage,ddr_dq};
+                 s_IntfPage    <= {s_HalfPage0,s_HalfPage1};
 		 i_IntfDoRead  <= 0;
 		 i_IntfDoWrite <= 0;
               end
@@ -1174,8 +1175,12 @@ module DdrCtl1(clock0,clock90,reset,inst,inst_en,page,ready,ddr_clock0,ddr_clock
       end // else: !if(reset)
    end // always @ (posedge clock0)
 
-   always @ (negedge ddr_clock0) begin
-      s_HalfPage <= ddr_dq;
+   always @ (posedge ddr_clock90) begin
+      s_HalfPage0 <= ddr_dq;
+   end
+
+   always @ (negedge ddr_clock90) begin
+      s_HalfPage1 <= ddr_dq;
    end
 
 `ifdef SIM

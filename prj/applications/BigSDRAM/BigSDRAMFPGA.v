@@ -44,7 +44,7 @@ module BigSDRAMFPGA(clock,reset,leds,ddr_clk,ddr_clkn,ddr_cke,ddr_csn,ddr_rasn,d
 
    ClockManager #(.ExternalFeedBack(0))
    cm2 (.clock(cm1_clock2x0),
-        .reset(reset),
+        .reset(reset & cm1_locked),
 
         .locked(cm2_locked),
         .clock0(cm2_clock0),
