@@ -230,6 +230,18 @@ Prj.RegBankS8.Sim.Ref  = RegBankS8.All
 Prj.RegBankS8.Sim.Out  = RegBankS8Sim
 Prj.RegBankS8.Sim.Top  = RegBankS8Sim
 
+# ROMMatrix
+
+Prj.ROMMatrix.All.Base = components/ROMMatrix
+Prj.ROMMatrix.All.Src  = ROMMatrix.v
+Prj.ROMMatrix.All.Ref  =
+
+Prj.ROMMatrix.Sim.Base = $(Prj.ROMMatrix.All.Base)
+Prj.ROMMatrix.Sim.Src  = ROMMatrixSim.v ROMMatrixSim.sav ROMMatrixSim.mem
+Prj.ROMMatrix.Sim.Ref  = ROMMatrix.All
+Prj.ROMMatrix.Sim.Out  = ROMMatrixSim
+Prj.ROMMatrix.Sim.Top  = ROMMatrixSim
+
 # Rotary
 
 Prj.Rotary.All.Base = components/Rotary
@@ -490,8 +502,8 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.AllSrc) $$(DevProjectsToRules) _out
 #	Compile any .mem files, and produce a MemGen.v file for IVerilog.
 	@$$(call LineH2,Building Prj $(1) : MemGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.MemGen.OutPath)
-	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
-		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+	$$(if $$(and $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		     $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
 		$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
 			$$(Prj.$(1).Gen.Tools.MemGen.MemSrc) \
@@ -633,8 +645,8 @@ $$(Prj.$(1).Gen.RuleFile): $$(Prj.$(1).Gen.Src) $$(DevProjectsToRules) _out
 #	Compile any .mem files, and produce a MemGen.v file for IVerilog.
 	@$$(call LineH2,Building Prj $(1) : MemGen)
 	mkdir -p $$(Prj.$(1).Gen.Tools.MemGen.OutPath)
-	$$(if $$(or $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
-		    $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
+	$$(if $$(and $$(Prj.$(1).Gen.Tools.SeqAsm.SeqSrc),\
+		     $$(Prj.$(1).Gen.Tools.MemGen.MemSrc)),\
 		$$(Cfg.Prj.Targets.Sim.Tools.MemGen.Invoke) \
 			-o $$(Prj.$(1).Gen.Tools.MemGen.OutFile) \
 			$$(Prj.$(1).Gen.Tools.MemGen.MemSrc) \

@@ -3,6 +3,7 @@
 import Image
 import cStringIO
 import getopt
+import math
 import sys
 
 def convert(size,number):
@@ -11,13 +12,13 @@ def convert(size,number):
     repr = bin(number)[2:]
     return ((size-len(repr)) * '0') + repr
 
-memTypes = ['RAM','ROM']
+memTypes = ['ROM','RAMSP','RAMDP']
 channelsTypes = ['L','RGB','LRGB']
 maxChannelBits = 8
 
-usage = """image2mem [OPTION..] [IMAGEFILE]
+usage = """image2mem [OPTION..] IMAGEFILE
   -o File   --output=File          Output File
-  -o String --memoryname=String    Memory Name
+  -n String --memoryname=String    Memory Name
   -t String --memorytype=String    Memory Type""" +  str(memTypes) + """
   -c String --channelstype=String  Channel Type""" + str(channelsTypes) + """
   -b Number --channelbits=Number   Number of Bits per Channel"""
@@ -32,7 +33,7 @@ except getopt.GetoptError,err:
 
 memOutputPath   = 'out.mem'
 memMemoryName   = 'OutRam'
-memMemoryType   = 'RAM'
+memMemoryType   = 'ROM'
 memChannelsType = 'RGB'
 memChannelBits  = 2
 
@@ -82,10 +83,11 @@ if len(remainder) == 1:
     memOutputBody = cStringIO.StringIO()
 
     interval = 255 / (2**memChannelBits - 1)
+    addressBits = int(math.ceil(math.log(imgi.size[0] * imgi.size[1],2)))
 
     memOutputFile.write('Name: ' + memMemoryName + '\n')
     memOutputFile.write('Type: ' + memMemoryType + '\n')
-    memOutputFile.write('AddrSize: ' + str(imgi.size[0] * imgi.size[1]) + '\n')
+    memOutputFile.write('AddrSize: ' + str(addressBits) + '\n')
 
     if memChannelsType == 'L':
         memOutputFile.write('WordSize: ' + str(memChannelBits) + '\n')
@@ -120,11 +122,11 @@ if len(remainder) == 1:
         sys.exit(2)
 
     memOutputFile.write('Format: Bin\n')
-    memOutputFile.write('Generator:\n')
-    memOutputFile.write('    Name: ImageToMem\n')
-    memOutputFile.write('    Data:\n')
-    memOutputFile.write('        ChannelsType: ' + memChannelsType + '\n')
-    memOutputFile.write('        ChannelBits: ' + str(memChannelBits) + '\n')
+    memOutputFile.write('# Generator:\n')
+    memOutputFile.write('#     Name: ImageToMem\n')
+    memOutputFile.write('#     Data:\n')
+    memOutputFile.write('#         ChannelsType: ' + memChannelsType + '\n')
+    memOutputFile.write('#         ChannelBits: ' + str(memChannelBits) + '\n')
     memOutputFile.write('\n')
     memOutputFile.write(memOutputBody.getvalue())
     memOutputFile.write('\n')

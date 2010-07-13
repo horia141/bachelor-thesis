@@ -22,6 +22,7 @@ data ClOptions
         clOptionsDeviceFile :: String}
     deriving (Show)
 
+clHeader :: String
 clHeader = "seqasm [OPTION..] SOURCEFILE"
 
 clOptions :: [OptDescr (ClOptions -> ClOptions)]
@@ -29,7 +30,7 @@ clOptions = [Option ['o'] ["outfile"]    (ReqArg (\x -> (\ opts -> opts {clOptio
              Option ['t'] ["textdebug"]  (ReqArg (\x -> (\ opts -> opts {clOptionsTextFile = x})) "File") "Output Debug Text File",
              Option ['s'] ["sequencers"] (ReqArg (\x -> (\ opts -> opts {clOptionsSequencersFile = x})) "File") "Sequencers File",
              Option ['c'] ["components"] (ReqArg (\x -> (\ opts -> opts {clOptionsComponentsFile = x})) "File") "Components File",
-             Option ['d'] ["components"] (ReqArg (\x -> (\ opts -> opts {clOptionsDeviceFile = x})) "File") "Device File"]
+             Option ['d'] ["device"] (ReqArg (\x -> (\ opts -> opts {clOptionsDeviceFile = x})) "File") "Device File"]
 
 main :: IO ()
 main = do

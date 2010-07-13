@@ -35,11 +35,12 @@ compile device text =
 genBody :: CDevice -> String
 genBody (CDevice romName sequencer components seqOutputs seqInputs) =
     "Name: " ++ romName ++ "\n" ++
+    "Type: ROM" ++ "\n" ++
     "AddrSize: " ++ (show $ cSequencerAddressSize sequencer) ++ "\n" ++
     "WordSize: " ++ (show $ cSequencerInstructionSize sequencer) ++ "\n" ++
     "Format: Bin" ++ "\n" ++
-    "Generator:" ++ "\n" ++
-    "    Name: SeqAsm" ++ "\n\n" ++
+    "# Generator:" ++ "\n" ++
+    "#     Name: SeqAsm" ++ "\n\n" ++
     "# " ++ header0 ++ " " ++ (replicate ((cSequencerInstructionSize sequencer) - (length header0) - 2) ' ') ++ 
     "# " ++ header1 ++ " " ++ (replicate (maxNumberOfLines - (length header1)) ' ') ++ 
     header2 ++ " " ++ (replicate (maxNumberOfAddresses - (length header2) + 2) ' ') ++ 
@@ -48,11 +49,12 @@ genBody (CDevice romName sequencer components seqOutputs seqInputs) =
 genBodyText :: CDevice -> String
 genBodyText (CDevice romName sequencer components seqOutputs seqInputs) =
     "Name: " ++ romName ++ "Text" ++ "\n" ++
+    "Type: ROM" ++ "\n" ++
     "AddrSize: " ++ (show $ cSequencerAddressSize sequencer) ++ "\n" ++
     "WordSize: 4096" ++ "\n" ++
     "Format: Str" ++ "\n" ++
-    "Generator:" ++ "\n" ++
-    "    Name: SeqAsm" ++ "\n\n"
+    "# Generator:" ++ "\n" ++
+    "#     Name: SeqAsm" ++ "\n\n"
 
 stripLabels :: String -> String
 stripLabels line =
