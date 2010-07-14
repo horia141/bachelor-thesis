@@ -1,0 +1,24 @@
+@drawImage       no
+@drawImageSetRow ci regbank.ld0 00:h
+@drawImageSetCol ci regbank.ld1 00:h
+@drawImageWork   ci regbank.rdo 00:h
+                 cr imgrom.ldr regbank.Out
+                 cr vga.ldr regbank.Out
+                 ci regbank.rdo 01:h
+                 cr imgrom.ldc regbank.Out
+                 cr vga.ldc regbank.Out
+		 no
+                 ci vga.ldd 00001101:b
+@drawImageIncCol ci regbank.rdo 01:h
+                 cr alu.ldi regbank.Out
+                 ci alu.add 01:h
+                 cr regbank.ld1 alu.Result
+                 ci alu.lts 10:h
+                 jn @drawImageWork alu.Result
+@drawImageIncRow ci regbank.rdo 00:h
+                 cr alu.ldi regbank.Out
+                 ci alu.add 01:h
+                 cr regbank.ld0 alu.Result
+                 ci alu.lts 10:h
+                 jn @drawImageSetCol alu.Result
+@stop            ji @stop

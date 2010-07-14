@@ -74,7 +74,7 @@ module Seq(clock,reset,inst,inst_text,inst_en,ireg_0,ireg_1,ireg_2,ireg_3,next,o
    assign w_IregMux = w_InstSrc == 0 ? ireg_0 :
                       w_InstSrc == 1 ? ireg_1 :
                       w_InstSrc == 2 ? ireg_2 :
-                                        ireg_3;
+                                       ireg_3;
    assign w_OregWen = w_InstDst == 0 ? 8'b00000001 :
                       w_InstDst == 1 ? 8'b00000010 :
                       w_InstDst == 2 ? 8'b00000100 :

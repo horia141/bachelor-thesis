@@ -1,6 +1,6 @@
 module Main where
 
-import Data.List (intercalate)
+import Data.List (intercalate,(!!))
 import Data.Char (intToDigit,toUpper,ord)
 
 import Numeric (showIntAtBase)
@@ -234,6 +234,29 @@ binStringToHex "1101" = "d"
 binStringToHex "1110" = "e"
 binStringToHex "1111" = "f"
 
+hexStringToBin "0" = "0000"
+hexStringToBin "1" = "0001"
+hexStringToBin "2" = "0010"
+hexStringToBin "3" = "0011"
+hexStringToBin "4" = "0100"
+hexStringToBin "5" = "0101"
+hexStringToBin "6" = "0110"
+hexStringToBin "7" = "0111"
+hexStringToBin "8" = "1000"
+hexStringToBin "9" = "1001"
+hexStringToBin "A" = "1010"
+hexStringToBin "B" = "1011"
+hexStringToBin "C" = "1100"
+hexStringToBin "D" = "1101"
+hexStringToBin "E" = "1110"
+hexStringToBin "F" = "1111"
+hexStringToBin "a" = "1010"
+hexStringToBin "b" = "1011"
+hexStringToBin "c" = "1100"
+hexStringToBin "d" = "1101"
+hexStringToBin "e" = "1110"
+hexStringToBin "f" = "1111"
+
 strStringToHex :: Char -> String
 strStringToHex ch =
     intToHex 2 $ ord ch
@@ -242,59 +265,46 @@ genInit :: Int -> String -> String
 genInit index value =
     ".INIT_" ++ intToHex 2 index ++ "(\"" ++ value ++ "\")"
 
-genInitParameters :: MemFormat -> Int -> Int -> [String] -> String
-genInitParameters Bin wordSize memoryWordSize content
-    | length content < defXilinxBlockMemSize =
+genInitParameters :: String -> String
+genInitParameters content
+    | length content <= defXilinxBlockMemSize =
         intercalate ",\n" $ 
         zipWith genInit [0..] $ 
         splitInto defXilinxBlockInitSize $ 
         concat $ 
         map binStringToHex $ 
-        splitInto 4 $ 
-        concat $
-        map ((replicate (memoryWordSize - wordSize) '0')++) content
+        splitInto 4 content
     | otherwise = 
         error "genInitParameters got more than 16Kb! This should never be!"
-genInitParameters Hex wordSize memoryWordSize content
-    | length content < defXilinxBlockMemSize =
-        intercalate ",\n" $
-        zipWith genInit [0..] $
-        splitInto defXilinxBlockInitSize $
-        concat $ 
-        map ((replicate ((memoryWordSize - wordSize)`div`4) '0')++) content
-    | otherwise =
-        error "genInitParameters got more than 16Kb! This should never be!"
-genInitParameters Str wordSize memoryWordSize content
-    | length content < defXilinxBlockMemSize =
-        intercalate ",\n" $
-        zipWith genInit [0..] $
-        splitInto defXilinxBlockInitSize $
-        concat $
-        map strStringToHex $
-        concat $
-        map ((replicate ((memoryWordSize - wordSize)`div`8) '\0')++) content
-    | otherwise =
-        error "genInitParameters got more than 16Kb! This should never be!"
+
+selectInitParams :: Int -> Int -> String -> String 
+selectInitParams bit from content =
+    map (!!bit) $ splitInto from content
+
+convertAllToBin :: MemFormat -> String -> String
+convertAllToBin Bin str = str
+convertAllToBin Hex str = concat $ map (hexStringToBin . (:[])) str
+convertAllToBin Str str = convertAllToBin Hex $ concat $ map strStringToHex str
 
 genRamSP :: MemDef -> String
 genRamSP (Def name memType wordSize addrSize format content) =
-    "module " ++ name ++ "(clock,reset,we,addr,data_i,data_o)" ++ "\n" ++
+    "module " ++ name ++ "(clock,reset,we,addr,data_i,data_o);" ++ "\n" ++
     "  input wire clock;" ++ "\n" ++
     "  input wire reset;" ++ "\n\n" ++
     "  input wire we;" ++ "\n" ++
     "  input wire [" ++ show addrSize ++ "-1:0] addr;" ++ "\n" ++
     "  input wire [" ++ show wordSize ++ "-1:0] data_i;" ++ "\n\n" ++
-    "  output wire [" ++ show wordSize ++ "-1:0] data_o;" ++ "\n\n" ++
     "`ifdef SIM" ++ "\n" ++
+    "  output reg [" ++ show wordSize ++ "-1:0] data_o;" ++ "\n\n" ++
     "  reg [" ++ show addrSize ++ ":0] s_InitCounter;" ++ "\n" ++
-    "  reg [" ++ show (2^addrSize) ++ "-1:0] s_Memory;" ++ "\n\n" ++
+    "  reg [" ++ show wordSize ++ "-1:0] s_Memory [" ++ show (2^addrSize) ++ "-1:0];" ++ "\n\n" ++
     "  initial begin" ++ "\n" ++
-    "    for (s_InitCounter = 0; s_InitCounter < " ++ show (2^addrSize) ++ "; s_InitCounter) begin" ++ "\n" ++
-    "      case (s_InitCounter)" ++ "\n" ++
+--    "    for (s_InitCounter = 0; s_InitCounter < " ++ show (2^addrSize) ++ "; s_InitCounter = s_InitCounter+1) begin" ++ "\n" ++
+--    "      case (s_InitCounter)" ++ "\n" ++
     simBody ++ "\n" ++
-    "        default: s_Memory[s_InitCounter] = " ++ veriNumber format wordSize "0" ++ ";"  ++ "\n" ++
-    "      endcase" ++ "\n" ++
-    "    end" ++ "\n" ++
+--    "        default: s_Memory[s_InitCounter] = " ++ veriNumber format wordSize "0" ++ ";"  ++ "\n" ++
+--    "      endcase" ++ "\n" ++
+--    "    end" ++ "\n" ++
     "  end" ++ "\n\n" ++
     "  always @ (posedge clock) begin" ++ "\n" ++
     "    if (reset) begin" ++ "\n" ++
@@ -309,6 +319,12 @@ genRamSP (Def name memType wordSize addrSize format content) =
     "  end // always @ (posedge clock)" ++ "\n" ++
     "`endif" ++ "\n\n" ++
     "`ifdef FPGA" ++ "\n" ++
+    "  output wire [" ++ show wordSize ++ "-1:0] data_o;" ++ "\n\n" ++
+    "wire m0_data_o;" ++ "\n" ++
+    "wire m1_data_o;" ++ "\n" ++
+    "wire m2_data_o;" ++ "\n" ++
+    "wire m3_data_o;" ++ "\n" ++
+    "assign data_o = {m3_data_o,m2_data_o,m1_data_o,m0_data_o};" ++ "\n" ++
     fpgaBody ++
     "`endif" ++ "\n" ++
     "endmodule // " ++ name ++ "\n"
@@ -316,22 +332,48 @@ genRamSP (Def name memType wordSize addrSize format content) =
           simBody = intercalate "\n" $
                     zipWith toCase [0..2^addrSize-1] $
                     map (veriNumber format wordSize) content
-              where toCase index value = "        " ++ show index ++ ": s_Memory[s_InitCounter] = " ++ value ++ ";"
+              where toCase index value = "    s_Memory[" ++ show index ++ "] = " ++ value ++ ";"
 
           fpgaBody :: String
           fpgaBody = 
-              if addrSize <= 9
-              then if wordSize >= 1 && wordSize <= 32
-                   then "RAMB_S36 #(" ++ genInitParameters format wordSize 32 content ++ ")" ++ "\n" ++
-                        name ++ "(.CLK(clock)," ++ "\n" ++
-                                 ".SSR(reset)," ++ "\n\n" ++
-                                 ".CE(1)," ++ "\n" ++
-                                 ".WE(we)," ++ "\n" ++
-                                 ".ADDR(addr)," ++ "\n" ++
-                                 ".DI(data_i)," ++ "\n" ++
-                                 ".DO(data_o));" ++ "\n"
-                   else ""
-              else ""
+              if addrSize <= 14 && wordSize == 4 -- only supported case
+              then "RAMB16_S1 #(" ++ genInitParameters (selectInitParams 0 4 $ convertAllToBin format $ concat content) ++ ")" ++ "\n" ++
+                   name ++ "_m0 (" ++ "\n" ++
+                            ".CLK(clock)," ++ "\n" ++
+                            ".SSR(reset)," ++ "\n\n" ++
+                            ".EN(1)," ++ "\n" ++
+                            ".WE(we)," ++ "\n" ++
+                            ".ADDR(addr)," ++ "\n" ++
+                            ".DI(data_i[0])," ++ "\n" ++
+                            ".DO(m0_data_o));" ++ "\n" ++
+                  "RAMB16_S1 #(" ++ genInitParameters (selectInitParams 1 4 $ convertAllToBin format $ concat content) ++ ")" ++ "\n" ++
+                   name ++ "_m1 (" ++ "\n" ++
+                            ".CLK(clock)," ++ "\n" ++
+                            ".SSR(reset)," ++ "\n\n" ++
+                            ".EN(1)," ++ "\n" ++
+                            ".WE(we)," ++ "\n" ++
+                            ".ADDR(addr)," ++ "\n" ++
+                            ".DI(data_i[1])," ++ "\n" ++
+                            ".DO(m1_data_o));" ++ "\n" ++
+                  "RAMB16_S1 #(" ++ genInitParameters (selectInitParams 2 4 $ convertAllToBin format $ concat content) ++ ")" ++ "\n" ++
+                   name ++ "_m2 (" ++ "\n" ++
+                            ".CLK(clock)," ++ "\n" ++
+                            ".SSR(reset)," ++ "\n\n" ++
+                            ".EN(1)," ++ "\n" ++
+                            ".WE(we)," ++ "\n" ++
+                            ".ADDR(addr)," ++ "\n" ++
+                            ".DI(data_i[2])," ++ "\n" ++
+                            ".DO(m2_data_o));" ++ "\n" ++
+                  "RAMB16_S1 #(" ++ genInitParameters (selectInitParams 3 4 $ convertAllToBin format $ concat content) ++ ")" ++ "\n" ++
+                   name ++ "_m3 (" ++ "\n" ++
+                            ".CLK(clock)," ++ "\n" ++
+                            ".SSR(reset)," ++ "\n\n" ++
+                            ".EN(1)," ++ "\n" ++
+                            ".WE(we)," ++ "\n" ++
+                            ".ADDR(addr)," ++ "\n" ++
+                            ".DI(data_i[3])," ++ "\n" ++
+                            ".DO(m3_data_o));" ++ "\n"
+              else error "Unsupported case!"
 
 genRamDP :: MemDef -> String
 genRamDP (Def name memType wordSize addrSize format content) =

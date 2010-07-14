@@ -164,14 +164,14 @@ module VGA2(clock,reset,inst,inst_en,vga_hsync,vga_vsync,vga_r,vga_g,vga_b);
             .reset(reset),
 
             .color_r(~i_VGAIntfAddr[0] ? 
-                     (rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramr0_data_o1 : ramr0_data_o1) :
-                     (rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramr1_data_o1 : ramr1_data_o1)),
+                     (~rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramr0_data_o1 : ramr0_data_o1) :
+                     (~rama1_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramr1_data_o1 : ramr1_data_o1)),
             .color_g(~i_VGAIntfAddr[0] ? 
-                     (rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramg0_data_o1 : ramg0_data_o1) :
-                     (rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramg1_data_o1 : ramg1_data_o1)),
+                     (~rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramg0_data_o1 : ramg0_data_o1) :
+                     (~rama1_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramg1_data_o1 : ramg1_data_o1)),
             .color_b(~i_VGAIntfAddr[0] ? 
-                     (rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramb0_data_o1 : ramb0_data_o1) :
-                     (rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramb1_data_o1 : ramb1_data_o1)),
+                     (~rama0_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramb0_data_o1 : ramb0_data_o1) :
+                     (~rama1_data_o1 ? (~vgaintf_fb_addr_h[0]) & (~vgaintf_fb_addr_v[0]) & ramb1_data_o1 : ramb1_data_o1)),
 
             .fb_addr_h(vgaintf_fb_addr_h),
             .fb_addr_v(vgaintf_fb_addr_v),

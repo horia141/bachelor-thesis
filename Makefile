@@ -108,6 +108,24 @@ Prj.RotaryLed.FPGA.Ref  = RotaryLed.All ClockManager.All
 Prj.RotaryLed.FPGA.Out  = RotaryLedFPGA
 Prj.RotaryLed.FPGA.Top  = RotaryLedFPGA
 
+# ViewImage
+
+Prj.ViewImage.All.Base = applications/ViewImage
+Prj.ViewImage.All.Src  = ViewImage.v ViewImage.seq ViewImage.dev ViewImageImgROM.mem
+Prj.ViewImage.All.Ref  = Seq.All Alu.All RegBankS8.All ROMMatrix.All VGA2.All
+
+Prj.ViewImage.Sim.Base = $(Prj.ViewImage.All.Base)
+Prj.ViewImage.Sim.Src  = ViewImageSim.v ViewImageSim.sav
+Prj.ViewImage.Sim.Ref  = ViewImage.All
+Prj.ViewImage.Sim.Out  = ViewImageSim
+Prj.ViewImage.Sim.Top  = ViewImageSim
+
+Prj.ViewImage.FPGA.Base = $(Prj.ViewImage.All.Base)
+Prj.ViewImage.FPGA.Src  = ViewImageFPGA.v ViewImageFPGA.ucf
+Prj.ViewImage.FPGA.Ref  = ViewImage.All ClockManager.All
+Prj.ViewImage.FPGA.Out  = ViewImageFPGA
+Prj.ViewImage.FPGA.Top  = ViewImageFPGA
+
 # Projects in prj/components
 
 # Alu

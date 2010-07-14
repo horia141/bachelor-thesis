@@ -10,12 +10,12 @@ module RAMDP(clock,reset,we,addr0,addr1,data_i,data_o0,data_o1);
    input wire [AddrSize-1:0]  addr1;
    input wire [DataSize-1:0]  data_i;
 
+
+`ifdef SIM
    output reg [DataSize-1:0]  data_o0;
    output reg [DataSize-1:0]  data_o1;
 
    reg [DataSize-1:0]         s_Data[2**AddrSize-1:0];
-
-`ifdef SIM
    reg [AddrSize:0]           k;
    
    initial begin
@@ -23,7 +23,6 @@ module RAMDP(clock,reset,we,addr0,addr1,data_i,data_o0,data_o1);
          s_Data[k] = 0;
       end
    end
-`endif
 
    always @ (posedge clock) begin
       if (reset) begin
@@ -39,4 +38,28 @@ module RAMDP(clock,reset,we,addr0,addr1,data_i,data_o0,data_o1);
          data_o1 <= s_Data[addr1];
       end
    end // always @ (posedge clock)
+`endif //  `ifdef SIM
+
+`ifdef FPGA
+   output wire [DataSize-1:0]  data_o0;
+   output wire [DataSize-1:0]  data_o1;
+
+   RAMB16_S1_S1
+   ramse (.CLKA(clock),
+	  .CLKB(clock),
+	  .SSRA(reset),
+	  .SSRB(reset),
+	  
+	  .ENA(~reset),
+	  .WEA(we),
+	  .ADDRA(addr0),
+	  .DIA(data_i),
+	  .DOA(data_o0),
+
+	  .ENB(~reset),
+	  .WEB(0),
+	  .ADDRB(addr1),
+	  .DIB(1'b0),
+	  .DOB(data_o1));
+`endif
 endmodule // RAMDP

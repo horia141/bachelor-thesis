@@ -1,0 +1,46 @@
+[timestart] 0
+[size] 1678 1004
+[pos] -1 -1
+*-19.000000 96000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] ViewImageSim.
+[treeopen] ViewImageSim.view.
+@28
+ViewImageSim.clock0
+ViewImageSim.clock180
+@200
+-seq
+@820
+ViewImageSim.view.seq.d_Instruction[4119:0]
+ViewImageSim.view.seq.d_Input[2047:0]
+ViewImageSim.view.seq.d_State[2047:0]
+@200
+-alu
+@820
+ViewImageSim.view.alu.d_Input[2047:0]
+ViewImageSim.view.alu.d_State[2047:0]
+@200
+-regbank
+@820
+ViewImageSim.view.regbank.d_Input[2047:0]
+ViewImageSim.view.regbank.d_State[2047:0]
+@200
+-imgrom
+@820
+ViewImageSim.view.imgrom.d_Input[2047:0]
+ViewImageSim.view.imgrom.d_State[2047:0]
+@200
+-vga
+@820
+ViewImageSim.view.vga.d_Input[2047:0]
+ViewImageSim.view.vga.d_State[2047:0]
+@200
+-internalrom
+@22
+ViewImageSim.view.internalrom.addr[13:0]
+ViewImageSim.view.internalrom.data_i[3:0]
+@29
+ViewImageSim.view.internalrom.data_o[3:0]
+@28
+ViewImageSim.vga_r
+ViewImageSim.vga_g
+ViewImageSim.vga_b

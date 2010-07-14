@@ -1,0 +1,10 @@
+Sequencer:
+    RomName: ViewImageRom
+    Type: Seq
+    Outputs: alu regbank imgrom vga
+    Inputs: alu.Result regbank.Out imgrom.Out
+Components:
+    alu: Alu
+    regbank: RegBankS8
+    imgrom: ROMMatrix
+    vga: VGA2

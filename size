@@ -22,3 +22,47 @@ Index   Build   Dev     Prj     Total   Commit
 20      623     1058    8592    10273   Fixed issue with text roms.
 21      718     1058    9726    11502   Added VGA2 testbench.
 22      719     1060    9912    11691   Finished VGA2 testbench.
+
+23      882     1490    9942    12314   Phase 1 Complete : I earned my batchelor's degree.
+
+Build: 882
+  Makefile: 871
+  Program: 11
+
+Dev: 1490
+  ImageToMem: 140
+  LineBR: 73
+  MemGen: 438
+  SeqAsm: 839
+
+Prj: 9942
+  applications: 1160
+    Auto2: 183
+    BigSDRAM: 325
+    BlockFall: 211
+    PressCount: 243
+    RedRectangle: 199
+    RotaryLed: 277
+    ViewImage: 222
+  components: 7816
+    Alu: 414
+    DdrCtl1: 1895
+    LedBank: 300
+    PushBtn: 424
+    RegBank: 1976
+    ROMMatrix: 275
+    Rotary: 649
+    Swc: 451
+    VGA1: 326
+    VGA2: 686
+    Components.cfg: 420
+  sequencers: 540
+    Seq: 498
+    Sequencers.cfg: 42
+  xtra: 426
+    common: 426
+      ClockManager: 89
+      RAMDP: 150
+      RAMSP: 114
+      SlowClock: 73
+    extern: 0
