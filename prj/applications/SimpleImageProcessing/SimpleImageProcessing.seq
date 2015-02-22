@@ -1,0 +1,160 @@
+# Scan the button bank status and do an appropriate
+# action if the right button is pressed.
+# Button/Operation precedence order:
+#    Inverse
+#    HorzFlip
+#    VertFlip
+
+@readButtons        cc buttonbank:rdbs
+                    ci alu.ldi buttonbank.Status
+                    ci alu.and 00000100:b
+                    jn @doInverse alu.Result
+                    ci alu.ldi buttonbank.Status
+                    ci alu.and 00000010:b
+                    jn @doHorzFlip alu.Result
+                    ci alu.ldi buttonbank.Status
+                    ci alu.and 00000001:b
+                    jn @doVertFlip alu.Result
+                    ji @readButtons
+
+# Do a bitwise inverse of all the pixels in the image
+# memory. Send it to the framebuffer afterwards.
+
+@doInverse          nop                        # This is for convenience. We could have started
+		    			       # from @doInverse.
+@doInverseSetRow    ci regbank.ld0 00:h        # Reset the row counter. Should happen only once.
+@doInverseSetCol    ci regbank.ld1 00:h        # Reset the column counter. Should happen once per row.
+@doInverseWork      ci regbank.rdo 00:h        # Select the proper row.
+                    cr imgmem.ldr regbank.Out  # The value is given by register 0.
+                    ci regbank.rdo 01:h        # Select the proper column.
+                    cr imgmem.ldc regbank.Out  # The value is given by register 1.
+                    cr alu.ldi imgmem.Out      # Do the actual bit flipping by loading
+                    ci alu.not                 # the pixel value in the alu, executing
+                    cr imgmem.ldd alu.Result   # a not, and storing the result back in the same cell.
+@doInverseIncCol    ci regbank.rdo 01:h        # Increment register 1, the column counter.
+                    cr alu.ldi regbank.Out     # Move it to the alu, add 1 to it,
+                    ci alu.add 01:h            # and store the result back in the
+                    cr regbank.ld1 alu.Result  # register bank.
+                    ci alu.lts 40:h            # Test to see if we're lower than 64, and if we
+                    jn @doInverseWork          # are, jump to Work.
+@doInverseIncRow    ci regbank.rdo 00:h        # We must increment register 0, the row counter.
+		    cr alu.ldi regbank.Out     # We've reached the end column. The process is
+		    ci alu.add 01:h            # the same as before.
+		    cr regbank.ld0 alu.Result  #
+		    ci alu.lts 40:h            # Test to see if we're lower than 64, and if we
+		    jn @doInverseSetCol        # are, jump to SetCol, to begin a new row.
+		    ji @drawImage              # If we aren't, we've finished processing and need to
+		       			       # redraw the image.
+
+# Do a horizontal flip of the image and send it to the framebuffer
+# afterwards.
+
+@doHorzFlip         nop
+@doHorzFlipSetRow   ci regbank.ld0 00:h
+@doHorzFlipSetCol   ci regbank.ld1 00:h
+@doHorzFlipWork     ci regbank.rdo 00:h
+		    cr imgmem.ldr regbank.Out
+		    ci regbank.rdo 01:h
+		    cr imgmem.ldc regbank.Out
+		    cr regbank.ld7 imgmem.Out
+		    ci regbank.rdo 00:h
+		    ci alu.ldi 3F:h
+		    ci alu.sub regbank.Out
+		    cr imgmem.ldr alu.Result
+		    cr regbank.ld6 imgmem.Out
+		    ci regbank.rdo 07:h
+		    cr imgmem.ldd regbank.Out
+		    ci regbank.rdo 00:h
+		    cr imgmem.ldr regbank.Out
+		    ci regbank.rdo 06:h
+		    cr imgmem.ldd regbank.Out
+@doHorzFlipIncCol   ci regbank.rdo 01:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld1 alu.Result
+		    ci alu.lts 40:h
+		    jn @doHorzFlipWork
+@doHorzFlipIncRow   ci regbank.rdo 00:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld0 alu.Result
+		    ci alu.lts 20:h
+		    jn @doHorzFlipSetCol
+		    ji @drawImage
+
+# Do a vertical flip of the image and send it to the framebuffer
+# afterwards.
+
+@doVertFlip         nop
+@doVertFlipSetRow   ci regbank.ld0 00:h
+@doVertFlipSetCol   ci regbank.ld1 00:h
+@doVertFlipWork     ci regbank.rdo 00:h
+		    cr imgmem.ldr regbank.Out
+		    ci regbank.rdo 01:h
+		    cr imgmem.ldc regbank.Out
+		    cr regbank.ld7 imgmem.Out
+		    ci regbank.rdo 01:h
+		    ci alu.ldi 3F:h
+		    ci alu.sub regbank.Out
+		    cr imgmem.ldc alu.Result
+		    cr regbank.ld6 imgmem.Out
+		    ci regbank.rdo 07:h
+		    cr imgmem.ldd regbank.Out
+		    ci regbank.rdo 01:h
+		    ci regbank.ldc regbank.Out
+		    ci regbank.rdo 06:h
+		    ci imgmem.ldd regbank.Out
+@doVertFlipIncCol   ci regbank.rdo 01:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld1 alu.Result
+		    ci alu.lts 20:h
+		    jn @doVertFlipWork
+@doVertFlipIncRow   ci regbank.rdo 00:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld0 alu.Result
+		    ci alu.lts 40:h
+		    jn @doVertFlipSetCol
+		    ji @drawImage
+
+# Draw the image : basically we need to copy the image
+# in imgmem to the framebuffer.
+
+#drawImage          nop
+@drawImageSetRow    ci regbank.ld0 00:h
+		    ci regbank.ld7 0B:h
+@drawImageSetCol    ci regbank.ld1 00:h
+		    ci regbank.ld6 24:h
+@drawImageWork      ci regbank.rdo 00:h
+		    cr imgmem.ldr regbank.Out
+		    ci regbank.rdo 01:h
+		    cr imgmem.ldc regbank.Out
+		    cr regbank.ld4 imgmem.Out
+		    ci regbank.rdo 07:h
+		    cr vga.ldr regbank.Out
+		    ci regbank.rdo 06:h
+		    cr vga.ldc regbank.Out
+		    ci regbank.rdo 04:h
+		    cr vga.ldd regbank.Out
+@drawImageIncCol    ci regbank.rdo 06:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld6 alu.Result
+		    ci regbank.rdo 01:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld1 alu.Result
+		    ci alu.lts 40:h
+		    jn @drawImageWork
+@drawImageIncRow    ci regbank.rdo 07:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld7 alu.Result
+		    ci regbank.rdo 00:h
+		    cr alu.ldi regbank.Out
+		    ci alu.add 01:h
+		    cr regbank.ld0 alu.Result
+		    ci alu.lts 40:h
+		    jn @drawImageSetCol
+		    ji @readButtons
